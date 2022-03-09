@@ -1,0 +1,712 @@
+/*------------------------------------------------------------------
+Table of Contents
+
+01. Forms
+02. Validation
+03. Switch
+04. Custom Checkbox
+05. Custom Radio
+06. Cards
+07. Top Bar
+08. Menu Bar
+09. Workspace
+10. Footer
+11. Breadcrumb
+12. Table
+13. Tab
+14. Wizard
+15. Overlay
+16. Custom Range
+17. Dropzone
+18. Rating Stars
+19. Alerts
+20. Badges
+21. Buttons
+22. Button Group
+23. Input Group
+24. Tippy
+25. Dropdown
+26. Custom Dropdown
+27. Search & Select
+28. Modal
+29. Sidebar
+30. Collapse
+31. Accordion
+32. Editors
+33. Sortable
+34. Toast
+35. Caraousel
+36. Footer Bar
+37. Avatar
+38. Full Layout
+-------------------------------------------------------------------*/
+
+/*
+Forms
+*/
+
+/*
+  Validation
+  */
+
+/*
+  Switch
+  */
+
+/*
+  Custom Checkbox
+  */
+
+/*
+  Custom Radio
+  */
+
+/*
+  Cards
+  */
+
+/*
+  Top Bar
+  */
+
+/*
+  Menu Bar
+  */
+
+/*
+  Workspace
+  */
+
+/*
+   Footer
+  */
+.dark .footer {
+    @apply border-gray-800;
+
+    .divider {
+        @apply text-gray-700;
+    }
+}
+
+.footer {
+    @apply bg-gradient-to-b from-black via-secondary-500 to-secondary-500 bottom-0 static;
+
+    .divider {
+        @apply text-gray-500 mx-2;
+    }
+
+    .social-link {
+        @apply rounded-full bg-yellow-500 text-black h-10 w-10 ml-2 flex items-center justify-center hover:bg-white transition delay-100 ease-in;
+        &:first-child {
+            @apply ml-0;
+        }
+    }
+
+
+}
+
+/*
+  Breadcrumb
+  */
+
+/*
+  Table
+  */
+
+/*
+  Tab
+  */
+.dark .tab-nav {
+    @apply border-gray-900;
+}
+
+.tab-nav {
+    @apply flex flex-nowrap border-b border-gray-300;
+
+    a,
+    .nav-link {
+        @apply relative inline-block pb-1 font-sans font-bold text-gray-600;
+
+        &:before {
+            @apply absolute;
+            content: "";
+        }
+
+        &.active {
+            @apply text-primary;
+
+            &:before {
+                @apply h-1 right-0 left-0 bg-primary rounded-full;
+                bottom: -2px;
+            }
+        }
+
+        + a,
+        + .nav-link {
+            @apply ml-4;
+        }
+    }
+}
+
+/*
+  Wizard
+  */
+
+/*
+  Overlay
+  */
+.dark .overlay {
+    &.active {
+        @apply opacity-30;
+    }
+}
+
+.overlay {
+    @apply fixed top-0 right-0 bottom-0 left-0 bg-black opacity-0 z-40;
+    @apply transition-opacity duration-200 ease-linear;
+
+    &.active {
+        @apply opacity-10;
+    }
+
+    &.workspace {
+        @apply z-10;
+    }
+}
+
+/*
+  Custom Range
+  */
+
+/*
+  Dropzone
+  */
+
+/*
+  Rating Stars
+  */
+
+/*
+  Alerts
+  */
+
+/*
+  Badges
+  */
+
+/*
+  Buttons
+  */
+.dark .btn {
+    @apply text-gray-900;
+
+    &:hover {
+        @apply text-gray-900;
+    }
+}
+
+.btn {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent font-bold text-white;
+    @apply transition-all duration-200 ease-linear;
+
+    &:hover {
+        @apply text-white;
+    }
+
+    &:disabled {
+        @apply opacity-50;
+    }
+
+    &_primary {
+        @apply bg-primary text-black;
+
+        &:hover:not([disabled]) {
+            @apply bg-primary-700 text-black;
+        }
+    }
+
+    &_secondary {
+        @apply bg-secondary;
+
+        &:hover:not([disabled]) {
+            @apply bg-secondary-700 text-primary;
+        }
+    }
+
+    &_success {
+        @apply bg-green-500;
+
+        &:hover:not([disabled]) {
+            @apply bg-green-900;
+        }
+    }
+
+    &_danger {
+        @apply bg-red-500;
+
+        &:hover:not([disabled]) {
+            @apply bg-red-900;
+        }
+    }
+
+    &_warning {
+        @apply bg-yellow-700;
+
+        &:hover:not([disabled]) {
+            @apply bg-yellow-900;
+        }
+    }
+
+    &_info {
+        @apply bg-blue-500;
+
+        &:hover:not([disabled]) {
+            @apply bg-blue-900;
+        }
+    }
+
+    &_outlined {
+        @apply bg-transparent;
+
+        &:hover:not([disabled]) {
+            @apply bg-transparent;
+        }
+
+        &.btn {
+            &_primary {
+                @apply border-primary text-primary;
+
+                &:hover:not([disabled]) {
+                    @apply border-primary-700 text-primary-700;
+                }
+            }
+
+            &_secondary {
+                @apply border-secondary text-secondary;
+
+                &:hover:not([disabled]) {
+                    @apply border-primary text-primary;
+                }
+            }
+
+            &_success {
+                @apply border-green-500 text-green-500;
+
+                &:hover:not([disabled]) {
+                    @apply border-green-900 text-green-900;
+                }
+            }
+
+            &_danger {
+                @apply border-red-500 text-red-500;
+
+                &:hover:not([disabled]) {
+                    @apply border-red-900 text-red-900;
+                }
+            }
+
+            &_warning {
+                @apply border-yellow-700 text-yellow-700;
+
+                &:hover:not([disabled]) {
+                    @apply border-yellow-900 text-yellow-900;
+                }
+            }
+
+            &_info {
+                @apply border-blue-500 text-blue-500;
+
+                &:hover:not([disabled]) {
+                    @apply border-blue-900 text-blue-900;
+                }
+            }
+        }
+    }
+
+    &-icon {
+        @apply w-8 h-8 p-0 justify-center text-xl leading-none;
+
+        &_large {
+            @apply w-10 h-10;
+        }
+    }
+
+    &-link {
+        @apply m-0 p-0;
+
+        &:hover {
+            @apply text-primary;
+        }
+    }
+}
+
+/*
+  Button Group
+  */
+
+/*
+  Input Group
+  */
+
+/*
+  Tippy
+  */
+.dark {
+    .tippy-box {
+        &[data-theme~="light-border"] {
+            @apply bg-gray-800 text-gray-500 border-gray-900;
+
+            > .tippy-backdrop {
+                @apply bg-gray-800;
+            }
+            &[data-placement^="top"] > .tippy-arrow {
+                &::before {
+                    border-top-color: theme("colors.gray.800");
+                }
+                &::after {
+                    border-top-color: theme("colors.gray.900");
+                }
+            }
+
+            &[data-placement^="bottom"] > .tippy-arrow {
+                &::before {
+                    border-bottom-color: theme("colors.gray.800");
+                }
+                &::after {
+                    border-bottom-color: theme("colors.gray.900");
+                }
+            }
+            &[data-placement^="left"] > .tippy-arrow {
+                &::before {
+                    border-left-color: theme("colors.gray.800");
+                }
+                &::after {
+                    border-left-color: theme("colors.gray.900");
+                }
+            }
+            &[data-placement^="right"] > .tippy-arrow {
+                &::before {
+                    border-right-color: theme("colors.gray.800");
+                }
+                &::after {
+                    border-right-color: theme("colors.gray.900");
+                }
+            }
+
+            > .tippy-svg-arrow {
+                fill: theme("colors.gray.800");
+            }
+        }
+    }
+}
+
+.tippy-box {
+    &[data-theme~="light-border"] {
+        @apply bg-white text-gray-700 rounded-xl border border-gray-200 shadow;
+
+        > .tippy-backdrop {
+            @apply bg-white;
+        }
+
+        &[data-placement^="top"] > .tippy-arrow {
+            &::before {
+                border-top-color: theme("colors.white");
+            }
+            &::after {
+                border-top-color: theme("colors.gray.200");
+            }
+        }
+
+        &[data-placement^="bottom"] > .tippy-arrow {
+            &::before {
+                border-bottom-color: theme("colors.white");
+                bottom: 15px;
+            }
+            &::after {
+                border-bottom-color: theme("colors.gray.200");
+            }
+        }
+        &[data-placement^="left"] > .tippy-arrow {
+            &::before {
+                border-left-color: theme("colors.white");
+            }
+            &::after {
+                border-left-color: theme("colors.gray.200");
+            }
+        }
+        &[data-placement^="right"] > .tippy-arrow {
+            &::before {
+                border-right-color: theme("colors.white");
+                right: 15px;
+            }
+            &::after {
+                border-right-color: theme("colors.gray.200");
+            }
+        }
+
+        > .tippy-svg-arrow {
+            fill: theme("colors.white");
+        }
+
+        > .tippy-content {
+            @apply p-0;
+
+            .dropdown-menu {
+                @apply block;
+            }
+
+            .custom-dropdown-menu {
+                @apply block;
+            }
+
+            .search-select-menu {
+                @apply block;
+            }
+        }
+    }
+
+    &[data-theme~="tooltip"] {
+        > .tippy-content {
+            @apply px-5 py-2;
+        }
+    }
+
+    &[data-theme~="popover"] {
+        > .tippy-content {
+            @apply p-5;
+        }
+    }
+}
+
+/*
+  Dropdown
+  */
+
+/*
+  Custom Dropdown
+  */
+
+/*
+  Search & Select
+  */
+select {
+    @apply rounded appearance-none w-full focus:ring-0 focus:border-gray-800 border border-gray-500;
+}
+.form-select {
+    @apply relative;
+}
+.form-select-arrow {
+    @apply block bg-primary-500 h-full w-8 absolute top-0 right-0 rounded-r border border-gray-500 pointer-events-none;
+
+    &::before,
+    &::after {
+        font-family: "Font Awesome 5 Pro";
+        content: "\f078";
+        @apply absolute w-0 h-0 left-1/4 top-1/4 -translate-x-1/2 -translate-y-1/2;
+    }
+}
+/*
+  Modal
+  */
+.dark .modal {
+    .modal-dialog {
+        .modal-content {
+            @apply bg-gray-800;
+
+            .modal-header {
+                @apply border-gray-900;
+            }
+
+            .modal-footer {
+                @apply border-gray-900;
+            }
+        }
+    }
+}
+
+.modal {
+    @apply hidden fixed top-0 right-0 bottom-0 left-0 w-full h-full overflow-y-auto z-50;
+
+    .modal-dialog {
+        @apply flex mx-auto p-5;
+
+        &_centered {
+            @apply items-center h-full;
+        }
+
+        &_scrollable {
+            @apply max-h-screen;
+
+            .modal-content {
+                @apply flex flex-col;
+
+                .modal-body {
+                    @apply overflow-y-auto;
+                }
+            }
+        }
+
+        .modal-content {
+            @apply rounded-xl bg-white shadow;
+
+            .modal-header {
+                @apply flex flex-shrink-0 items-center p-5 border-b border-gray-200;
+
+                .close {
+                    @apply ml-auto text-2xl leading-none;
+
+                    &:hover {
+                        @apply text-primary;
+                    }
+                }
+            }
+
+            .modal-body {
+                @apply m-5;
+            }
+
+            .modal-footer {
+                @apply flex flex-shrink-0 p-5 border-t border-gray-200;
+            }
+        }
+    }
+
+    &.active {
+        @apply block;
+    }
+
+    &_aside {
+        .modal-dialog {
+            @apply relative mr-0 h-full;
+
+            .modal-content {
+                @apply absolute flex flex-col top-0 right-0 bottom-0 rounded-none;
+
+                .modal-header {
+                    min-height: 5rem;
+                }
+
+                .modal-body {
+                    @apply overflow-y-scroll;
+                }
+
+                .modal-footer {
+                    @apply mt-auto;
+                }
+            }
+        }
+    }
+}
+
+/*
+  Sidebar
+  */
+
+/*
+  Collapse
+  */
+.collapse {
+    @apply h-0 opacity-0 overflow-y-hidden;
+
+    &.open {
+        @apply h-auto opacity-100 overflow-y-auto;
+    }
+}
+
+/*
+  Accordion
+  */
+
+/*
+  Editors
+  */
+
+/*
+  Sortable
+  */
+
+/*
+  Toast
+  */
+.toasts-container {
+    @apply absolute mt-5 mr-5 mb-20 ml-5 z-10;
+}
+
+.dark .toast {
+    @apply bg-gray-800;
+
+    .toast-header {
+        @apply border-gray-900;
+    }
+}
+
+.toast {
+    @apply rounded-xl shadow bg-white bg-opacity-90;
+
+    .toast-header {
+        @apply flex items-center px-5 py-2 border-b border-gray-200;
+
+        small {
+            @apply mr-5 ml-auto;
+        }
+
+        .close {
+            @apply m-0 p-0 text-2xl leading-none;
+
+            &:hover {
+                @apply text-primary;
+            }
+        }
+    }
+
+    .toast-body {
+        @apply p-5;
+    }
+
+    @screen lg {
+        min-width: 400px;
+    }
+}
+
+/*
+  Caraousel
+  */
+.swiper {
+    @apply w-full h-full;
+    max-height: 600px;
+}
+.swiper-slide {
+    @apply text-center text-lg bg-white flex justify-center items-center;
+    img {
+        @apply block w-full h-full object-cover;
+    }
+}
+.swiper-button-next,
+.swiper-button-prev {
+    @apply text-secondary;
+}
+.swiper-pagination-bullet {
+    @apply h-3 w-3;
+}
+.swiper-pagination-bullet-active {
+    @apply bg-primary;
+}
+.swiper {
+    @apply mx-auto;
+}
+
+/*
+  Footer Bar
+  */
+
+/*
+  Avatars
+  */
+
+/*
+ Full Layout
+ */
+.full-layout {
+    background: url("../images/bg.jpg") no-repeat center center;
+    background-size: cover;
+}
