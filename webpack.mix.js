@@ -15,10 +15,15 @@ mix.js('resources/js/app.js', 'public/js')
     .vue()
     .postCss('resources/css/app.css', 'public/css', [
         require('postcss-import'),
+        require('tailwindcss/nesting'),
+        require('postcss-nested'),
         require('tailwindcss'),
+        require('postcss-custom-properties'),
         require('autoprefixer'),
     ])
     .webpackConfig(require('./webpack.config'));
+
+mix.copy('resources/images', 'public/images');
 
 if (mix.inProduction()) {
     mix.version();
