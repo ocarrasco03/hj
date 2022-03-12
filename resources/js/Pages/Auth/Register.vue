@@ -1,6 +1,5 @@
 <script setup>
-import BreezeButton from '@/Components/Button.vue';
-import BreezeGuestLayout from '@/Layouts/Guest.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import BreezeInput from '@/Components/Input.vue';
 import BreezeLabel from '@/Components/Label.vue';
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue';
@@ -21,15 +20,22 @@ const submit = () => {
 };
 </script>
 
+<script context="module">
+import BreezeGuestLayout from '@/Layouts/Guest.vue';
+
+export default{
+    layout: BreezeGuestLayout,
+}
+</script>
+
 <template>
-    <BreezeGuestLayout>
         <Head title="Register" />
 
         <BreezeValidationErrors class="mb-4" />
 
         <form @submit.prevent="submit">
             <div>
-                <BreezeLabel for="name" value="Name" />
+                <BreezeLabel for="name" value="Nombre Completo" />
                 <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus autocomplete="name" />
             </div>
 
@@ -39,24 +45,30 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <BreezeLabel for="password" value="Password" />
+                <BreezeLabel for="password" value="Contraseña" />
                 <BreezeInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="new-password" />
             </div>
 
             <div class="mt-4">
-                <BreezeLabel for="password_confirmation" value="Confirm Password" />
+                <BreezeLabel for="password_confirmation" value="Confirmar Contraseña" />
                 <BreezeInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
             </div>
-
             <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Already registered?
-                </Link>
-
-                <BreezeButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <SecondaryButton class="flex-1" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Register
-                </BreezeButton>
+                </SecondaryButton>
+            </div>
+
+            <div class="flex items-center justify-center mt-4">
+                <Link :href="route('login')" class="underline text-sm text-secondary-600 hover:text-gray-900">
+                    &iquest;Ya tienes cuenta?
+                </Link>
+            </div>
+
+            <div class="mt-10 flex items-center justify-center">
+                <Link :href="route('terms')" class="font-bold text-xs text-secondary-500 hover:text-gray-900">
+                    T&eacute;rminos y Condiciones
+                </Link>
             </div>
         </form>
-    </BreezeGuestLayout>
 </template>

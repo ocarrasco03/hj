@@ -20,6 +20,7 @@
         "axios": "^0.25",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
+        "nprogress": "^0.2.0",
         "postcss": "^8.4.6",
         "postcss-custom-properties": "^12.1.4",
         "postcss-import": "^14.0.2",
@@ -29,6 +30,7 @@
         "vue-loader": "^16.1.2"
     },
     "dependencies": {
+        "swiper": "^8.0.7",
         "toastr": "^2.1.4"
     }
 }

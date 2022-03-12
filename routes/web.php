@@ -27,6 +27,14 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/contacto', [HomeController::class, 'sendContact'])->name('contact.form');
+Route::get('/corporativo', [HomeController::class, 'corporate'])->name('corporate');
+
+/**
+ * Quick Links
+ */
+Route::get('/aviso-de-privacidad', [HomeController::class, 'policy'])->name('policy');
+Route::get('/politicas-de-garantia-y-devolucion', [HomeController::class, 'warranty'])->name('warranty');
+Route::get('/terminos-y-condiciones', [HomeController::class, 'terms'])->name('terms');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

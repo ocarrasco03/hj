@@ -8,8 +8,8 @@ const hasErrors = computed(() => Object.keys(errors.value).length > 0);
 </script>
 
 <template>
-    <div v-if="hasErrors">
-        <div class="font-medium text-red-600">Whoops! Something went wrong.</div>
+    <div v-if="hasErrors" class="border border-red-500 rounded p-2">
+        <div class="font-medium text-red-600">Whoops! Algo sali&oacute; mal.</div>
 
         <ul class="mt-3 list-disc list-inside text-sm text-red-600">
             <li v-for="(error, key) in errors" :key="key">{{ error }}</li>

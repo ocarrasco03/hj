@@ -1,6 +1,5 @@
 <script setup>
 import BreezeButton from '@/Components/Button.vue';
-import BreezeGuestLayout from '@/Layouts/Guest.vue';
 import BreezeInput from '@/Components/Input.vue';
 import BreezeLabel from '@/Components/Label.vue';
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue';
@@ -19,8 +18,15 @@ const submit = () => {
 };
 </script>
 
+<script context="module">
+import BreezeGuestLayout from '@/Layouts/Guest.vue';
+
+export default{
+    layout: BreezeGuestLayout,
+}
+</script>
+
 <template>
-    <BreezeGuestLayout>
         <Head title="Forgot Password" />
 
         <div class="mb-4 text-sm text-gray-600">
@@ -45,5 +51,4 @@ const submit = () => {
                 </BreezeButton>
             </div>
         </form>
-    </BreezeGuestLayout>
 </template>

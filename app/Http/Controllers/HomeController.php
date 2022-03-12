@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactForm;
+use Exception;
 use Inertia\Inertia;
+use App\Mail\ContactForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
 
 class HomeController extends Controller
 {
@@ -86,10 +87,57 @@ class HomeController extends Controller
         //
     }
 
+    /**
+     * Contact form method
+     *
+     * @param Request $request
+     * @return void
+     */
     public function sendContact(Request $request)
     {
-        Mail::to('ocarrasco@hjautopartes.com.mx')->send(new ContactForm($request->input()));
+        try {
+            if (!$this->validDomain($request->input('email'))) {
+                throw new Exception('Lo sentimos! Detectamos que tu email no es valido');
+            }
 
-        return back()->with('success', 'Solicitud enviada correctamente!');
+            Mail::to('ocarrasco@hjautopartes.com.mx')->send(new ContactForm($request->input()));
+
+        } catch (\Exception $e) {
+            return Redirect::route('home')->with(['toast' => ['type' => 'danger', 'message' => $e->getMessage()]]);
+        }
+
+        return Redirect::route('home')->with(['toast' => ['type' => 'success', 'message' => 'Mensaje enviado']]);
+    }
+
+    public function corporate()
+    {
+        return Inertia::render('Corporate');
+    }
+
+    public function policy()
+    {
+        return Inertia::render('Markdown/Policy');
+    }
+
+    public function warranty()
+    {
+        return Inertia::render('Markdown/Warranty');
+    }
+
+    public function terms()
+    {
+        return Inertia::render('Markdown/TermsConditions');
+    }
+
+    protected function validDomain($email)
+    {
+        $domain = explode('@', $email);
+        $domain = $domain[1];
+
+        if (str_contains($domain, '.xyz') || str_contains($domain, 'example')) {
+            return false;
+        }
+
+        return true;
     }
 }

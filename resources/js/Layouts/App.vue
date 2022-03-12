@@ -4,13 +4,14 @@ import { Link } from "@inertiajs/inertia-vue3";
 import HjApplicationLogo from "@/Components/ApplicationLogo.vue";
 import HjNavLink from '@/Components/NavLink.vue';
 import HjResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-
+import Toast from '@/Components/Toast.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
     <div class="min-h-screen bg-white flex flex-col">
+        <Toast :toast="$page.props.toast" />
         <!-- Navigation Manu -->
         <nav class="bg-gradient-to-b from-black via-secondary to-secondary-500 border-b border-yellow-500">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,7 +55,7 @@ const showingNavigationDropdown = ref(false);
                                 <HjNavLink :href="route('home')" :active="route().current('home')">
                                     Inicio
                                 </HjNavLink>
-                                <HjNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <HjNavLink :href="route('corporate')" :active="route().current('corporate')">
                                     Corporativo
                                 </HjNavLink>
                                 <HjNavLink :href="route('dashboard')" :active="route().current('dashboard')">
@@ -82,7 +83,7 @@ const showingNavigationDropdown = ref(false);
                         <HjResponsiveNavLink :href="route('home')" :active="route().current('home')">
                             Inicio
                         </HjResponsiveNavLink>
-                        <HjResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <HjResponsiveNavLink :href="route('corporate')" :active="route().current('corporate')">
                             Corporativo
                         </HjResponsiveNavLink>
                         <HjResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
@@ -137,9 +138,7 @@ const showingNavigationDropdown = ref(false);
                     </div>
                     <div class="text-xs space-y-5">
                         <span class="text-primary text-sm font-bold pb-4">Nosotros</span>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum numquam officiis necessitatibus a quis
-                            unde ex cum fugiat dicta. Possimus fugit suscipit nisi natus deserunt voluptate perspiciatis ipsam
-                            similique nam.</p>
+                        <p class="text-justify">Somos una empresa 100% Mexicana líder en: Innovación, desarrollo, fabricación y comercialización de autopartes en el mercado global, con presencia en mercados INTERNACIONALES como Estados Unidos, Colombia, Guatemala, Costa Rica, El Salvador, Perú, Ecuador, Venezuela, Chile, Brasil, Bolivia, Canadá, Líbano, Israel, etc. Consolidando cada una de nuestras marcas como líderes indiscutibles en cada uno de sus segmentos, forjando valor a través de nuestra cadena productiva única en el mercado de autopartes; generando excelentes niveles de rentabilidad para nuestros clientes.</p>
                     </div>
                     <div class="text-xs space-y-5">
                         <span class="text-primary text-sm font-bold pb-4">Acceso Rápido</span>
@@ -148,7 +147,7 @@ const showingNavigationDropdown = ref(false);
                                 <Link :href="route('home')" class="text-white transition delay-100 ease-in">Inicio</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')"
+                                <Link :href="route('corporate')"
                                     class="text-white transition delay-100 ease-in">Corporativo</Link>
                             </li>
                             <li>
@@ -159,15 +158,15 @@ const showingNavigationDropdown = ref(false);
                                 <Link :href="route('home')" class="text-white transition delay-100 ease-in">Facturación</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Terminos y
+                                <Link :href="route('terms')" class="text-white transition delay-100 ease-in">Terminos y
                                     Condiciones</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Políticas de
+                                <Link :href="route('warranty')" class="text-white transition delay-100 ease-in">Políticas de
                                     Garantia</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Aviso de
+                                <Link :href="route('policy')" class="text-white transition delay-100 ease-in">Aviso de
                                     Privacidad</Link>
                             </li>
                         </ul>

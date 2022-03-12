@@ -8,8 +8,13 @@ import HjInput from "@/Components/Input.vue";
 import HjLabel from "@/Components/Label.vue";
 import HjTextarea from "@/Components/Textarea.vue";
 import { Inertia } from "@inertiajs/inertia";
+import axios from "axios";
+import NProgress from 'nprogress';
+import { InertiaProgress } from "@inertiajs/progress";
+import Slider from '@/Components/Slider.vue';
 
 let rate = Math.floor(Math.random() * 5);
+let sending = false;
 
 const form = useForm({
     email: "",
@@ -23,38 +28,35 @@ const suscribe = useForm({
     email: "",
 });
 
-const submitContact = () => {
-    form.post(route("contact.form"), {
-        onFinish: () => {
-            Inertia.on("success", (event) => console.log(event));
-            form.reset();
-            toastr["success"]("Mensaje enviado exitosamente", 'Success');
 
-            toastr.options = {
-                closeButton: false,
-                debug: false,
-                newestOnTop: false,
-                progressBar: true,
-                positionClass: "toast-top-right",
-                preventDuplicates: false,
-                onclick: null,
-                showDuration: "300",
-                hideDuration: "1000",
-                timeOut: "5000",
-                extendedTimeOut: "1000",
-                showEasing: "swing",
-                hideEasing: "linear",
-                showMethod: "fadeIn",
-                hideMethod: "fadeOut",
-            };
+const submitContact = () => {
+    // axios
+    //     .post(route("contact.form"), form)
+    //     .then((res) => {
+    //         console.log($page.props.flash.message);
+
+    //     })
+    //     .catch((err) => {
+    //         console.log(err);
+    //     });
+    form.post(route('contact.form'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset('email', 'name', 'phone', 'subject', 'message');
+            document.getElementById("message").value = "";
         },
-    });
+        onFinish: () => {
+            // form.reset()
+        }
+    })
 };
+
 const submitSuscribe = () => {};
 </script>
 
 <template>
     <Head title="Inicio" />
+    <Slider />
     <HjSectionTitle :primary="true">
         <h4>Productos Sugeridos</h4>
     </HjSectionTitle>
@@ -110,12 +112,12 @@ const submitSuscribe = () => {};
             </div>
         </div>
     </div>
-    <HjSectionTitle :primary="true">
+    <!-- <HjSectionTitle :primary="true">
         <h4>Sucursal Matriz</h4>
-    </HjSectionTitle>
-    <HjSectionTitle :primary="true">
+    </HjSectionTitle> -->
+    <!-- <HjSectionTitle :primary="true">
         <h4>Nuestras Sucursales</h4>
-    </HjSectionTitle>
+    </HjSectionTitle> -->
     <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 divide-y divide-gray-500"
     >
@@ -144,7 +146,6 @@ const submitSuscribe = () => {};
                                 class="mt-1 block w-full"
                                 v-model="form.email"
                                 placeholder="Email"
-                                required
                             />
                             <HjInput
                                 id="phone"
@@ -152,7 +153,6 @@ const submitSuscribe = () => {};
                                 class="mt-1 block w-full"
                                 v-model="form.phone"
                                 placeholder="Teléfono"
-                                required
                             />
                             <HjInput
                                 id="subject"
@@ -172,7 +172,10 @@ const submitSuscribe = () => {};
                         </div>
                     </div>
                     <div class="flex justify-end mt-7 items-center">
-                        <HjButton>Enviar</HjButton>
+                        <HjButton class="flex space-x-1" :disabled="form.processing">
+                            <i class="fas fa-spinner-third fa-spin mr-2" v-if="form.processing"></i>
+                            <span>Enviar</span>
+                        </HjButton>
                     </div>
                 </form>
             </div>
