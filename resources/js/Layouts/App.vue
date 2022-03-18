@@ -33,7 +33,7 @@ const showingNavigationDropdown = ref(false);
                                 <i class="fal fa-user-circle text-4xl"></i>
                                 <span class="text-base">{{ $page.props.auth.user.name }}</span>
                             </Link>
-                            <Link :href="route('home')"
+                            <Link :href="route('cart')"
                             class="flex items-center text-center flex-col px-3 hover:text-white text-primary rounded-full">
                                 <i class="fal fa-shopping-cart text-4xl"></i>
                                 <span class="text-center text-base">Carrito</span>
@@ -151,23 +151,19 @@ const showingNavigationDropdown = ref(false);
                                     class="text-white transition delay-100 ease-in">Corporativo</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Tips
-                                    Técnicos</Link>
+                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Tips T&eacute;cnicos</Link>
                             </li>
                             <li>
-                                <Link :href="route('home')" class="text-white transition delay-100 ease-in">Facturación</Link>
+                                <a href="https://hjautopartes.sucfdi.mx" target="_blank" class="text-white transition delay-100 ease-in">Facturaci&oacute;n</a>
                             </li>
                             <li>
-                                <Link :href="route('terms')" class="text-white transition delay-100 ease-in">Terminos y
-                                    Condiciones</Link>
+                                <Link :href="route('terms')" class="text-white transition delay-100 ease-in">Terminos y Condiciones</Link>
                             </li>
                             <li>
-                                <Link :href="route('warranty')" class="text-white transition delay-100 ease-in">Políticas de
-                                    Garantia</Link>
+                                <Link :href="route('warranty')" class="text-white transition delay-100 ease-in">Políticas de Garantia</Link>
                             </li>
                             <li>
-                                <Link :href="route('policy')" class="text-white transition delay-100 ease-in">Aviso de
-                                    Privacidad</Link>
+                                <Link :href="route('policy')" class="text-white transition delay-100 ease-in">Aviso de Privacidad</Link>
                             </li>
                         </ul>
                     </div>
