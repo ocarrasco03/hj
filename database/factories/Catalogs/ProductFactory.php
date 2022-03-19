@@ -17,13 +17,15 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
+        $cost = $this->faker->randomFloat(2, 0, 1000);
         return [
             'sku' => Str::random(10),
             'name' => $this->faker->name(),
-            'slug' => $this->faker->slug(),
-            'cost' => $this->faker->randomFloat(2, 0, 1000),
-            'price_wo_taxt' => $this->faker->randomFloat(2, 0, 1000),
-            'price' => $this->faker->randomFloat(2, 0, 1000),
+            'description' => $this->faker->text,
+            'slug' => $this->faker->unique()->slug(),
+            'cost' => $cost,
+            'price_wo_tax' => ($cost * 1.63)/1.16,
+            'price' => ceil($cost * 1.63),
             'stock' => $this->faker->randomDigitNotZero(),
 
         ];

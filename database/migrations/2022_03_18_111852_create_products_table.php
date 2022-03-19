@@ -17,12 +17,14 @@ return new class extends Migration
             $table->id();
             $table->string('sku');
             $table->string('name');
-            $table->string('slug');
+            $table->longText('description')->nullable();
+            $table->string('slug')->unique();
             $table->float('cost', 10, 2)->unsigned();
-            $table->float('price_wo_taxt', 10, 2)->unsigned();
+            $table->float('price_wo_tax', 10, 2)->unsigned();
             $table->float('price', 10, 2)->unsigned();
             $table->string('unit')->default('pza');
             $table->float('stock')->unsigned()->default(0);
+            $table->float('weight')->unsigned()->default(0);
             $table->jsonb('notes')->nullable();
             $table->string('condition')->default('new');
             $table->timestamps();

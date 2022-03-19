@@ -2,13 +2,15 @@
 
 namespace App\Models\Catalogs;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use willvincent\Rateable\Rateable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Packages\Shoppingcart\Contracts\Buyable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Product extends Model
+class Product extends Model implements Buyable
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Rateable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,12 +21,59 @@ class Product extends Model
         'sku',
         'slug',
         'name',
+        'description',
         'cost',
-        'price_wo_taxt',
+        'price_wo_tax',
         'price',
         'unit',
         'stock',
         'notes',
+        'weight',
         'condition',
     ];
+
+    /**
+     * Get the product id can be buyeable
+     *
+     * @param string $options
+     * @return string
+     */
+    public function getBuyableIdentifier($options = null) {
+        return $this->id;
+    }
+
+    /**
+     * Get the product name can be buyeable
+     *
+     * @param string $options
+     * @return string
+     */
+    public function getBuyableDescription($options = null) {
+        return $this->name;
+    }
+
+    /**
+     * Get the product price without tax can be buyeable
+     *
+     * @param float $options
+     * @return float
+     */
+    public function getBuyablePrice($options = null) {
+        return $this->price_wo_taxt;
+    }
+
+    /**
+     * Get the product weight can be buyeable
+     *
+     * @param float $options
+     * @return float
+     */
+    public function getBuyableWeight($options = null) {
+        return $this->weight;
+    }
+
+    // public function relatedProducts()
+    // {
+    //     return $this->hasMany(Product::class);
+    // }
 }

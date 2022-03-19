@@ -13,8 +13,9 @@ import NProgress from 'nprogress';
 import { InertiaProgress } from "@inertiajs/progress";
 import Slider from '@/Components/Slider.vue';
 
-let rate = Math.floor(Math.random() * 5);
-let sending = false;
+defineProps({
+    products: Object
+})
 
 const form = useForm({
     email: "",
@@ -30,28 +31,20 @@ const suscribe = useForm({
 
 
 const submitContact = () => {
-    // axios
-    //     .post(route("contact.form"), form)
-    //     .then((res) => {
-    //         console.log($page.props.flash.message);
-
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     });
     form.post(route('contact.form'), {
         preserveScroll: true,
         onSuccess: () => {
             form.reset('email', 'name', 'phone', 'subject', 'message');
             document.getElementById("message").value = "";
         },
-        onFinish: () => {
-            // form.reset()
-        }
     })
 };
 
 const submitSuscribe = () => {};
+
+const shortText = (text, length) => {
+    return text.slice(0, length) + ((text.length > length) ? "..." : "");
+}
 </script>
 
 <template>
@@ -65,8 +58,8 @@ const submitSuscribe = () => {};
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch"
         >
             <div
-                class="flex flex-col px-4 space-y-4"
-                v-for="(n, key) in 8"
+                class="flex flex-col px-4 space-y-4 items-stretch py-2"
+                v-for="(item, key) in products"
                 :key="key"
             >
                 <div class="flex flex-grow w-full h-36 max-h-36 bg-white">
@@ -76,35 +69,21 @@ const submitSuscribe = () => {};
                     />
                 </div>
                 <span class="font-bold text-2xl">
-                    $
-                    {{
-                        Math.round(
-                            1 +
-                                (Math.random() / Math.max(Math.random())) *
-                                    (5000 - 1),
-                            2
-                        )
-                    }}
+                    $ {{ item.price }}
                 </span>
                 <div id="rate" class="flex flex-row space-x-1">
                     <template v-for="(i, key) in 5" :key="key">
-                        <i v-if="i < n" class="fas fa-star text-yellow-500"></i>
+                        <i v-if="i < item.averageRating" class="fas fa-star text-yellow-500"></i>
                         <i v-else class="fal fa-star text-secondary-500"></i>
                     </template>
                 </div>
-                <h5 class="text-base font-bold">Disco ventilado BREMBO</h5>
-                <p class="text-sm">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Ratione repudiandae corporis, ex in nesciunt eaque repellat
-                    exercitationem sequi quia, nemo consequuntur quasi
-                    perspiciatis. Veniam dignissimos rem, nesciunt asperiores
-                    numquam tenetur.
+                <h5 class="text-base font-bold">{{ item.name }}</h5>
+                <p class="text-sm flex-1 text-justify">
+                    {{ shortText(item.description, 100) }}
                 </p>
-                <div class="self-end w-full">
+                <div class="self-end items-end w-full">
                     <div class="grid grid-cols-2 gap-0 text-sm">
-                        <Link
-                            class="col-span-2 btn btn_primary text-center py-2 text-lg transition ease-in delay-150"
-                        >
+                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn_primary text-center py-2 text-lg transition ease-in delay-150">
                             Ver mas
                         </Link>
                     </div>

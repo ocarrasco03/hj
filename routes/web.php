@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,6 +26,14 @@ use Inertia\Inertia;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/contacto', [HomeController::class, 'sendContact'])->name('contact.form');
 Route::get('/corporativo', [HomeController::class, 'corporate'])->name('corporate');
+
+/*
+ |--------------------------------------------------------------------------
+ | Products Routes
+ |--------------------------------------------------------------------------
+ |
+ */
+Route::get('/producto/{slug}', [ProductController::class, 'show'])->name('product.show');
 
 /*
  |--------------------------------------------------------------------------

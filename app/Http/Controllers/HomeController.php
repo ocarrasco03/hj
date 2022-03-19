@@ -19,7 +19,26 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Home', ['products' => Product::where('stock','>', 0)->get()->random(8)]);
+        foreach (Product::all() as $value) {
+            $value->update([
+                'price_wo_taxt' => $value->price / 1.16
+            ]);
+        }
+        $products = Product::where('stock','>', 0)->get()->random(8);
+        $products->load('ratings');
+        $mostSelled = [];
+        foreach ($products as $product) {
+            $mostSelled[] = [
+                'sku' => $product->sku,
+                'name' => $product->name,
+                'description' => $product->description,
+                'slug' => $product->slug,
+                'price' => $product->price,
+                'ratings' => $product->ratings,
+                'averageRating' => $product->averageRating,
+            ];
+        }
+        return Inertia::render('Home', ['products' => $mostSelled]);
     }
 
     /**
