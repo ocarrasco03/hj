@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use App\Traits\Categorizable;
+use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model implements Buyable
 {
-    use HasFactory, SoftDeletes, Rateable, Categorizable;
+    use HasFactory, SoftDeletes, Rateable, Categorizable, Taggeable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,6 +20,8 @@ class Product extends Model implements Buyable
      * @var array<int, string>
      */
     protected $fillable = [
+        'brand_id',
+        'supplier_id',
         'sku',
         'slug',
         'name',
@@ -31,6 +34,10 @@ class Product extends Model implements Buyable
         'notes',
         'weight',
         'condition',
+    ];
+
+    protected $casts = [
+        'notes' => 'array'
     ];
 
     /**
@@ -72,9 +79,4 @@ class Product extends Model implements Buyable
     public function getBuyableWeight($options = null) {
         return $this->weight;
     }
-
-    // public function relatedProducts()
-    // {
-    //     return $this->hasMany(Product::class);
-    // }
 }

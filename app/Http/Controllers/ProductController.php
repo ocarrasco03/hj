@@ -47,9 +47,11 @@ class ProductController extends Controller
      */
     public function show($slug)
     {
-        $product = Product::where('slug', $slug)->first();
+        $product = Product::where('slug', $slug)->firstOrFail();
         $product->load('ratings');
+
         $rate = $product->averageRating;
+
         return Inertia::render('Catalogs/Product', ['product' => $product, 'rate' => $rate]);
     }
 

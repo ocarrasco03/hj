@@ -22,17 +22,23 @@ class BuyableProduct implements Buyable
     private $price;
 
     /**
+     * @var int|float
+     */
+    private $weight;
+
+    /**
      * BuyableProduct constructor.
      *
      * @param int|string $id
      * @param string     $name
      * @param float      $price
      */
-    public function __construct($id = 1, $name = 'Item name', $price = 10.00)
+    public function __construct($id = 1, $name = 'Item name', $price = 10.00, $weight = 150)
     {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
+        $this->weight = $weight;
     }
 
     /**
