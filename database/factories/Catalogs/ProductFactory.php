@@ -18,9 +18,10 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
-        $brand = Brand::first();
-        if (Brand::count() <= 1){
+        if (Brand::count() < 1){
             $brand = Brand::factory()->create();
+        } else {
+            $brand = Brand::find(rand(1, Brand::count()));
         }
 
         $cost = $this->faker->randomFloat(2, 0, 1000);
