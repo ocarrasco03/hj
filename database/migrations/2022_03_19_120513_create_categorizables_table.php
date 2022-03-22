@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->foreignId('parent')->default(0);
+        Schema::create('categorizables', function (Blueprint $table) {
+            $table->foreignId('category_id');
+            $table->morphs('categorizable');
+            
+            $table->index('categorizable_id');
+            $table->index('categorizable_type');
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('categorizables');
     }
 };
