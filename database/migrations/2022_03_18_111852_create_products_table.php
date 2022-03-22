@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('brand_id');
-            $table->foreignId('supplier_id');
+            $table->foreignId('supplier_id')->nullable();
             $table->string('sku');
             $table->string('name');
             $table->longText('description')->nullable();
@@ -31,6 +31,9 @@ return new class extends Migration
             $table->string('condition')->default('new');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('brand_id')->references('id')->on('brands');
+            $table->foreign('supplier_id')->references('id')->on('suppliers');
         });
     }
 

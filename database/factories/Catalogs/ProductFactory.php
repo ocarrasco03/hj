@@ -2,6 +2,7 @@
 
 namespace Database\Factories\Catalogs;
 
+use App\Models\Catalogs\Brand;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,8 +18,14 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
+        $brand = Brand::first();
+        if (Brand::count() <= 1){
+            $brand = Brand::factory()->create();
+        }
+
         $cost = $this->faker->randomFloat(2, 0, 1000);
         return [
+            'brand_id' => $brand->id,
             'sku' => Str::random(10),
             'name' => $this->faker->name(),
             'description' => $this->faker->text,
