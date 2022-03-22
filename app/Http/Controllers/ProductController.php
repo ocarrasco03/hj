@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Catalogs\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
@@ -45,7 +47,10 @@ class ProductController extends Controller
      */
     public function show($slug)
     {
-        //
+        $product = Product::where('slug', $slug)->first();
+        $product->load('ratings');
+        $rate = $product->averageRating;
+        return Inertia::render('Catalogs/Product', ['product' => $product, 'rate' => $rate]);
     }
 
     /**

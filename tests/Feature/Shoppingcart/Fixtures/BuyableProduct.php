@@ -64,4 +64,14 @@ class BuyableProduct implements Buyable
     {
         return $this->price;
     }
+
+    /**
+     * Get the price of the Buyable item.
+     *
+     * @return float
+     */
+    public function getBuyableWeight($options = null)
+    {
+        return $this->weight;
+    }
 }

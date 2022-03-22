@@ -116,22 +116,22 @@ const showingNavigationDropdown = ref(false);
                                 </h5>
                             </div>
                             <div class="flex flex-row mt-2">
-                                <Link :href="'https://www.facebook.com/hjautopartesMX'"
+                                <a href="https://www.facebook.com/hjautopartesMX" target="_blank"
                                     class="social-link">
                                     <i class="fab fa-facebook-f"></i>
-                                </Link>
-                                <Link :href="'#'"
+                                </a>
+                                <a href="https://www.instagram.com/hjautopartes/" target="_blank"
                                     class="social-link">
                                     <i class="fab fa-linkedin-in"></i>
-                                </Link>
-                                <Link :href="'#'"
+                                </a>
+                                <!-- <a href="#" target="_blank"
                                     class="social-link">
                                     <i class="fab fa-twitter"></i>
-                                </Link>
-                                <Link :href="'#'"
+                                </a> -->
+                                <!-- <a href="#" target="_blank"
                                     class="social-link">
                                     <i class="fab fa-youtube"></i>
-                                </Link>
+                                </a> -->
                             </div>
                         </div>
 

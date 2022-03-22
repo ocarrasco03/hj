@@ -19,11 +19,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        foreach (Product::all() as $value) {
-            $value->update([
-                'price_wo_taxt' => $value->price / 1.16
-            ]);
-        }
         $products = Product::where('stock','>', 0)->get()->random(8);
         $products->load('ratings');
         $mostSelled = [];
@@ -34,7 +29,6 @@ class HomeController extends Controller
                 'description' => $product->description,
                 'slug' => $product->slug,
                 'price' => $product->price,
-                'ratings' => $product->ratings,
                 'averageRating' => $product->averageRating,
             ];
         }

@@ -6,11 +6,12 @@ use willvincent\Rateable\Rateable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
+use App\Traits\Categorizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model implements Buyable
 {
-    use HasFactory, SoftDeletes, Rateable;
+    use HasFactory, SoftDeletes, Rateable, Categorizable;
 
     /**
      * The attributes that are mass assignable.
