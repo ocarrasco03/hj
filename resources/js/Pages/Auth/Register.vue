@@ -2,6 +2,7 @@
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import BreezeInput from '@/Components/Input.vue';
 import BreezeLabel from '@/Components/Label.vue';
+import BreezeCheckbox from '@/Components/Checkbox.vue';
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue';
 import { Head, Link, useForm } from '@inertiajs/inertia-vue3';
 
@@ -53,9 +54,15 @@ export default{
                 <BreezeLabel for="password_confirmation" value="Confirmar Contraseña" />
                 <BreezeInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
             </div>
+
+            <div class="mt-4 inline-flex justify-center items-center space-x-1">
+                <BreezeCheckbox id="terms" class="focus:ring-0 focus:ring-transparent checked:ring-0 checked:ring-transparent" v-model="form.terms" required :checked="form.terms" />
+                <BreezeLabel for="terms" value="Acepto Terminos y Condiciones" />
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <SecondaryButton class="flex-1" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+                    Registrar
                 </SecondaryButton>
             </div>
 
