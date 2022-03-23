@@ -5,6 +5,7 @@ import PrimaryButton from "@/Components/Button.vue";
 import Input from "@/Components/Input.vue";
 import axios from "axios";
 import nprogress from "nprogress";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 defineProps({
     cart: Object,
@@ -20,6 +21,7 @@ defineProps({
 export default {
     data: () => ({
         propCart: {
+            cart: usePage().props.value.cart,
             subtotal: usePage().props.value.subtotal,
             discount: usePage().props.value.discount,
             tax: usePage().props.value.tax,
@@ -38,9 +40,11 @@ export default {
     methods: {
         add(item) {
             nprogress.start();
-            console.log(this.propCart.items)
             axios
-                .put(route("cart.update"), { id: item.rowId, qty: item.qty + 1 })
+                .put(route("cart.update"), {
+                    id: item.rowId,
+                    qty: item.qty + 1,
+                })
                 .then((res) => {
                     item.qty++;
                     item.subtotal = res.data.success.cart.item.subtotal;
@@ -55,12 +59,19 @@ export default {
                     nprogress.done();
                 });
         },
-        reduce(item) {
+        reduce(item, index) {
             nprogress.start();
             axios
-                .put(route("cart.update"), { id: item.rowId, qty: item.qty - 1 })
+                .put(route("cart.update"), {
+                    id: item.rowId,
+                    qty: item.qty - 1,
+                })
                 .then((res) => {
                     item.qty--;
+                    if (item.qty === 0) {
+                        delete this.propCart.cart[index];
+                        this.propCart.count = res.data.success.cart.count;
+                    }
                     item.subtotal = res.data.success.cart.item.subtotal;
                     this.propCart.subtotal = res.data.success.cart.subtotal;
                     this.propCart.discount = res.data.success.cart.discount;
@@ -73,29 +84,29 @@ export default {
                     nprogress.done();
                 });
         },
-        remove(id) {
-            nprogress.start();
-            axios
-                .delete(route("cart.destroy", {id: id}))
-                .then((res) => {
-                    // this.propCart.items = res.data.success.cart.items;
-                    this.propCart.subtotal = res.data.success.cart.subtotal;
-                    this.propCart.discount = res.data.success.cart.discount;
-                    this.propCart.tax = res.data.success.cart.tax;
-                    this.propCart.total = res.data.success.cart.total;
-                    nprogress.done();
-                })
-                .catch((err) => {
-                    console.error(err);
-                    nprogress.done();
-                });
-        },
+        // remove(id, index) {
+        //     nprogress.start();
+        //     axios
+        //         .delete(route("cart.destroy", { id: id }))
+        //         .then((res) => {
+        //             this.propCart.subtotal = res.data.success.cart.subtotal;
+        //             this.propCart.discount = res.data.success.cart.discount;
+        //             this.propCart.tax = res.data.success.cart.tax;
+        //             this.propCart.total = res.data.success.cart.total;
+        //             delete this.propCart.cart[index];
+        //             nprogress.done();
+        //         })
+        //         .catch((err) => {
+        //             console.error(err);
+        //             nprogress.done();
+        //         });
+        // },
     },
 };
 </script>
 
 <template>
-    <Head>Mi Carrito</Head>
+    <Head title="Mi Carrito" />
     <section class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
         <div class="border border-gray-500 shadow">
             <div class="bg-black text-primary-500 px-5 py-4">
@@ -105,13 +116,10 @@ export default {
                 <div class="pl-2 flex flex-col md:flex-row items-start">
                     <table class="flex-1">
                         <tbody>
-                            <tr v-for="(item, index) of cart" :key="index">
+                            <tr v-for="(item, index) of this.propCart.cart" :key="index">
                                 <td class="px-2">
                                     Cantidad:
-                                    <form
-                                        @submit.prevent=""
-                                        class="flex max-w-xs w-44"
-                                    >
+                                    <div class="flex max-w-xs w-44">
                                         <Input
                                             :value="item.qty"
                                             name="qty"
@@ -125,25 +133,30 @@ export default {
                                         >
                                             <i class="fas fa-chevron-up"></i>
                                         </SecondaryButton>
-                                        <SecondaryButton
-                                            @click="reduce(item)"
-                                            :disabled="item.qty == 1"
-                                            :class="{
-                                                'opacity-50': item.qty == 1,
-                                            }"
-                                        >
+                                        <SecondaryButton @click="reduce(item, index)">
                                             <i class="fas fa-chevron-down"></i>
                                         </SecondaryButton>
-                                    </form>
-                                    <Link class="text-center underline text-secondary-500 items-center justify-center" @click="remove(item.rowId)">Remover</Link>
+                                    </div>
+                                    <!-- <Link
+                                        class="text-center underline text-secondary-500 items-center justify-center"
+                                        @click="remove(item.rowId, index)"
+                                        >Remover</Link
+                                    > -->
                                 </td>
                                 <td class="px-2 border-x border-gray-500">
                                     <div class="flex items-center space-x-2">
-                                        <!-- <img
-                                            src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/6204_1621374063.jpg"
+                                        <img
+                                            v-if="item.options.image"
+                                            :src="item.options.image"
                                             alt="6204"
                                             class="h-24 w-24"
-                                        /> -->
+                                        />
+                                        <ApplicationLogo
+                                            class="h-24 w-24"
+                                            :fill="'#000'"
+                                            v-else
+                                        />
+
                                         <h4 class="font-bold">
                                             {{ item.name }}
                                         </h4>
@@ -159,7 +172,9 @@ export default {
                         </tbody>
                     </table>
 
-                    <div class="border-b border-l border-gray-500 flex-auto shrink-0 divide-y max-w-sm w-full">
+                    <div
+                        class="border-b border-l border-gray-500 flex-auto shrink-0 divide-y max-w-sm w-full"
+                    >
                         <div class="p-2">
                             <span
                                 >Hay {{ propCart.count }} articulos en el

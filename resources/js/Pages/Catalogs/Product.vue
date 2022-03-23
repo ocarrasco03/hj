@@ -1,29 +1,100 @@
 <script setup>
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/Button.vue";
 import Input from "@/Components/Input.vue";
-import Tabs from '@/Components/Tabs.vue';
-import Tab from '@/Components/Tab.vue';
+import Tabs from "@/Components/Tabs.vue";
+import Tab from "@/Components/Tab.vue";
 import axios from "axios";
 import nprogress from "nprogress";
 import { ref } from "vue";
 
 defineProps({
     product: Object,
-    rate: Number,
+    rate: String,
 });
 
-const toggling = ref(true);
+let previousImage = "";
 
-const add = (target) => {
-    //
-}
+window.onload = () => {
+    previousImage = document.getElementById("main-image").src;
+};
 
-const reduce = (target) => {
-    //
-}
+const formatedDate = (date) => {
+    const day = new Date().getDay();
+    const month = new Date().getMonth();
+    const year = new Date().getFullYear();
 
+    const months = [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+    ];
+
+    return day + " de " + months[month] + " de " + year;
+};
+
+const eventChange = (event) => {
+    let target = document.getElementById("main-image");
+    switch (event.type) {
+        case "mouseover":
+            target.src = event.target.src;
+            break;
+        case "mouseleave":
+            target.src = previousImage;
+            break;
+        default:
+            target.src = event.target.src;
+            previousImage = event.target.src;
+            break;
+    }
+};
+</script>
+<script>
+export default {
+    data: () => ({
+        qty: 1,
+        stock: usePage().props.value.product.stock,
+    }),
+    methods: {
+        add() {
+            if (this.qty < this.stock) {
+                this.qty++;
+            }
+        },
+        reduce() {
+            if (this.qty > 1) {
+                this.qty--;
+            }
+        },
+        addToCart()
+        {
+            nprogress.start();
+            axios.post(route('cart.store'), {
+                id: usePage().props.value.product.id,
+                name: usePage().props.value.product.sku + ' ' + usePage().props.value.product.name,
+                qty: this.qty,
+                price: usePage().props.value.product.price,
+                options: {
+                    image: 'https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg'
+                }
+            }).then((res) => {
+                nprogress.done();
+            }).catch((err) => {
+                nprogress.done();
+            });
+        }
+    },
+};
 </script>
 
 <template>
@@ -47,6 +118,9 @@ const reduce = (target) => {
                         srcset=""
                         height="95"
                         width="95"
+                        @click="eventChange"
+                        @mouseover="eventChange"
+                        @mouseleave="eventChange"
                     />
                     <img
                         data-toggle="preview"
@@ -55,6 +129,9 @@ const reduce = (target) => {
                         srcset=""
                         height="95"
                         width="95"
+                        @click="eventChange"
+                        @mouseover="eventChange"
+                        @mouseleave="eventChange"
                     />
                     <img
                         data-toggle="preview"
@@ -63,6 +140,9 @@ const reduce = (target) => {
                         srcset=""
                         height="95"
                         width="95"
+                        @click="eventChange"
+                        @mouseover="eventChange"
+                        @mouseleave="eventChange"
                     />
                     <img
                         data-toggle="preview"
@@ -71,16 +151,19 @@ const reduce = (target) => {
                         srcset=""
                         height="95"
                         width="95"
+                        @click="eventChange"
+                        @mouseover="eventChange"
+                        @mouseleave="eventChange"
                     />
                 </div>
             </div>
-            <div class="detail mx-auto">
+            <div class="detail mx-auto flex flex-col px-2 max-w-sm">
                 <h2>{{ product.name }}</h2>
                 <h4 class="text-gray-500">SKU: {{ product.sku }}</h4>
                 <div id="rate" class="flex flex-row space-x-1 mt-3">
                     <template v-for="(i, key) in 5" :key="key">
                         <i
-                            v-if="i < rate"
+                            v-if="i <= rate"
                             class="fas fa-star text-yellow-500"
                         ></i>
                         <i v-else class="fal fa-star text-secondary-500"></i>
@@ -88,18 +171,39 @@ const reduce = (target) => {
                 </div>
                 <h2 class="mt-3">$ {{ product.price }}</h2>
                 <div class="mt-3">
-                    <ul class="list-disc list-inside">
-                        <li>Marca: Eagle BHP</li>
-                        <li>Posicion: Front</li>
-                        <li>Material: Hierro Fundido Gris</li>
-                        <li>OEM: J3241950</li>
+                    <ul class="list-inside">
+                        <li>Marca: {{ product.brand.name }}</li>
+                        <li>
+                            OEM:
+                            <span v-if="product.notes.oem">{{
+                                product.notes.oem
+                            }}</span>
+                        </li>
                     </ul>
                 </div>
-                <div class="mt-3">
+                <div class="mt-3 flex flex-col">
                     <h4 class="text-secondary" v-if="product.stock > 0">
                         Disponible: {{ product.stock }}
                     </h4>
                     <h4 class="text-red-500" v-else>Sin Existencia</h4>
+                    <div class="flex space-x-1">
+                        <Input
+                            :value="qty"
+                            name="qty"
+                            id="qty"
+                            class="px-4 py-1 text-center mr-1 w-28 flex-1"
+                            readonly
+                        />
+                        <SecondaryButton @click="add()">
+                            <i class="fas fa-chevron-up"></i>
+                        </SecondaryButton>
+                        <SecondaryButton @click="reduce()">
+                            <i class="fas fa-chevron-down"></i>
+                        </SecondaryButton>
+                    </div>
+                    <SecondaryButton class="flex-1 mt-4" @click="addToCart">
+                        Agregar al carrito
+                    </SecondaryButton>
                 </div>
 
                 <div class="share mt-3 flex justify-between">
@@ -111,7 +215,13 @@ const reduce = (target) => {
                         <a href="#" class="text-gray-400 hover:text-primary-900"
                             ><i class="fab fa-twitter"></i
                         ></a>
-                        <a :href="`https://wa.me/?text=${route('product.show', {slug: product.slug})}`" class="text-gray-400 hover:text-primary-900" target="_blank"
+                        <a
+                            :href="`https://wa.me/?text=${route(
+                                'product.show',
+                                { slug: product.slug }
+                            )}`"
+                            class="text-gray-400 hover:text-primary-900"
+                            target="_blank"
                             ><i class="fab fa-whatsapp"></i
                         ></a>
                         <a href="#" class="text-gray-400 hover:text-primary-900"
@@ -127,50 +237,153 @@ const reduce = (target) => {
                     {{ product.description }}
                 </Tab>
                 <Tab :title="'Detalles'">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Expedita optio fugiat eveniet fugit tenetur voluptates
-                    pariatur nisi totam velit! Vel ducimus soluta labore optio
-                    blanditiis nesciunt, et ullam itaque voluptate. Lorem ipsum
-                    dolor sit amet consectetur, adipisicing elit. Dolore eaque
-                    natus, in a ab porro quae fugit alias cupiditate aut
-                    repellat. Voluptas ut aliquid voluptatibus ab aut aspernatur
-                    repellat cumque.
+                    <ul class="list-disc list-inside">
+                        <li
+                            v-for="(note, key, index) in product.notes"
+                            :key="index"
+                            class="list-item"
+                        >
+                            {{ key }}: {{ note }}
+                        </li>
+                    </ul>
                 </Tab>
                 <Tab :title="'Aplicación'">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quam fugit quasi, deserunt temporibus iste quisquam? Sequi
-                    nulla deleniti consequatur corporis iure et possimus sed
-                    doloremque, aliquid cum est quo reprehenderit. Lorem ipsum
-                    dolor sit amet consectetur, adipisicing elit. Suscipit
-                    repellat reiciendis itaque, consequatur quod nesciunt
-                    laudantium accusamus commodi dicta praesentium iste autem
-                    atque obcaecati veniam amet cumque sit sed eum? Lorem ipsum
-                    dolor sit amet consectetur adipisicing elit. Ad quod autem
-                    voluptatibus commodi facilis reiciendis, ducimus quaerat
-                    quasi, tempora dicta unde consequuntur recusandae cupiditate
-                    ut sunt at quae similique omnis. Lorem ipsum dolor sit amet
-                    consectetur adipisicing elit. Quae, culpa qui. Voluptate
-                    suscipit neque esse ipsam possimus similique quaerat labore
-                    incidunt itaque exercitationem officia cum, placeat fuga
-                    voluptatem. Et, esse.
+                    <div
+                        class="relative overflow-x-auto shadow-md sm:rounded-lg max-h-96"
+                    >
+                        <table
+                            class="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto"
+                        >
+                            <thead
+                                class="text-xs text-yellow-700 uppercase bg-black"
+                            >
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        A&ntilde;o
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">Marca</th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Modelo
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">Motor</th>
+                                    <th
+                                        scope="col"
+                                        class="px-6 py-3 uppercase"
+                                        v-for="(
+                                            note, key, index
+                                        ) in product.notes"
+                                        :key="index"
+                                    >
+                                        {{ key }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    <th
+                                        scope="row"
+                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                                    >
+                                        2011
+                                    </th>
+                                    <td class="px-6 py-4">Nissan</td>
+                                    <td class="px-6 py-4">Versa</td>
+                                    <td class="px-6 py-4">1.6</td>
+                                    <td
+                                        class="px-6 py-4 capitalize"
+                                        v-for="(
+                                            note, key, index
+                                        ) in product.notes"
+                                        :key="index"
+                                    >
+                                        {{ note }}
+                                    </td>
+                                </tr>
+                                <tr
+                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    <th
+                                        scope="row"
+                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                                    >
+                                        2011
+                                    </th>
+                                    <td class="px-6 py-4">Nissan</td>
+                                    <td class="px-6 py-4">Versa</td>
+                                    <td class="px-6 py-4">1.6</td>
+                                    <td
+                                        class="px-6 py-4 capitalize"
+                                        v-for="(
+                                            note, key, index
+                                        ) in product.notes"
+                                        :key="index"
+                                    >
+                                        {{ note }}
+                                    </td>
+                                </tr>
+                                <tr
+                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    <th
+                                        scope="row"
+                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                                    >
+                                        2011
+                                    </th>
+                                    <td class="px-6 py-4">Nissan</td>
+                                    <td class="px-6 py-4">Versa</td>
+                                    <td class="px-6 py-4">1.6</td>
+                                    <td
+                                        class="px-6 py-4 capitalize"
+                                        v-for="(
+                                            note, key, index
+                                        ) in product.notes"
+                                        :key="index"
+                                    >
+                                        {{ note }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </Tab>
                 <Tab :title="'Reseñas'">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quam fugit quasi, deserunt temporibus iste quisquam? Sequi
-                    nulla deleniti consequatur corporis iure et possimus sed
-                    doloremque, aliquid cum est quo reprehenderit. Lorem ipsum
-                    dolor sit amet consectetur, adipisicing elit. Suscipit
-                    repellat reiciendis itaque, consequatur quod nesciunt
-                    laudantium accusamus commodi dicta praesentium iste autem
-                    atque obcaecati veniam amet cumque sit sed eum? Lorem ipsum
-                    dolor sit amet consectetur adipisicing elit. Ad quod autem
-                    voluptatibus commodi facilis reiciendis, ducimus quaerat
-                    quasi, tempora dicta unde consequuntur recusandae cupiditate
-                    ut sunt at quae similique omnis. Lorem ipsum dolor sit amet
-                    consectetur adipisicing elit. Quae, culpa qui. Voluptate
-                    suscipit neque esse ipsam possimus similique quaerat labore
-                    incidunt itaque exercitationem officia cum, placeat fuga
-                    voluptatem. Et, esse.
+                    <div class="w-full overscroll-none">
+                        <div
+                            class="flex py-2"
+                            v-for="(review, key, index) in product.ratings"
+                            :key="index"
+                        >
+                            <div class="px-4">
+                                <i class="fal fa-user-circle fa-3x"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div id="rate" class="flex flex-row space-x-1">
+                                    <template v-for="(i, key) in 5" :key="key">
+                                        <i
+                                            v-if="i <= review.rating"
+                                            class="fas fa-star text-yellow-500"
+                                        ></i>
+                                        <i
+                                            v-else
+                                            class="fal fa-star text-secondary-500"
+                                        ></i>
+                                    </template>
+                                </div>
+                                <div>
+                                    <small
+                                        >Revisado el
+                                        {{
+                                            formatedDate(review.created_at)
+                                        }}</small
+                                    >
+                                </div>
+                                <p>{{ review.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </Tab>
             </Tabs>
         </div>

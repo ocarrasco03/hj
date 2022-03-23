@@ -66,9 +66,9 @@ Route::get('/dashboard', function () {
     });
 
     Route::get('/mi-carrito', [CartController::class, 'index'])->name('cart');
+    Route::post('/mi-carrito', [CartController::class, 'store'])->name('cart.store');
     Route::put('/mi-carrito', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/mi-carrito/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-    // Route::resource('cart', CartController::class);
 // });
 
 /*

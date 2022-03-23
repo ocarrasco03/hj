@@ -11,6 +11,11 @@ class Categorizable extends Model
 
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'category_id',
     ];
@@ -23,5 +28,10 @@ class Categorizable extends Model
     public function category()
     {
         return $this->belongsTo(\App\Models\Configs\Category::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsTo(\App\Models\Catalogs\Product::class);
     }
 }

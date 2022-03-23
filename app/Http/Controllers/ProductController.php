@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Catalogs\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Str;
 
 class ProductController extends Controller
 {
@@ -48,7 +49,8 @@ class ProductController extends Controller
     public function show($slug)
     {
         $product = Product::where('slug', $slug)->firstOrFail();
-        $product->load('ratings');
+        $product->load('ratings', 'brand');
+
 
         $rate = $product->averageRating;
 

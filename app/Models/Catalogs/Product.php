@@ -15,6 +15,13 @@ class Product extends Model implements Buyable
     use HasFactory, SoftDeletes, Rateable, Categorizable, Taggeable;
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['brand'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -78,5 +85,25 @@ class Product extends Model implements Buyable
      */
     public function getBuyableWeight($options = null) {
         return $this->weight;
+    }
+
+    /**
+     * The model belongs to a supplier model
+     *
+     * @return void
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * The model belongs to a brand model
+     *
+     * @return void
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
 }

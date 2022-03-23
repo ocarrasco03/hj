@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Packages\Shoppingcart\Cart;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Packages\Shoppingcart\Cart;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -54,9 +55,28 @@ class CartController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Cart $cart)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'name' => ['required', 'string'],
+            'qty' => ['required', 'numeric'],
+            'price' => ['required', 'numeric'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Los parametros '], 400);
+        }
+        $cart->add(
+            $request->input('id'),
+            $request->input('name'),
+            $request->input('qty'),
+            $request->input('price'),
+            0,
+            $request->input('options'),
+        );
+
+        return response()->json(['success' => 'Añadido correctamente'], 200);
     }
 
     /**
@@ -91,7 +111,7 @@ class CartController extends Controller
     public function update(Request $request, Cart $cart)
     {
         try {
-            $cart->update($request->input('id'), ['qty' => $request->input('qty'), 'name' => 'SOPORTE PARA TRANSMISION 4712']);
+            $cart->update($request->input('id'), ['qty' => $request->input('qty')]);
         } catch (\Throwable$th) {
             return response()->json(['error' => $th->getMessage()], 400);
         }
@@ -99,14 +119,15 @@ class CartController extends Controller
         return response()->json(['success' => [
             'cart' => [
                 'item' => [
-                    'subtotal' => $cart->get($request->input('id'))->subtotal(),
-                    'discount' => $cart->get($request->input('id'))->discount(),
-                    'total' => $cart->get($request->input('id'))->total(),
+                    'subtotal' => $request->input('qty') > 0 ? $cart->get($request->input('id'))->subtotal() : null,
+                    'discount' => $request->input('qty') > 0 ? $cart->get($request->input('id'))->discount() : null,
+                    'total' => $request->input('qty') > 0 ? $cart->get($request->input('id'))->total() : null,
                 ],
                 'subtotal' => $cart->subtotal(),
                 'discount' => $cart->discount(),
                 'tax' => $cart->tax(),
                 'total' => $cart->total(),
+                'count' => $cart->count(),
             ],
         ]], 200);
     }
@@ -119,11 +140,15 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart, $id)
     {
-        if ($cart->countItems() <= 1) {
-            $cart->destroy();
+        try {
+            if ($cart->countItems() <= 1) {
+                $cart->destroy();
+            }
+            
+            $cart->update($id, ['qty' => 0]);
+        } catch (\Throwable$th) {
+            return response()->json(['error' => $th->getMessage()], 400);
         }
-
-        $cart->remove($id);
 
         return response()->json(['success' => [
             'cart' => [
