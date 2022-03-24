@@ -28,12 +28,9 @@ export default {
     <transition name="slide-fade">
         <div
             v-if="toast && visible"
-            class="fixed flex max-w-sm w-full mt-4 mr-4 top-0 right-0 rounded shadow p-4 z-50"
-            :class="{
-                'bg-success-200': toast.type === 'success',
-                'bg-danger-200': toast.type === 'danger',
-                'bg-warning-200': toast.type === 'warning',
-            }"
+            id="toast-simple"
+            class="fixed z-50 top-5 right-5 flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+            role="alert"
         >
             <div class="mr-2">
                 <i
@@ -49,15 +46,15 @@ export default {
                     v-else
                 ></i>
             </div>
-            <div class="flex-1 text-secondary-800">
+            <div class="flex-1 pl-4 font-normal text-secondary-800">
                 {{ toast.message }}
             </div>
             <div class="ml-2">
-            <button @click="visible = false"
+            <!-- <button @click="visible = false"
                 class="align-top text-black hover:text-secondary-300 focus:outline-none focus:text-secondary-600"
             >
                 <i class="fas fa-times text-sm"></i>
-            </button>
+            </button> -->
         </div>
         </div>
     </transition>
