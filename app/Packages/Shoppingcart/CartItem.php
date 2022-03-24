@@ -507,6 +507,7 @@ class CartItem implements Arrayable, Jsonable
             'discount' => $this->discount,
             'tax'      => $this->tax,
             'subtotal' => $this->subtotal,
+            'total'    => $this->total(),
         ];
     }
 

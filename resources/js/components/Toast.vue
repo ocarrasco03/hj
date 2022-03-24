@@ -29,7 +29,7 @@ export default {
         <div
             v-if="toast && visible"
             id="toast-simple"
-            class="fixed z-50 top-5 right-5 flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
+            class="fixed z-50 top-5 right-5 bg-opacity-75 flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x divide-gray-200 rounded-lg shadow-md dark:text-gray-400 dark:divide-gray-700 space-x dark:bg-gray-800"
             role="alert"
         >
             <div class="mr-2">

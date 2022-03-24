@@ -1,7 +1,8 @@
 <script setup>
-import { Head, Link, usePage } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryButton from "@/Components/Button.vue";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Input from "@/Components/Input.vue";
 import Tabs from "@/Components/Tabs.vue";
 import Tab from "@/Components/Tab.vue";
@@ -14,11 +15,37 @@ defineProps({
     rate: String,
 });
 
+const stock = usePage().props.value.product.stock;
+
+const form = useForm({
+    id: usePage().props.value.product.id,
+    name:
+        usePage().props.value.product.sku +
+        " " +
+        usePage().props.value.product.name,
+    qty: 1,
+    price: usePage().props.value.product.price_wo_tax,
+    options: {
+        image: "https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg",
+    },
+});
+
+const add = () => (form.qty < stock ? form.qty++ : null);
+const reduce = () => (form.qty > 1 ? form.qty-- : null);
+
+const addToCart = () =>
+    form.post(route("cart.store"), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.qty = 1;
+        },
+    });
+
 let previousImage = "";
 
-window.onload = () => {
-    previousImage = document.getElementById("main-image").src;
-};
+// window.onload = () => {
+//     previousImage = document.getElementById("main-image").src;
+// };
 
 const formatedDate = (date) => {
     const day = new Date().getDay();
@@ -59,43 +86,6 @@ const eventChange = (event) => {
     }
 };
 </script>
-<script>
-export default {
-    data: () => ({
-        qty: 1,
-        stock: usePage().props.value.product.stock,
-    }),
-    methods: {
-        add() {
-            if (this.qty < this.stock) {
-                this.qty++;
-            }
-        },
-        reduce() {
-            if (this.qty > 1) {
-                this.qty--;
-            }
-        },
-        addToCart()
-        {
-            nprogress.start();
-            axios.post(route('cart.store'), {
-                id: usePage().props.value.product.id,
-                name: usePage().props.value.product.sku + ' ' + usePage().props.value.product.name,
-                qty: this.qty,
-                price: usePage().props.value.product.price,
-                options: {
-                    image: 'https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg'
-                }
-            }).then((res) => {
-                nprogress.done();
-            }).catch((err) => {
-                nprogress.done();
-            });
-        }
-    },
-};
-</script>
 
 <template>
     <Head :title="product.name" />
@@ -103,6 +93,7 @@ export default {
         <div class="flex flex-col md:flex-row space-x-3">
             <div class="preview shrink-0">
                 <img
+                    v-if="product.files.length > 0"
                     id="main-image"
                     src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg"
                     alt=""
@@ -110,51 +101,28 @@ export default {
                     height="450"
                     width="500"
                 />
-                <div class="flex flex-row">
-                    <img
-                        data-toggle="preview"
-                        src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg"
-                        alt=""
-                        srcset=""
-                        height="95"
-                        width="95"
-                        @click="eventChange"
-                        @mouseover="eventChange"
-                        @mouseleave="eventChange"
-                    />
-                    <img
-                        data-toggle="preview"
-                        src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(1)_1621399447.jpg"
-                        alt=""
-                        srcset=""
-                        height="95"
-                        width="95"
-                        @click="eventChange"
-                        @mouseover="eventChange"
-                        @mouseleave="eventChange"
-                    />
-                    <img
-                        data-toggle="preview"
-                        src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(2)_1621399447.jpg"
-                        alt=""
-                        srcset=""
-                        height="95"
-                        width="95"
-                        @click="eventChange"
-                        @mouseover="eventChange"
-                        @mouseleave="eventChange"
-                    />
-                    <img
-                        data-toggle="preview"
-                        src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(3)_1621399447.jpg"
-                        alt=""
-                        srcset=""
-                        height="95"
-                        width="95"
-                        @click="eventChange"
-                        @mouseover="eventChange"
-                        @mouseleave="eventChange"
-                    />
+                <ApplicationLogo
+                    class="block h-full w-96 mx-auto"
+                    :fill="'#000'"
+                    v-else
+                />
+                <div class="flex flex-row flex-wrap">
+                    <template
+                        v-for="(file, key, index) in product.files"
+                        :key="index"
+                    >
+                        <img
+                            data-toggle="preview"
+                            :src="file.path"
+                            :alt="file.name"
+                            srcset=""
+                            height="95"
+                            width="95"
+                            @click="eventChange"
+                            @mouseover="eventChange"
+                            @mouseleave="eventChange"
+                        />
+                    </template>
                 </div>
             </div>
             <div class="detail mx-auto flex flex-col px-2 max-w-sm">
@@ -188,9 +156,9 @@ export default {
                     <h4 class="text-red-500" v-else>Sin Existencia</h4>
                     <div class="flex space-x-1">
                         <Input
-                            :value="qty"
                             name="qty"
                             id="qty"
+                            v-model="form.qty"
                             class="px-4 py-1 text-center mr-1 w-28 flex-1"
                             readonly
                         />
@@ -212,9 +180,9 @@ export default {
                         <a href="#" class="text-gray-400 hover:text-primary-900"
                             ><i class="fab fa-facebook-f"></i
                         ></a>
-                        <a href="#" class="text-gray-400 hover:text-primary-900"
+                        <!-- <a href="#" class="text-gray-400 hover:text-primary-900"
                             ><i class="fab fa-twitter"></i
-                        ></a>
+                        ></a> -->
                         <a
                             :href="`https://wa.me/?text=${route(
                                 'product.show',
@@ -224,9 +192,9 @@ export default {
                             target="_blank"
                             ><i class="fab fa-whatsapp"></i
                         ></a>
-                        <a href="#" class="text-gray-400 hover:text-primary-900"
+                        <!-- <a href="#" class="text-gray-400 hover:text-primary-900"
                             ><i class="fab fa-linkedin-in"></i
-                        ></a>
+                        ></a> -->
                     </div>
                 </div>
             </div>

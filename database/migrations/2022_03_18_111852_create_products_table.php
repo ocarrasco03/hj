@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description')->nullable();
             $table->string('slug')->unique();
-            $table->float('cost', 10, 2)->unsigned();
-            $table->float('price_wo_tax', 10, 2)->unsigned();
-            $table->float('price', 10, 2)->unsigned();
+            $table->float('cost', 16, 10)->unsigned();
+            $table->float('price_wo_tax', 16, 10)->unsigned();
+            $table->float('price', 16, 10)->unsigned();
             $table->string('unit')->default('pza');
             $table->float('stock')->unsigned()->default(0);
             $table->float('weight')->unsigned()->default(0);

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Models\Catalogs\Product;
 use App\Packages\Shoppingcart\Cart;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -17,18 +19,6 @@ class CartController extends Controller
      */
     public function index(Cart $cart)
     {
-        // $i = 1;
-        // $cart->add([
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        //     ['id' => Str::uuid(), 'name' => 'Product ' . $i++, 'qty' => 1, 'price' => 100.00, 'weight' => 550],
-        // ]);
         return Inertia::render('Cart', [
             'cart' => $cart->content(),
             'subtotal' => $cart->subtotal(),
@@ -65,8 +55,9 @@ class CartController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => 'Los parametros '], 400);
+            return Redirect::route('home')->with(['toast' => ['type' => 'success', 'message' => 'Los parametros son incorrectos']]);
         }
+
         $cart->add(
             $request->input('id'),
             $request->input('name'),
@@ -76,7 +67,7 @@ class CartController extends Controller
             $request->input('options'),
         );
 
-        return response()->json(['success' => 'Añadido correctamente'], 200);
+        return Redirect::back()->with(['toast' => ['type' => 'success', 'message' => 'Producto añadido']]);
     }
 
     /**
@@ -144,7 +135,7 @@ class CartController extends Controller
             if ($cart->countItems() <= 1) {
                 $cart->destroy();
             }
-            
+
             $cart->update($id, ['qty' => 0]);
         } catch (\Throwable$th) {
             return response()->json(['error' => $th->getMessage()], 400);

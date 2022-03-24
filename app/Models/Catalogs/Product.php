@@ -19,7 +19,7 @@ class Product extends Model implements Buyable
      *
      * @var array
      */
-    protected $with = ['brand'];
+    protected $with = ['brand', 'files'];
 
     /**
      * The attributes that are mass assignable.
@@ -105,5 +105,10 @@ class Product extends Model implements Buyable
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function files()
+    {
+        return $this->morphMany(File::class, 'fileable');
     }
 }

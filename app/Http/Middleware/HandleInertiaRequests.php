@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Middleware;
@@ -42,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message')
             ],
             'toast' => fn () => Session::get('toast'),
+            'cartTotalItems' => Cart::countItems(),
         ]);
     }
 }

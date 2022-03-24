@@ -48,6 +48,7 @@ export default {
                 .then((res) => {
                     item.qty++;
                     item.subtotal = res.data.success.cart.item.subtotal;
+                    item.total = res.data.success.cart.item.total;
                     this.propCart.subtotal = res.data.success.cart.subtotal;
                     this.propCart.discount = res.data.success.cart.discount;
                     this.propCart.tax = res.data.success.cart.tax;
@@ -73,6 +74,7 @@ export default {
                         this.propCart.count = res.data.success.cart.count;
                     }
                     item.subtotal = res.data.success.cart.item.subtotal;
+                    item.total = res.data.success.cart.item.total;
                     this.propCart.subtotal = res.data.success.cart.subtotal;
                     this.propCart.discount = res.data.success.cart.discount;
                     this.propCart.tax = res.data.success.cart.tax;
@@ -108,7 +110,7 @@ export default {
 <template>
     <Head title="Mi Carrito" />
     <section class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
-        <div class="border border-gray-500 shadow">
+        <div class="border border-gray-500 shadow-md rounded">
             <div class="bg-black text-primary-500 px-5 py-4">
                 <h4>Carrito de Compras</h4>
             </div>
@@ -165,7 +167,7 @@ export default {
                                 <td class="px-4">
                                     Precio:
                                     <h4 class="font-bold">
-                                        $ {{ item.subtotal }}
+                                        $ {{ item.total }}
                                     </h4>
                                 </td>
                             </tr>

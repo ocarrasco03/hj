@@ -56,7 +56,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('mi-perfil')->name('profile');
 
     Route::name('profile.')->prefix('mi-perfil')->group(function() {
@@ -69,7 +69,7 @@ Route::get('/dashboard', function () {
     Route::post('/mi-carrito', [CartController::class, 'store'])->name('cart.store');
     Route::put('/mi-carrito', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/mi-carrito/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-// });
+});
 
 /*
  |--------------------------------------------------------------------------

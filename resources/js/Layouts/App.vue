@@ -37,6 +37,7 @@ const showingNavigationDropdown = ref(false);
                             class="flex items-center text-center flex-col px-3 hover:text-white text-primary rounded-full">
                                 <i class="fal fa-shopping-cart text-4xl"></i>
                                 <span class="text-center text-base">Carrito</span>
+                                <span v-if="$page.props.cartTotalItems > 0" class="absolute ml-12 -mt-1 z-10 bg-white text-secondary-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-200 dark:text-yellow-900">{{ $page.props.cartTotalItems }}</span>
                             </Link>
                         </template>
                         <Link v-if="!$page.props.auth.user" :href="route('register')" class="flex items-center text-center flex-col px-3 text-primary hover:text-white transition">
