@@ -4,10 +4,11 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
 import Layout from '@/Layouts/App.vue';
+import { initFacebookSdk } from '@/facebook';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'HJ Autopartes';
 
-createInertiaApp({
+initFacebookSdk().then(createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
         const page = require(`./Pages/${name}.vue`).default
@@ -22,6 +23,6 @@ createInertiaApp({
             .mixin({ methods: { route } })
             .mount(el);
     },
-});
+}));
 
 InertiaProgress.init({ color: '#f8a403', showSpinner: true, });

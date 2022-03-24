@@ -7,6 +7,7 @@ import HjResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import Toast from '@/Components/Toast.vue';
 
 const showingNavigationDropdown = ref(false);
+
 </script>
 
 <template>

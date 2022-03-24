@@ -32,6 +32,15 @@ const form = useForm({
 
 const add = () => (form.qty < stock ? form.qty++ : null);
 const reduce = () => (form.qty > 1 ? form.qty-- : null);
+const fbShare = () => {
+    FB.ui(
+        {
+            method: "feed",
+            link: "https://www.hjautopartes.com.mx/producto/653/2609-soporte-para-motor/",
+        },
+        function (response) {}
+    );
+};
 
 const addToCart = () =>
     form.post(route("cart.store"), {
@@ -43,9 +52,11 @@ const addToCart = () =>
 
 let previousImage = "";
 
-// window.onload = () => {
-//     previousImage = document.getElementById("main-image").src;
-// };
+window.onload = () => {
+    if (usePage().props.value.product.files.length > 0) {
+        previousImage = document.getElementById("main-image").src;
+    }
+};
 
 const formatedDate = (date) => {
     const day = new Date().getDay();
@@ -177,7 +188,10 @@ const eventChange = (event) => {
                 <div class="share mt-3 flex justify-between">
                     <span class="font-light text-black">Compartir:</span>
                     <div class="social-share flex flex-row space-x-7">
-                        <a href="#" class="text-gray-400 hover:text-primary-900"
+                        <a
+                            href="#"
+                            class="text-gray-400 hover:text-primary-900"
+                            @click="fbShare"
                             ><i class="fab fa-facebook-f"></i
                         ></a>
                         <!-- <a href="#" class="text-gray-400 hover:text-primary-900"
