@@ -7,12 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use App\Traits\Categorizable;
+use App\Traits\Fileable;
 use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model implements Buyable
 {
-    use HasFactory, SoftDeletes, Rateable, Categorizable, Taggeable;
+    use HasFactory;
+    use SoftDeletes;
+    use Rateable;
+    use Categorizable;
+    use Taggeable;
+    use Fileable;
 
     /**
      * The relationships that should always be loaded.
@@ -107,8 +113,8 @@ class Product extends Model implements Buyable
         return $this->belongsTo(Brand::class);
     }
 
-    public function files()
+    public function related()
     {
-        return $this->morphMany(File::class, 'fileable');
+        return $this->belongsToMany(Product::class);
     }
 }

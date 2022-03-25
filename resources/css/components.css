@@ -39,6 +39,7 @@ Table of Contents
 36. Footer Bar
 37. Avatar
 38. Full Layout
+39. Container
 -------------------------------------------------------------------*/
 
 /*
@@ -101,8 +102,6 @@ Forms
             @apply ml-0;
         }
     }
-
-
 }
 
 /*
@@ -704,9 +703,16 @@ select {
   */
 
 /*
- Full Layout
+ * Full Layout
  */
 .full-layout {
     background: url("../images/bg.jpg") no-repeat center center;
     background-size: cover;
+}
+
+/*
+ * Container
+ */
+.container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10;
 }

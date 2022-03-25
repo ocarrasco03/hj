@@ -515,6 +515,7 @@ class CartTest extends TestCase
                 'options' => [],
                 'weight' => 150.0,
                 'discount' => 0.0,
+                'total' => 11.60,
             ],
             '370d08585360f5c568b18d1f2e4ca1df' => [
                 'rowId' => '370d08585360f5c568b18d1f2e4ca1df',
@@ -527,6 +528,7 @@ class CartTest extends TestCase
                 'options' => [],
                 'weight' => 150.0,
                 'discount' => 0.0,
+                'total' => 11.60,
             ],
         ], $content->toArray());
     }

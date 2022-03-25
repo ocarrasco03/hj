@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Catalogs\Brand;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 use App\Models\Catalogs\Product;

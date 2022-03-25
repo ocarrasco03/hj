@@ -3,8 +3,8 @@
 namespace Database\Factories\Catalogs;
 
 use App\Models\Catalogs\Brand;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Catalogs\Product>
@@ -18,14 +18,12 @@ class ProductFactory extends Factory
      */
     public function definition()
     {
-        if (Brand::count() < 1){
-            $brand = Brand::factory()->create();
-        } else {
-            $brand = Brand::find(rand(1, Brand::count()));
-        }
+
+        $brand = Brand::factory()->create();
 
         $cost = $this->faker->randomFloat(2, 0, 1000);
-        $price = ceil($cost*1.63);
+        $price = ceil($cost * 1.63);
+
         return [
             'brand_id' => $brand->id,
             'sku' => Str::random(10),
@@ -33,7 +31,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->text,
             'slug' => $this->faker->unique()->slug(),
             'cost' => $cost,
-            'price_wo_tax' => $price/1.16,
+            'price_wo_tax' => $price / 1.16,
             'price' => $price,
             'stock' => $this->faker->randomDigitNotZero(),
 

@@ -16,10 +16,10 @@ trait Taggeable
     {
         $tag = new Tag();
         $tag->tag = $name;
-        $this->products()->save($tag);
+        $this->tags()->save($tag);
     }
 
-    public function products(){
-        return $this->morphMany(\App\Models\Catalogs\Product::class, 'taggeable');
+    public function tags(){
+        return $this->morphMany(Tag::class, 'taggeable');
     }
 }

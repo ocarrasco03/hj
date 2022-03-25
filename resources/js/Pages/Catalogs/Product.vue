@@ -6,6 +6,8 @@ import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Input from "@/Components/Input.vue";
 import Tabs from "@/Components/Tabs.vue";
 import Tab from "@/Components/Tab.vue";
+import SectionTitle from "@/Components/SectionTitle.vue";
+import ProductItem from "@/Components/ProductItem.vue";
 import axios from "axios";
 import nprogress from "nprogress";
 import { ref } from "vue";
@@ -369,5 +371,47 @@ const eventChange = (event) => {
                 </Tab>
             </Tabs>
         </div>
+    </div>
+    <SectionTitle :primary="true">
+        <h4>Productos Similares</h4>
+    </SectionTitle>
+    <div class="container divide-y-2">
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch"
+        >
+            <ProductItem
+                :rating="5"
+                :description="product.description"
+                :name="product.name"
+                :sku="product.sku"
+                :slug="product.slug"
+                :price="product.price"
+            />
+            <ProductItem
+                :rating="5"
+                :description="product.description"
+                :name="product.name"
+                :sku="product.sku"
+                :slug="product.slug"
+                :price="product.price"
+            />
+            <ProductItem
+                :rating="5"
+                :description="product.description"
+                :name="product.name"
+                :sku="product.sku"
+                :slug="product.slug"
+                :price="product.price"
+            />
+            <ProductItem
+                :rating="5"
+                :description="product.description"
+                :name="product.name"
+                :sku="product.sku"
+                :slug="product.slug"
+                :price="product.price"
+            />
+        </div>
+        <div></div>
     </div>
 </template>

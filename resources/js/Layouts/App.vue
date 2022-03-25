@@ -14,7 +14,9 @@ const showingNavigationDropdown = ref(false);
     <div class="min-h-screen bg-white flex flex-col">
         <Toast :toast="$page.props.toast" />
         <!-- Navigation Manu -->
-        <nav class="bg-gradient-to-b from-black via-secondary to-secondary-500 border-b border-yellow-500">
+        <nav class="bg-gradient-to-b from-black via-secondary to-secondary-500 border-b border-yellow-500890'¡
+    '¡`+o8790'
+++çìlu 00i60'09876
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between py-3 h-32">
                     <!-- Logo -->
