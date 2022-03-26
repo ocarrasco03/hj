@@ -4,6 +4,7 @@ import toastr from "toastr";
 import HjApplicationLogo from "@/Components/ApplicationLogo.vue";
 import HjSectionTitle from "@/Components/SectionTitle.vue";
 import HjButton from "@/Components/Button.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
 import HjInput from "@/Components/Input.vue";
 import HjLabel from "@/Components/Label.vue";
 import HjTextarea from "@/Components/Textarea.vue";
@@ -12,6 +13,7 @@ import axios from "axios";
 import NProgress from 'nprogress';
 import { InertiaProgress } from "@inertiajs/progress";
 import Slider from '@/Components/Slider.vue';
+import SearchPanel from '@/Components/SearchPanel.vue';
 
 defineProps({
     products: Object
@@ -49,11 +51,15 @@ const shortText = (text, length) => {
 
 <template>
     <Head title="Inicio" />
+    <div class="container px-0">
+        <SearchPanel />
+    </div>
+
     <Slider />
     <HjSectionTitle :primary="true">
         <h4>Productos Sugeridos</h4>
     </HjSectionTitle>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="container py-3">
         <div
             class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch"
         >
@@ -97,9 +103,7 @@ const shortText = (text, length) => {
     <!-- <HjSectionTitle :primary="true">
         <h4>Nuestras Sucursales</h4>
     </HjSectionTitle> -->
-    <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 divide-y divide-gray-500"
-    >
+    <div class="container py-3 divide-y divide-gray-500">
         <div></div>
         <div class="py-5 px-5">
             <div

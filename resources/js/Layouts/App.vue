@@ -14,8 +14,8 @@ const showingNavigationDropdown = ref(false);
     <div class="min-h-screen bg-white flex flex-col">
         <Toast :toast="$page.props.toast" />
         <!-- Navigation Manu -->
-        <nav class="bg-gradient-to-b from-black via-secondary to-secondary-500 border-b border-yellow-500">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="bg-gradient-to-b from-black via-secondary to-secondary-500 z-10">
+            <div class="container">
                 <div class="flex justify-between py-3 h-32">
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
@@ -48,12 +48,15 @@ const showingNavigationDropdown = ref(false);
                     </div>
                 </div>
             </div>
-            <div class="bg-yellow-500 shadow-md">
+            <div class="bg-yellow-500 shadow-lg border border-primary-500">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="container">
                     <div class="flex justify-between h-12">
-                        <div class="flex">
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <div class="flex flex-auto">
+                            <div class="hidden space-x-8 sm:-my-px sm:flex flex-auto">
+                                <HjNavLink class="bg-gray-100 w-full max-w-xs items-center justify-center font-bold text-center hover:border-0 hover:border-transparent">
+                                    Catalogo Electrónico
+                                </HjNavLink>
                                 <HjNavLink :href="route('home')" :active="route().current('home')">
                                     Inicio
                                 </HjNavLink>
@@ -105,7 +108,7 @@ const showingNavigationDropdown = ref(false);
         </main>
         <!-- Footer -->
         <footer class="footer">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white divide-y divide-gray-400">
+            <div class="container text-white divide-y divide-gray-400">
                 <div class="grid grid-cols-1 gap-4 py-5 sm:grid-cols-2 md:grid-cols-4">
                     <div class="flex flex-shrink flex-col content-between">
                         <Link :href="route('home')" class="flex items-center justify-center">
