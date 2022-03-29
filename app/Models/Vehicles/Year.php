@@ -17,4 +17,9 @@ class Year extends Model
     protected $fillable = [
         'year',
     ];
+
+    public function models()
+    {
+        return $this->belongsToMany(\App\Models\Vehicles\Model::class, 'models_years');
+    }
 }

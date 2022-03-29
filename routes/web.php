@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,6 +35,7 @@ Route::get('/corporativo', [HomeController::class, 'corporate'])->name('corporat
  |
  */
 Route::get('/producto/{slug}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/buscar', [SearchController::class, 'index'])->name('product.search');
 
 /*
  |--------------------------------------------------------------------------

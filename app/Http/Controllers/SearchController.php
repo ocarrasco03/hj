@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Catalogs\Product;
+use App\Models\Configs\Category;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SearchController extends Controller
 {
@@ -11,9 +14,25 @@ class SearchController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $products = [];
+        $query =$request->input('query');
+
+        if (!is_null($query)) {
+            $products = Product::search($query)->paginate(10)->withQueryString();
+
+            // foreach ($products as $value) {
+            //     $category = Category::factory()->create();
+            //     $value->category($category->id);
+            //     $category = Category::factory()->create();
+            //     $value->category($category->id);
+            // }
+        }
+
+        $products = Product::paginate(10);
+
+        return Inertia::render('Catalogs/Search', ['products' => $products]);
     }
 
     /**

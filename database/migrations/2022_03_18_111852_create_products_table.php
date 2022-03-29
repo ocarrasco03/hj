@@ -35,6 +35,14 @@ return new class extends Migration
             $table->foreign('brand_id')->references('id')->on('brands');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
         });
+
+        Schema::create('products_categories', function (Blueprint $table) {
+            $table->foreignId('product_id');
+            $table->foreignId('category_id');
+
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('category_id')->references('id')->on('categories');
+        });
     }
 
     /**
@@ -44,6 +52,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('products_categories');
         Schema::dropIfExists('products');
     }
 };

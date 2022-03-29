@@ -2,7 +2,8 @@
 
 namespace App\Traits;
 
-use App\Models\Configs\Categorizable as Category;
+use App\Models\Configs\Category;
+
 
 trait Categorizable
 {
@@ -23,10 +24,7 @@ trait Categorizable
         $ids = [$id];
 
         if (count($this->categories()->whereIn('category_id', $ids)->pluck('category_id')) <= 0) {
-            $category = new Category();
-            $category->category_id = $id;
-
-            $this->categories()->save($category);
+            $this->categories()->attach($id);
         }
     }
 
@@ -43,6 +41,6 @@ trait Categorizable
 
     public function categories()
     {
-        return $this->morphMany(\App\Models\Configs\Categorizable::class, 'categorizable');
+        return $this->belongsToMany(Category::class, 'products_categories');
     }
 }

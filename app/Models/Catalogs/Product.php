@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalogs;
 
+use App\Models\Configs\Category;
 use willvincent\Rateable\Rateable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +11,7 @@ use App\Traits\Categorizable;
 use App\Traits\Fileable;
 use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 
 class Product extends Model implements Buyable
 {
@@ -19,13 +21,14 @@ class Product extends Model implements Buyable
     use Categorizable;
     use Taggeable;
     use Fileable;
+    use Searchable;
 
     /**
      * The relationships that should always be loaded.
      *
      * @var array
      */
-    protected $with = ['brand', 'files'];
+    protected $with = ['brand', 'files', 'ratings', 'categories'];
 
     /**
      * The attributes that are mass assignable.
@@ -116,5 +119,20 @@ class Product extends Model implements Buyable
     public function related()
     {
         return $this->belongsToMany(Product::class);
+    }
+
+    public function toSearchableArray()
+    {
+        return [
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'description' => $this->description,
+            'notes' => $this->notes,
+        ];
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'products_categories');
     }
 }

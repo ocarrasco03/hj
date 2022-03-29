@@ -168,6 +168,7 @@ return [
          * Package Service Providers...
          */
         willvincent\Rateable\RateableServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -194,6 +195,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Cart' => App\Packages\Shoppingcart\Facades\Cart::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];

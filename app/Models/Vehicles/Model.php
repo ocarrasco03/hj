@@ -11,7 +11,7 @@ class Model extends DBModel
     use HasFactory;
     use SoftDeletes;
 
-    protected $with = ['makes', 'engines'];
+    // protected $with = ['makes', 'engines'];
 
     /**
      * The attributes that are mass assignable.
@@ -36,5 +36,20 @@ class Model extends DBModel
     public function engines()
     {
         return $this->belongsToMany(Engine::class, 'models_engines');
+    }
+
+    public function storeYear($id)
+    {
+        if (is_array($id)) {
+            return array_map(function ($item) {
+                return $this->storeYear($item);
+            }, $id);
+        }
+
+        $ids = [$id];
+
+        if (count($this->years()->whereIn('year_id', $ids)->pluck('year_id')) <= 0) {
+            $this->years()->attach($id);
+        }
     }
 }

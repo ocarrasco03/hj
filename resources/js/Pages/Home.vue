@@ -51,9 +51,7 @@ const shortText = (text, length) => {
 
 <template>
     <Head title="Inicio" />
-    <div class="container px-0">
-        <SearchPanel />
-    </div>
+    
 
     <Slider />
     <HjSectionTitle :primary="true">

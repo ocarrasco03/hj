@@ -1,19 +1,19 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
+const defaultTheme = require("tailwindcss/defaultTheme");
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-    darkMode: 'class',
+    darkMode: "class",
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
-        './resources/js/**/*.vue',
+        "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
+        "./storage/framework/views/*.php",
+        "./resources/views/**/*.blade.php",
+        "./resources/js/**/*.vue",
     ],
 
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ["Nunito", ...defaultTheme.fontFamily.sans],
                 body: ["Nunito Sans", ...defaultTheme.fontFamily.sans],
             },
         },
@@ -142,9 +142,17 @@ module.exports = {
                 700: "#ffb305",
                 800: "#ffab04",
                 900: "#ff9e02",
-            }
+            },
+        },
+    },
+    variants: {
+        extend: {
+            visibility: ["group-hover"],
         },
     },
 
-    plugins: [require('@tailwindcss/forms'), require("@tailwindcss/typography"),],
+    plugins: [
+        require("@tailwindcss/forms"),
+        require("@tailwindcss/typography"),
+    ],
 };

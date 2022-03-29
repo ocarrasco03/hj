@@ -11,6 +11,9 @@ use Illuminate\Support\Str;
  */
 class ProductFactory extends Factory
 {
+    protected $traction = ['4x4','4x2','AWD', '2WD', 'FWD', 'RWD'];
+    protected $position = ['frontal','trasero','inferior', 'superor'];
+
     /**
      * Define the model's default state.
      *
@@ -27,14 +30,17 @@ class ProductFactory extends Factory
         return [
             'brand_id' => $brand->id,
             'sku' => Str::random(10),
-            'name' => $this->faker->name(),
+            'name' => $this->faker->sentence(),
             'description' => $this->faker->text,
             'slug' => $this->faker->unique()->slug(),
             'cost' => $cost,
             'price_wo_tax' => $price / 1.16,
             'price' => $price,
             'stock' => $this->faker->randomDigitNotZero(),
-
+            'notes' => [
+                'traction' => $this->traction[rand(0, count($this->traction) - 1)],
+                'position' => $this->position[rand(0, count($this->position) - 1)],
+            ]
         ];
     }
 }
