@@ -19,6 +19,8 @@ namespace App\Models\Catalogs{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\Product[] $products
+ * @property-read int|null $products_count
  * @method static \Database\Factories\Catalogs\BrandFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Brand newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Brand newQuery()
@@ -41,7 +43,7 @@ namespace App\Models\Catalogs{
  *
  * @property int $id
  * @property string $name
- * @property string $file_path
+ * @property string $path
  * @property string $fileable_type
  * @property int $fileable_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -54,11 +56,11 @@ namespace App\Models\Catalogs{
  * @method static \Illuminate\Database\Eloquent\Builder|File newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|File query()
  * @method static \Illuminate\Database\Eloquent\Builder|File whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|File whereFilePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|File whereFileableId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|File whereFileableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|File whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|File whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|File whereUpdatedAt($value)
  */
 	class File extends \Eloquent {}
@@ -86,16 +88,22 @@ namespace App\Models\Catalogs{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Catalogs\Brand $brand
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Categorizable[] $categories
  * @property-read int|null $categories_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\File[] $files
+ * @property-read int|null $files_count
  * @property-read mixed $average_rating
  * @property-read mixed $sum_rating
  * @property-read mixed $user_average_rating
  * @property-read mixed $user_sum_rating
- * @property-read \Illuminate\Database\Eloquent\Collection|Product[] $products
- * @property-read int|null $products_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\willvincent\Rateable\Rating[] $ratings
  * @property-read int|null $ratings_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|Product[] $related
+ * @property-read int|null $related_count
+ * @property-read \App\Models\Catalogs\Supplier|null $supplier
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Tag[] $tags
+ * @property-read int|null $tags_count
  * @method static \Database\Factories\Catalogs\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
@@ -134,6 +142,8 @@ namespace App\Models\Catalogs{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\Product[] $products
+ * @property-read int|null $products_count
  * @method static \Database\Factories\Catalogs\SupplierFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Supplier newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Supplier newQuery()
@@ -159,6 +169,7 @@ namespace App\Models\Configs{
  * @property int $categorizable_id
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $categorizable
  * @property-read \App\Models\Configs\Category $category
+ * @property-read \App\Models\Catalogs\Product|null $products
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable query()
@@ -222,6 +233,7 @@ namespace App\Models{
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
+ * @property \Illuminate\Support\Carbon|null $acepted_terms_conditions
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -233,6 +245,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAceptedTermsConditions($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
@@ -243,5 +256,106 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  */
 	class User extends \Eloquent {}
+}
+
+namespace App\Models\Vehicles{
+/**
+ * App\Models\Vehicles\Engine
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @method static \Database\Factories\Vehicles\EngineFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Engine whereUpdatedAt($value)
+ */
+	class Engine extends \Eloquent {}
+}
+
+namespace App\Models\Vehicles{
+/**
+ * App\Models\Vehicles\Manufacturer
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Model[] $models
+ * @property-read int|null $models_count
+ * @method static \Database\Factories\Vehicles\ManufacturerFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Manufacturer onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Manufacturer whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Manufacturer withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Manufacturer withoutTrashed()
+ */
+	class Manufacturer extends \Eloquent {}
+}
+
+namespace App\Models\Vehicles{
+/**
+ * App\Models\Vehicles\Model
+ *
+ * @property int $id
+ * @property int $make_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Engine[] $engines
+ * @property-read int|null $engines_count
+ * @property-read \App\Models\Vehicles\Manufacturer $makes
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Year[] $years
+ * @property-read int|null $years_count
+ * @method static \Database\Factories\Vehicles\ModelFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Model newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Model onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Model query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereMakeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Model whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Model withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Model withoutTrashed()
+ */
+	class Model extends \Eloquent {}
+}
+
+namespace App\Models\Vehicles{
+/**
+ * App\Models\Vehicles\Year
+ *
+ * @property int $id
+ * @property string $year
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @method static \Database\Factories\Vehicles\YearFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Year newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Year query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Year whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year whereYear($value)
+ */
+	class Year extends \Eloquent {}
 }
 
