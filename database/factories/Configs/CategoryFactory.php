@@ -16,7 +16,7 @@ class CategoryFactory extends Factory
      * @var string
      */
     protected $model = Category::class;
-    
+
     /**
      * Define the model's default state.
      *
@@ -26,6 +26,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
+            'parent' => rand(0, 50)
         ];
     }
 }

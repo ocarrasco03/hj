@@ -89,7 +89,9 @@ namespace App\Models\Catalogs{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\Catalogs\Brand $brand
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Categorizable[] $categories
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Catalog[] $catalog
+ * @property-read int|null $catalog_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Category[] $categories
  * @property-read int|null $categories_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\File[] $files
  * @property-read int|null $files_count
@@ -164,18 +166,12 @@ namespace App\Models\Configs{
 /**
  * App\Models\Configs\Categorizable
  *
- * @property int $category_id
- * @property string $categorizable_type
- * @property int $categorizable_id
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $categorizable
- * @property-read \App\Models\Configs\Category $category
+ * @property-read \App\Models\Configs\Category|null $category
  * @property-read \App\Models\Catalogs\Product|null $products
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Categorizable query()
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable whereCategorizableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable whereCategorizableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable whereCategoryId($value)
  */
 	class Categorizable extends \Eloquent {}
 }
@@ -256,6 +252,22 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  */
 	class User extends \Eloquent {}
+}
+
+namespace App\Models\Vehicles{
+/**
+ * App\Models\Vehicles\Catalog
+ *
+ * @property-read \App\Models\Vehicles\Engine|null $engines
+ * @property-read \App\Models\Vehicles\Manufacturer|null $makes
+ * @property-read \App\Models\Vehicles\Model|null $models
+ * @property-read \App\Models\Catalogs\Product|null $products
+ * @property-read \App\Models\Vehicles\Year|null $years
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog query()
+ */
+	class Catalog extends \Eloquent {}
 }
 
 namespace App\Models\Vehicles{
@@ -346,6 +358,8 @@ namespace App\Models\Vehicles{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Model[] $models
+ * @property-read int|null $models_count
  * @method static \Database\Factories\Vehicles\YearFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Year newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Year newQuery()

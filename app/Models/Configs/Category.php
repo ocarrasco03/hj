@@ -15,4 +15,11 @@ class Category extends Model
         'name',
         'parent'
     ];
+
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
 }

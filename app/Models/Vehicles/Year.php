@@ -22,4 +22,9 @@ class Year extends Model
     {
         return $this->belongsToMany(\App\Models\Vehicles\Model::class, 'models_years');
     }
+
+    public function catalogs()
+    {
+        return $this->hasMany(Catalog::class);
+    }
 }

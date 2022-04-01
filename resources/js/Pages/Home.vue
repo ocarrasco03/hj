@@ -45,14 +45,18 @@ const submitContact = () => {
 const submitSuscribe = () => {};
 
 const shortText = (text, length) => {
-    return text.slice(0, length) + ((text.length > length) ? "..." : "");
+    if (text !== null && text.length > 0) {
+        return text.slice(0, length) + ((text.length > length) ? "..." : "");
+    }
+    return;
 }
 </script>
 
 <template>
     <Head title="Inicio" />
-    
-
+    <div class="container">
+        <SearchPanel class="ml-0" />
+    </div>
     <Slider />
     <HjSectionTitle :primary="true">
         <h4>Productos Sugeridos</h4>

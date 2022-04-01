@@ -2,16 +2,18 @@
 
 namespace App\Models\Catalogs;
 
+use App\Traits\Fileable;
+use App\Traits\Taggeable;
+use App\Traits\Categorizable;
+use Laravel\Scout\Searchable;
+use App\Traits\HasApplication;
 use App\Models\Configs\Category;
+use App\Models\Vehicles\Catalog;
 use willvincent\Rateable\Rateable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
-use App\Traits\Categorizable;
-use App\Traits\Fileable;
-use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Scout\Searchable;
 
 class Product extends Model implements Buyable
 {
@@ -53,7 +55,7 @@ class Product extends Model implements Buyable
     ];
 
     protected $casts = [
-        'notes' => 'array'
+        'notes' => 'array',
     ];
 
     /**
@@ -62,7 +64,8 @@ class Product extends Model implements Buyable
      * @param string $options
      * @return string
      */
-    public function getBuyableIdentifier($options = null) {
+    public function getBuyableIdentifier($options = null)
+    {
         return $this->id;
     }
 
@@ -72,7 +75,8 @@ class Product extends Model implements Buyable
      * @param string $options
      * @return string
      */
-    public function getBuyableDescription($options = null) {
+    public function getBuyableDescription($options = null)
+    {
         return $this->name;
     }
 
@@ -82,7 +86,8 @@ class Product extends Model implements Buyable
      * @param float $options
      * @return float
      */
-    public function getBuyablePrice($options = null) {
+    public function getBuyablePrice($options = null)
+    {
         return $this->price_wo_taxt;
     }
 
@@ -92,7 +97,8 @@ class Product extends Model implements Buyable
      * @param float $options
      * @return float
      */
-    public function getBuyableWeight($options = null) {
+    public function getBuyableWeight($options = null)
+    {
         return $this->weight;
     }
 
@@ -135,4 +141,10 @@ class Product extends Model implements Buyable
     {
         return $this->belongsToMany(Category::class, 'products_categories');
     }
+
+    public function catalogs()
+    {
+        return $this->hasMany(Catalog::class);
+    }
+
 }

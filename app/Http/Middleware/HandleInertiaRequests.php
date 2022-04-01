@@ -40,10 +40,19 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash' => [
-                'message' => fn () => $request->session()->get('message')
+                'message' => fn() => $request->session()->get('message'),
             ],
-            'toast' => fn () => Session::get('toast'),
+            'toast' => fn() => Session::get('toast'),
             'cartTotalItems' => Cart::countItems(),
+            'search' => fn() => Session::get('search')
+                ? Session::get('search')
+                : [
+                    'year' => date('Y'),
+                    'make' => null, 'model' => null,
+                    'engine' => null,
+                    'category' => null,
+                    'subcategory' => null
+                ],
         ]);
     }
 }
