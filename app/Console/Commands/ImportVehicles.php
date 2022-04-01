@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Imports\Catalogs\VehiclesImport;
 use Illuminate\Console\Command;
+use App\Imports\Catalogs\VehiclesImport;
+use App\Jobs\NotifyUserOfCompletedImport;
 
 class ImportVehicles extends Command
 {
@@ -38,9 +39,12 @@ class ImportVehicles extends Command
      */
     public function handle()
     {
+        ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            (new VehiclesImport)->withOutput($this->output)->import(public_path('/excel/VehiclesLayout.xlsx'));
+            (new \App\Imports\Catalogs\VehiclesImport)->queue(public_path('/excel/VehiclesLayout.xlsx'))->chain([
+                new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'vehiculos'),
+            ]);
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

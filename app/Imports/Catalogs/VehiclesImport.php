@@ -6,6 +6,7 @@ use App\Models\Vehicles\Year;
 use App\Models\Vehicles\Model;
 use Illuminate\Support\Collection;
 use App\Models\Vehicles\Manufacturer;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -13,7 +14,7 @@ use Maatwebsite\Excel\Concerns\WithProgressBar;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, WithProgressBar, WithBatchInserts
+class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, WithProgressBar, WithBatchInserts, ShouldQueue
 {
     use Importable;
 
@@ -22,6 +23,7 @@ class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, 
      */
     public function collection(Collection $collection)
     {
+        ini_set('max_execution_time',0);
         foreach ($collection as $row) {
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);
@@ -39,12 +41,12 @@ class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, 
 
     public function chunkSize(): int
     {
-        return 500;
+        return 10;
     }
 
     public function batchSize(): int
     {
-        return 500;
+        return 10;
     }
 
     public function getMake($name)

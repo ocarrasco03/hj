@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Imports\Catalogs\ApplicationImport;
 use Illuminate\Console\Command;
+use App\Jobs\NotifyUserOfCompletedImport;
+use App\Imports\Catalogs\ApplicationImport;
 
 class ImportApplicationCatalog extends Command
 {
@@ -38,9 +39,12 @@ class ImportApplicationCatalog extends Command
      */
     public function handle()
     {
+        ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            (new ApplicationImport)->withOutput($this->output)->import(public_path('/excel/ApplicationLayout.xlsx'));
+            (new \App\Imports\Catalogs\ApplicationImport)->queue(public_path('/excel/ApplicationLayout.xlsx'))->chain([
+                new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'aplicacion'),
+            ]);
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

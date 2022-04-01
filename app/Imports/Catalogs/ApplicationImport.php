@@ -8,6 +8,7 @@ use App\Models\Catalogs\Product;
 use App\Models\Vehicles\Catalog;
 use Illuminate\Support\Collection;
 use App\Models\Vehicles\Manufacturer;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -15,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithProgressBar;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar, WithChunkReading, WithBatchInserts
+class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar, WithChunkReading, WithBatchInserts, ShouldQueue
 {
     use Importable;
     /**
@@ -23,6 +24,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
     */
     public function collection(Collection $collection)
     {
+        ini_set('max_execution_time',0);
         foreach ($collection as $row) {
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);
@@ -101,7 +103,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function chunkSize(): int
     {
-        return 500;
+        return 10;
     }
 
     /**
@@ -109,6 +111,6 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function batchSize(): int
     {
-        return 500;
+        return 10;
     }
 }
