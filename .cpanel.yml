@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/hjautopa/repositories/hj/public
-    - /bin/ln -s /home/hjautopa/repositories/hj/storage/app/public $DEPLOYPATH/storage
+    # - /bin/ln -s /home/hjautopa/repositories/hj/storage/app/public $DEPLOYPATH/storage
