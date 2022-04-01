@@ -24,6 +24,7 @@ class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, 
     public function collection(Collection $collection)
     {
         ini_set('max_execution_time',0);
+        ini_set('memory_limit', '2048M');
         foreach ($collection as $row) {
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);

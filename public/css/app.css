@@ -2049,9 +2049,6 @@ select:focus {
 .mb-1 {
   margin-bottom: 0.25rem;
 }
-.ml-8 {
-  margin-left: 2rem;
-}
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -3004,9 +3001,6 @@ select:focus {
 .checked\:ring-transparent:checked {
   --tw-ring-color: transparent;
 }
-.hover\:rounded:hover {
-  border-radius: 0.25rem;
-}
 .hover\:border-0:hover {
   border-width: 0px;
 }
@@ -3024,10 +3018,6 @@ select:focus {
 .hover\:border-primary:hover {
   --tw-border-opacity: 1;
   border-color: rgb(251 198 10 / var(--tw-border-opacity));
-}
-.hover\:border-secondary-500:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(37 34 34 / var(--tw-border-opacity));
 }
 .hover\:bg-gray-100:hover {
   --tw-bg-opacity: 1;
@@ -3126,9 +3116,8 @@ select:focus {
   --tw-border-opacity: 1;
   border-color: rgb(0 0 0 / var(--tw-border-opacity));
 }
-.focus\:border-secondary-500:focus {
-  --tw-border-opacity: 1;
-  border-color: rgb(37 34 34 / var(--tw-border-opacity));
+.focus\:border-transparent:focus {
+  border-color: transparent;
 }
 .focus\:border-secondary-700:focus {
   --tw-border-opacity: 1;
@@ -3138,12 +3127,13 @@ select:focus {
   --tw-border-opacity: 1;
   border-color: rgb(102 100 100 / var(--tw-border-opacity));
 }
-.focus\:border-transparent:focus {
-  border-color: transparent;
-}
 .focus\:bg-gray-100:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(224 224 224 / var(--tw-bg-opacity));
+}
+.focus\:bg-secondary-500:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(37 34 34 / var(--tw-bg-opacity));
 }
 .focus\:bg-secondary-100:focus {
   --tw-bg-opacity: 1;
@@ -3153,14 +3143,6 @@ select:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(229 228 228 / var(--tw-bg-opacity));
 }
-.focus\:bg-yellow-500:focus {
-  --tw-bg-opacity: 1;
-  background-color: rgb(251 198 10 / var(--tw-bg-opacity));
-}
-.focus\:bg-secondary-500:focus {
-  --tw-bg-opacity: 1;
-  background-color: rgb(37 34 34 / var(--tw-bg-opacity));
-}
 .focus\:text-gray-500:focus {
   --tw-text-opacity: 1;
   color: rgb(151 151 151 / var(--tw-text-opacity));
@@ -3169,9 +3151,9 @@ select:focus {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
 }
-.focus\:text-secondary-500:focus {
+.focus\:text-yellow-500:focus {
   --tw-text-opacity: 1;
-  color: rgb(37 34 34 / var(--tw-text-opacity));
+  color: rgb(251 198 10 / var(--tw-text-opacity));
 }
 .focus\:text-secondary-800:focus {
   --tw-text-opacity: 1;
@@ -3180,10 +3162,6 @@ select:focus {
 .focus\:text-secondary-600:focus {
   --tw-text-opacity: 1;
   color: rgb(33 30 30 / var(--tw-text-opacity));
-}
-.focus\:text-yellow-500:focus {
-  --tw-text-opacity: 1;
-  color: rgb(251 198 10 / var(--tw-text-opacity));
 }
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
