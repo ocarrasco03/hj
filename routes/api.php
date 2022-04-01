@@ -26,8 +26,5 @@ Route::name('api.')->group(function () {
     Route::get('engines', [SearchController::class, 'getEngines'])->name('engines');
     Route::get('categories', [SearchController::class, 'getCategories'])->name('categories');
     Route::get('subcategories/{parent}', [SearchController::class, 'getSubCategories'])->name('subcategories');
-    Route::get('work', function () {
-        Artisan::call('queue:work');
-        return response()->json(['success' => true]);
-    });
+    
 });
