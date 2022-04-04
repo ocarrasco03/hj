@@ -42,9 +42,10 @@ class ImportApplicationCatalog extends Command
         ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            (new \App\Imports\Catalogs\ApplicationImport)->queue(public_path('/excel/ApplicationLayout.xlsx'))->chain([
-                new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'aplicacion'),
-            ]);
+            // (new \App\Imports\Catalogs\ApplicationImport)->queue(public_path('/excel/ApplicationLayout.xlsx'))->chain([
+            //     new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'aplicacion'),
+            // ]);
+            (new \App\Imports\Catalogs\ApplicationImport)->withOutput($this->output)->import(public_path('/excel/ApplicationLayout.xlsx'));
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

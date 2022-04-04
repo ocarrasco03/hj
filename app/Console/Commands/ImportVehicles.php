@@ -42,9 +42,10 @@ class ImportVehicles extends Command
         ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            (new \App\Imports\Catalogs\VehiclesImport)->queue(public_path('/excel/VehiclesLayout.xlsx'))->chain([
-                new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'vehiculos'),
-            ]);
+            // (new \App\Imports\Catalogs\VehiclesImport)->queue(public_path('/excel/VehiclesLayout.xlsx'))->chain([
+            //     new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'vehiculos'),
+            // ]);
+            (new \App\Imports\Catalogs\VehiclesImport)->withOutput($this->output)->import(public_path('/excel/VehiclesLayout.xlsx'));
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());
