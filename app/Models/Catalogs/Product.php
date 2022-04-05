@@ -2,20 +2,23 @@
 
 namespace App\Models\Catalogs;
 
-use App\Traits\Fileable;
-use App\Traits\Taggeable;
-use App\Traits\Categorizable;
-use Laravel\Scout\Searchable;
-use App\Traits\HasApplication;
 use App\Models\Configs\Category;
 use App\Models\Vehicles\Catalog;
-use willvincent\Rateable\Rateable;
+use App\Packages\Shoppingcart\Contracts\Buyable;
+use App\Traits\Categorizable;
+use App\Traits\Fileable;
+use App\Traits\Taggeable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Packages\Shoppingcart\Contracts\Buyable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use willvincent\Rateable\Rateable;
+use Spatie\Image\Manipulations;
 
-class Product extends Model implements Buyable
+class Product extends Model implements Buyable, HasMedia
 {
     use HasFactory;
     use SoftDeletes;
@@ -24,13 +27,14 @@ class Product extends Model implements Buyable
     use Taggeable;
     use Fileable;
     use Searchable;
+    use InteractsWithMedia;
 
     /**
      * The relationships that should always be loaded.
      *
      * @var array
      */
-    protected $with = ['brand', 'files', 'ratings', 'categories'];
+    protected $with = ['brand', 'files', 'ratings', 'categories', 'catalogs', 'media'];
 
     /**
      * The attributes that are mass assignable.
@@ -103,6 +107,19 @@ class Product extends Model implements Buyable
     }
 
     /**
+     * Register the conversions that should be performed.
+     *
+     * @return array
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+              ->height(160)
+              ->sharpen(10)
+              ->performOnCollections('images', 'products');
+    }
+
+    /**
      * The model belongs to a supplier model
      *
      * @return void
@@ -146,5 +163,11 @@ class Product extends Model implements Buyable
     {
         return $this->hasMany(Catalog::class);
     }
+
+    public function getThumb()
+    {
+        return $this->getFirstMediaUrl('products', 'thumb');
+    }
+
 
 }
