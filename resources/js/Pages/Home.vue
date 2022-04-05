@@ -54,7 +54,7 @@ const shortText = (text, length) => {
 
 <template>
     <Head title="Inicio" />
-    <div class="container">
+    <div class="container hidden sm:block">
         <SearchPanel class="ml-0" />
     </div>
     <Slider />
@@ -167,13 +167,13 @@ const shortText = (text, length) => {
         </div>
     </div>
     <HjSectionTitle>
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center flex-col md:flex-row">
             <h5>Suscribete y recibe nuestra promociones</h5>
             <form class="flex space-x-1" @submit.prevent="">
                 <HjInput
                     id="email"
                     type="email"
-                    class="block w-full w-80"
+                    class="block w-full md:w-80"
                     v-model="suscribe.email"
                     placeholder="Email"
                     required

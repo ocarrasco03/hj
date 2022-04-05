@@ -15,7 +15,7 @@ defineProps({
 });
 
 const shortText = (text, length) =>
-    text.slice(0, length) + (text.length > length ? "..." : "");
+     text ? text.slice(0, length) + (text.length > length ? "..." : "") : "";
 </script>
 
 <template>

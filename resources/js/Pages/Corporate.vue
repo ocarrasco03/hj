@@ -18,16 +18,13 @@ import Slider from "@/Components/Slider.vue";
         <div class="flex space-x-3">
             <i class="fas fa-quote-left text-4xl -mt-2"></i>
             <p>
-                Somos una empresa 100% Mexicana líder en: Innovación,
-                desarrollo, fabricación y comercialización de autopartes en el
-                mercado global, con presencia en mercados INTERNACIONALES como
-                Estados Unidos, Colombia, Guatemala, Costa Rica, El Salvador,
-                Perú, Ecuador, Venezuela, Chile, Brasil, Bolivia, Canadá,
-                Líbano, Israel, etc. Consolidando cada una de nuestras marcas
-                como líderes indiscutibles en cada uno de sus segmentos,
-                forjando valor a través de nuestra cadena productiva única en el
-                mercado de autopartes; generando excelentes niveles de
-                rentabilidad para nuestros clientes.”
+                Somos una empresa 100% Mexicana líder en: Distribución y
+                comercialización de autopartes en el mercado mexicano,
+                Consolidando cada una de nuestras marcas como líderes
+                indiscutibles en cada uno de sus segmentos, forjando valor a
+                través de nuestra cadena productiva única en el mercado de
+                autopartes; generando excelentes niveles de rentabilidad para
+                nuestros clientes.”
             </p>
         </div>
         <div

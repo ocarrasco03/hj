@@ -3,11 +3,21 @@ import SearchPanel from "@/Components/SearchPanel.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import RateStars from '@/Components/RateStars.vue';
 import Pagination from '@/Components/Pagination.vue';
-import { Head } from "@inertiajs/inertia-vue3";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import { Head, Link } from "@inertiajs/inertia-vue3";
 
 defineProps({
     products: Object,
 })
+
+const getThumb = (url) => {
+    let image = url.split('/')
+    let thumb = image[image.length - 1]
+    let temp = url.split(thumb)
+    thumb = thumb.split('.');
+    
+    return `${temp[0]}/conversions/${thumb[0]}-thumb.${thumb[1]}`
+}
 
 </script>
 
@@ -31,12 +41,18 @@ defineProps({
                 id="item"
                 class="border border-gray-500 shadow hover:shadow-md mt-3 flex flex-col md:flex-row" v-for="(item, index) in products.data" :key="index"
             >
-                <div class="shrink-0">
+                <div class="shrink-0" :class="{'p-2': item.media.length <= 0}">
                     <img
-                        src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-17/images/60-117_1621300607.jpg"
+                        v-if="item.media.length > 0"
+                        :src="getThumb(item.media[0].original_url)"
                         alt=""
-                        srcset="https://www.hjautopartes.com.mx/storage/uploads/2021-05-17/images/60-117_1621300607.jpg"
-                        class="h-auto w-full md:h-40 md:w-auto"
+                        :srcset="getThumb(item.media[0].original_url)"
+                        class="h-auto w-full md:h-40 md:w-auto md:max-w-40"
+                    />
+                    <ApplicationLogo
+                        class="block h-auto w-full md:h-40 md:w-auto md:max-w-40"
+                        :fill="'#000'"
+                        v-else
                     />
                 </div>
                 <div class="p-3 flex flex-col flex-1">
@@ -67,8 +83,9 @@ defineProps({
                             </a>
 
                         </h3>
-
-                        <SecondaryButton>Ver Mas</SecondaryButton>
+                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn_primary text-center py-2 text-xs transition ease-in delay-150">
+                            Ver mas
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -154,12 +154,12 @@ const eventChange = (event) => {
                 <div class="mt-3">
                     <ul class="list-inside">
                         <li>Marca: {{ product.brand.name }}</li>
-                        <li>
+                        <!-- <li>
                             OEM:
                             <span v-if="product.notes.oem">{{
                                 product.notes.oem
                             }}</span>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
                 <div class="mt-3 flex flex-col">
