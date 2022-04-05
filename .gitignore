@@ -15,3 +15,5 @@ yarn-error.log
 /.vscode
 .DS_Store
 error_log
+/storage/media-library
+

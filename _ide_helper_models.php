@@ -85,12 +85,13 @@ namespace App\Models\Catalogs{
  * @property float $weight
  * @property array|null $notes
  * @property string $condition
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Tag[] $tags
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\Catalogs\Brand $brand
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Catalog[] $catalog
- * @property-read int|null $catalog_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Catalog[] $catalogs
+ * @property-read int|null $catalogs_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Category[] $categories
  * @property-read int|null $categories_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\File[] $files
@@ -99,12 +100,13 @@ namespace App\Models\Catalogs{
  * @property-read mixed $sum_rating
  * @property-read mixed $user_average_rating
  * @property-read mixed $user_sum_rating
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\willvincent\Rateable\Rating[] $ratings
  * @property-read int|null $ratings_count
  * @property-read \Illuminate\Database\Eloquent\Collection|Product[] $related
  * @property-read int|null $related_count
  * @property-read \App\Models\Catalogs\Supplier|null $supplier
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Tag[] $tags
  * @property-read int|null $tags_count
  * @method static \Database\Factories\Catalogs\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
@@ -126,13 +128,14 @@ namespace App\Models\Catalogs{
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSupplierId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereTags($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereWeight($value)
  * @method static \Illuminate\Database\Query\Builder|Product withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Product withoutTrashed()
  */
-	class Product extends \Eloquent implements \App\Packages\Shoppingcart\Contracts\Buyable {}
+	class Product extends \Eloquent implements \App\Packages\Shoppingcart\Contracts\Buyable, \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Catalogs{
@@ -258,14 +261,34 @@ namespace App\Models\Vehicles{
 /**
  * App\Models\Vehicles\Catalog
  *
- * @property-read \App\Models\Vehicles\Engine|null $engines
- * @property-read \App\Models\Vehicles\Manufacturer|null $makes
- * @property-read \App\Models\Vehicles\Model|null $models
- * @property-read \App\Models\Catalogs\Product|null $products
- * @property-read \App\Models\Vehicles\Year|null $years
+ * @property int $id
+ * @property int $product_id
+ * @property int $year_id
+ * @property int $make_id
+ * @property int $model_id
+ * @property int|null $engine_id
+ * @property string|null $notes
+ * @property mixed|null $attributes
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Vehicles\Engine|null $engine
+ * @property-read \App\Models\Vehicles\Manufacturer $make
+ * @property-read \App\Models\Vehicles\Model $model
+ * @property-read \App\Models\Catalogs\Product $product
+ * @property-read \App\Models\Vehicles\Year $year
  * @method static \Illuminate\Database\Eloquent\Builder|Catalog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Catalog newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Catalog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereAttributes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereEngineId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereMakeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereModelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereProductId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Catalog whereYearId($value)
  */
 	class Catalog extends \Eloquent {}
 }
@@ -358,6 +381,8 @@ namespace App\Models\Vehicles{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Catalog[] $catalogs
+ * @property-read int|null $catalogs_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Model[] $models
  * @property-read int|null $models_count
  * @method static \Database\Factories\Vehicles\YearFactory factory(...$parameters)
