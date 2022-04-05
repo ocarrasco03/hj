@@ -2,43 +2,51 @@
 
 namespace App\Imports\Catalogs;
 
-use App\Models\Vehicles\Year;
-use App\Models\Vehicles\Model;
 use App\Models\Catalogs\Product;
 use App\Models\Vehicles\Catalog;
-use Illuminate\Support\Collection;
 use App\Models\Vehicles\Manufacturer;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Vehicles\Model;
+use App\Models\Vehicles\Year;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithProgressBar;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithProgressBar;
 
-class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar, WithChunkReading, WithBatchInserts, ShouldQueue
+class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar, WithChunkReading, WithBatchInserts
 {
     use Importable;
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $collection)
     {
-        ini_set('max_execution_time',0);
+        ini_set('max_execution_time', 0);
         ini_set('memory_limit', '2048M');
         foreach ($collection as $row) {
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);
-            $product = Product::where('sku', $row['sku'])->whereHas('brand', function($query) use ($row) {
+            $attachments = [];
+            foreach ($row as $key => $value) {
+                if ($key !== 'sku' && $key !== 'brand' && $key !== 'model' && $key !== 'make' && $key !== 'notes' && $key !== 'from' && $key !== 'to') {
+                    if ($value !== '-') {
+                        $attachments[$key] = $value;
+                    }
+                }
+            }
+            $product = Product::where('sku', $row['sku'])->whereHas('brand', function ($query) use ($row) {
                 return $query->where('name', $row['brand']);
             })->first();
-            if ($row['from'] !== 'TODOS') {
+            if ($row['from'] !== 'TODOS' && $row['from'] !== '-') {
                 $years = [];
                 for ($i = $row['from']; $i <= $row['to']; $i++) {
                     $year = $this->getYear($i);
                     $years[] = $year->id;
                     if ($product) {
-                        $this->attachToCatalog($product->id, $year->id, $make->id, $model->id, null, $row['notes']);
+                        $notes = ($row['notes'] !== '-' && !empty($row['notes'])) ? $row['notes'] : null;
+                        $this->attachToCatalog($product->id, $year->id, $make->id, $model->id, null, $notes, $attachments);
                     }
                 }
                 $model->storeYear($years);
@@ -95,7 +103,8 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
         $catalog->model_id = $model;
         $catalog->engine_id = $engine;
         $catalog->notes = $notes;
-        $catalog->attributes = !empty($attributes) ? $attributes : null;
+        // $catalog->attributes = !empty($attributes) ? [$attributes] : null;
+        $catalog->attributes = !empty($attributes) ? json_encode($attributes) : null;
         $catalog->save();
     }
 
@@ -104,7 +113,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function chunkSize(): int
     {
-        return 10;
+        return 500;
     }
 
     /**
@@ -112,6 +121,6 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function batchSize(): int
     {
-        return 10;
+        return 500;
     }
 }

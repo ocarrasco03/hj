@@ -5,7 +5,6 @@ namespace App\Imports\Catalogs;
 use App\Models\Catalogs\Brand;
 use App\Models\Catalogs\Product;
 use App\Models\Configs\Category;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -15,7 +14,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
 
-class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow, ShouldQueue
+class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow
 {
     use Importable;
 
@@ -24,7 +23,7 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
      */
     public function collection(Collection $collection)
     {
-        ini_set('max_execution_time',0);
+        ini_set('max_execution_time', 0);
         ini_set('memory_limit', '2048M');
         foreach ($collection as $row) {
             $brand = $this->getBrand($row['brand']);
@@ -52,12 +51,12 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
 
     public function chunkSize(): int
     {
-        return 10;
+        return 1000;
     }
 
     public function batchSize(): int
     {
-        return 10;
+        return 1000;
     }
 
     /**
