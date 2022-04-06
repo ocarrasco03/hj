@@ -6,7 +6,6 @@ use App\Models\Configs\Category;
 use App\Models\Vehicles\Catalog;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use App\Traits\Categorizable;
-use App\Traits\Fileable;
 use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +15,6 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use willvincent\Rateable\Rateable;
-use Spatie\Image\Manipulations;
 
 class Product extends Model implements Buyable, HasMedia
 {
@@ -25,7 +23,6 @@ class Product extends Model implements Buyable, HasMedia
     use Rateable;
     use Categorizable;
     use Taggeable;
-    use Fileable;
     use Searchable;
     use InteractsWithMedia;
 
@@ -34,8 +31,9 @@ class Product extends Model implements Buyable, HasMedia
      *
      * @var array
      */
-    protected $with = ['brand', 'files', 'ratings', 'categories', 'catalogs', 'media'];
+    protected $with = ['brand', 'ratings', 'categories', 'catalogs'];
 
+    protected $appends = ['thumb', 'media'];
     /**
      * The attributes that are mass assignable.
      *
@@ -114,9 +112,10 @@ class Product extends Model implements Buyable, HasMedia
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-              ->height(160)
-              ->sharpen(10)
-              ->performOnCollections('images', 'products');
+            ->width(160)
+            ->sharpen(10)
+            ->nonQueued()
+            ->performOnCollections('images', 'products');
     }
 
     /**
@@ -164,10 +163,20 @@ class Product extends Model implements Buyable, HasMedia
         return $this->hasMany(Catalog::class);
     }
 
-    public function getThumb()
+    public function getThumbAttribute()
     {
         return $this->getFirstMediaUrl('products', 'thumb');
     }
 
+    public function getMediaAttribute()
+    {
+        foreach ($this->media() as $media) {
+            return $media->getMediaUrl();
+        }
+    }
 
+    public function getCatalogAttribute()
+    {
+        //
+    }
 }

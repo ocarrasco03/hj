@@ -28,7 +28,7 @@ const form = useForm({
     qty: 1,
     price: usePage().props.value.product.price_wo_tax,
     options: {
-        image: "https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg",
+        image: usePage().props.value.product.media[0].original_url,
     },
 });
 
@@ -38,7 +38,9 @@ const fbShare = () => {
     FB.ui(
         {
             method: "feed",
-            link: "https://www.hjautopartes.com.mx/producto/653/2609-soporte-para-motor/",
+            link: route("product.show", {
+                slug: usePage().props.value.product.slug,
+            }),
         },
         function (response) {}
     );
@@ -55,7 +57,7 @@ const addToCart = () =>
 let previousImage = "";
 
 window.onload = () => {
-    if (usePage().props.value.product.files.length > 0) {
+    if (usePage().props.value.product.media.length > 0) {
         previousImage = document.getElementById("main-image").src;
     }
 };
@@ -101,14 +103,30 @@ const eventChange = (event) => {
 </script>
 
 <template>
-    <Head :title="product.name" />
+    <!-- <Head :title="product.name" /> -->
+    <Head :title="product.name">
+        <meta
+            property="og:url"
+            :content="route('product.show', { slug: product.slug })"
+        />
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:title"
+            content="When Great Minds Don’t Think Alike"
+        />
+        <meta
+            property="og:description"
+            content="How much does culture influence creative thinking?"
+        />
+        <meta property="og:image" :content="product.media[0].original_url" />
+    </Head>
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="flex flex-col md:flex-row space-x-3">
             <div class="preview shrink-0">
                 <img
-                    v-if="product.files.length > 0"
+                    v-if="product.media.length > 0"
                     id="main-image"
-                    src="https://www.hjautopartes.com.mx/storage/uploads/2021-05-18/images/SC-739(0)_1621399447.jpg"
+                    :src="product.media[0].original_url"
                     alt=""
                     srcset=""
                     height="450"
@@ -121,12 +139,12 @@ const eventChange = (event) => {
                 />
                 <div class="flex flex-row flex-wrap">
                     <template
-                        v-for="(file, key, index) in product.files"
+                        v-for="(file, key, index) in product.media"
                         :key="index"
                     >
                         <img
                             data-toggle="preview"
-                            :src="file.path"
+                            :src="file.original_url"
                             :alt="file.name"
                             srcset=""
                             height="95"

@@ -15,7 +15,7 @@ const getThumb = (url) => {
     let thumb = image[image.length - 1]
     let temp = url.split(thumb)
     thumb = thumb.split('.');
-    
+
     return `${temp[0]}/conversions/${thumb[0]}-thumb.${thumb[1]}`
 }
 
@@ -47,7 +47,7 @@ const getThumb = (url) => {
                         :src="getThumb(item.media[0].original_url)"
                         alt=""
                         :srcset="getThumb(item.media[0].original_url)"
-                        class="h-auto w-full md:h-40 md:w-auto md:max-w-40"
+                        class="h-auto w-full md:w-40"
                     />
                     <ApplicationLogo
                         class="block h-auto w-full md:h-40 md:w-auto md:max-w-40"

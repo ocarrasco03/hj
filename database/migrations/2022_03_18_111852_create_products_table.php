@@ -29,6 +29,7 @@ return new class extends Migration
             $table->float('weight')->unsigned()->default(0);
             $table->jsonb('notes')->nullable();
             $table->string('condition')->default('new');
+            $table->text('tags')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
