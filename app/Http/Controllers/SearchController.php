@@ -23,71 +23,73 @@ class SearchController extends Controller
     {
         $products = ['total' => 0, 'data' => [], 'links' => []];
         $query = $request->input('query');
+        $queries = [];
+        $qTmp = ['year', 'make', 'model', 'engine', 'category', 'subcategory'];
 
         if (empty($request->all())) {
             return Inertia::render('Catalogs/Search', ['products' => $products]);
         }
 
         if (!is_null($query)) {
+            $this->validateSessionSearchApplication();
             $products = Product::search($query)->paginate(10);
             $products->appends(['query' => $request->input('query')]);
         } else {
             $this->validateSessionSearchApplication($request->all());
             $products = Product::withCount(['ratings as averageRating' => function ($query) {
-                            $query->select(DB::raw('avg(rating)'));
-                        }])
-                        ->when(!is_null($request->input('year')), function ($query) use ($request) {
-                            return $query->whereHas('catalogs', function ($query) use ($request) {
-                                return $query->whereHas('year', function ($query) use ($request) {
-                                    return $query->where('year', $request->input('year'));
-                                });
-                            });
-                        })
-                        ->when(!is_null($request->input('make')), function ($query) use ($request) {
-                            return $query->whereHas('catalogs', function ($query) use ($request) {
-                                return $query->whereHas('make', function ($query) use ($request) {
-                                    return $query->where('name', $request->input('make'));
-                                });
-                            });
-                        })
-                        ->when(!is_null($request->input('model')), function ($query) use ($request) {
-                            return $query->whereHas('catalogs', function ($query) use ($request) {
-                                return $query->whereHas('model', function ($query) use ($request) {
-                                    return $query->where('name', $request->input('model'));
-                                });
-                            });
-                        })
-                        ->when(!is_null($request->input('make')), function ($query) use ($request) {
-                            return $query->whereHas('catalogs', function ($query) use ($request) {
-                                return $query->whereHas('make', function ($query) use ($request) {
-                                    return $query->where('name', $request->input('make'));
-                                });
-                            });
-                        })
-                        ->when(!is_null($request->input('categories')), function ($query) use ($request) {
-                            return $query->whereHas('categories', function ($query) use ($request) {
-                                return $query->where('name', $request->input('category'))->where('parent', 0);
-                            });
-                        })
-                        ->when(!is_null($request->input('subcategory')), function ($query) use ($request) {
-                            return $query->whereHas('categories', function ($query) use ($request) {
-                                $parent = Category::where('name', $request->input('category'))
-                                    ->where('parent', 0)
-                                    ->first();
+                $query->select(DB::raw('avg(rating)'));
+            }])
+                ->when(!is_null($request->input('year')), function ($query) use ($request) {
+                    return $query->whereHas('catalogs', function ($query) use ($request) {
+                        return $query->whereHas('year', function ($query) use ($request) {
+                            return $query->where('year', $request->input('year'));
+                        });
+                    });
+                })
+                ->when(!is_null($request->input('make')), function ($query) use ($request) {
+                    return $query->whereHas('catalogs', function ($query) use ($request) {
+                        return $query->whereHas('make', function ($query) use ($request) {
+                            return $query->where('name', $request->input('make'));
+                        });
+                    });
+                })
+                ->when(!is_null($request->input('model')), function ($query) use ($request) {
+                    return $query->whereHas('catalogs', function ($query) use ($request) {
+                        return $query->whereHas('model', function ($query) use ($request) {
+                            return $query->where('name', $request->input('model'));
+                        });
+                    });
+                })
+                ->when(!is_null($request->input('make')), function ($query) use ($request) {
+                    return $query->whereHas('catalogs', function ($query) use ($request) {
+                        return $query->whereHas('make', function ($query) use ($request) {
+                            return $query->where('name', $request->input('make'));
+                        });
+                    });
+                })
+                ->when(!is_null($request->input('category')), function ($query) use ($request) {
+                    return $query->whereHas('categories', function ($query) use ($request) {
+                        return $query->where('name', $request->input('category'))->where('parent', 0);
+                    });
+                })
+                ->when(!is_null($request->input('subcategory')), function ($query) use ($request) {
+                    return $query->whereHas('categories', function ($query) use ($request) {
+                        $parent = Category::where('name', $request->input('category'))
+                            ->where('parent', 0)
+                            ->first();
 
-                                return $query->where('name', $request->input('subcategory'))->where('parent', $parent->id);
-                            });
-                        })
-                        ->paginate(10);
+                        return $query->where('name', $request->input('subcategory'))->where('parent', $parent->id);
+                    });
+                })
+                ->paginate(10);
 
-            $products->appends([
-                'year' => $request->input('year'),
-                'make' => $request->input('make'),
-                'model' => $request->input('model'),
-                'engine' => $request->input('engine'),
-                'category' => $request->input('category'),
-                'subcategory' => $request->input('subcategory'),
-            ]);
+            foreach ($qTmp as $value) {
+                if (!is_null($request->input($value))) {
+                    $queries[$value] = $request->input($value);
+                }
+            }
+
+            $products->appends($queries);
         }
 
         return Inertia::render('Catalogs/Search', ['products' => $products]);
@@ -205,17 +207,23 @@ class SearchController extends Controller
         return $subcategories;
     }
 
-    public function validateSessionSearchApplication($values)
+    /**
+     * Set a new search session parameters
+     *
+     * @param array $values
+     * @return \Session
+     */
+    public function validateSessionSearchApplication(array $values = [])
     {
         $search = Session::get('search');
 
-        if (!empty($values)) {
-            foreach ($search as $key => $value) {
-                if (key_exists($key, $values)) {
-                    if ($value !== $values[$key]) {
-                        $search[$key] = $values[$key];
-                    }
+        foreach ($search as $key => $value) {
+            if (key_exists($key, $values)) {
+                if ($value !== $values[$key]) {
+                    $search[$key] = $values[$key];
                 }
+            } else {
+                $search[$key] = null;
             }
         }
 

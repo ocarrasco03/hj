@@ -124,7 +124,17 @@ onMounted(() => {
 
 const searchQuery = () => {
     if (formSearch.query !== "") {
-        formSearch.get(route("product.search"));
+        formSearch.get(route("product.search"), {
+            onFinish: () => {
+                formSearch.reset();
+            },
+        });
+        form.year = null;
+        form.make = null;
+        form.model = null;
+        form.engine = null;
+        form.category = null;
+        form.subcategory = null;
     }
 };
 
