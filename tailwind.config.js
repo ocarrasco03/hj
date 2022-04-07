@@ -143,6 +143,7 @@ module.exports = {
                 800: "#ffab04",
                 900: "#ff9e02",
             },
+            pink: "#F1F2F7",
         },
     },
     variants: {

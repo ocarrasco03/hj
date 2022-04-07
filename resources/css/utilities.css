@@ -2,6 +2,10 @@
     max-width: 10rem /* 160px */;
 }
 
+.rounded-1\/2 {
+    border-radius: 50%;
+}
+
 @media (min-width: 640px) {
     .sm\:max-w-40 {
         max-width: 10rem /* 160px */;

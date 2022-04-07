@@ -23,9 +23,15 @@
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
 
     <!-- Styles -->
+    @if (Request::is('admin') || Request::is('admin/*'))
+    <link rel="stylesheet" href="{{ mix('css/cms.css') }}">
+    @else
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    @endif
+    {{-- <link rel="stylesheet" href="{{ mix('css/app.css') }}"> --}}
 
     <!-- Scripts -->
     @routes

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('acepted_terms_conditions')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
