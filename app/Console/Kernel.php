@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // $schedule->command('queue:work')->everyMinute();
         // $schedule->command('import:products')->everyMinute();
+        $schedule->command('backup:clean')->daily()->at('09:00');
+        $schedule->command('backup:run')->daily()->at('09:30');
     }
 
     /**
