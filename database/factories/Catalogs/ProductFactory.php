@@ -22,13 +22,13 @@ class ProductFactory extends Factory
     public function definition()
     {
 
-        $brand = Brand::factory()->create();
+        $brandIds = Brand::all()->pluck('id')->toArray();
 
         $cost = $this->faker->randomFloat(2, 0, 1000);
         $price = ceil($cost * 1.63);
 
         return [
-            'brand_id' => $brand->id,
+            'brand_id' => $this->faker->randomElement($brandIds),
             'sku' => Str::random(10),
             'name' => $this->faker->sentence(),
             'description' => $this->faker->text,

@@ -1,6 +1,17 @@
 html {
     @apply font-body;
 }
+body {
+    /* @apply relative flex w-full min-h-screen bg-gray-100 text-gray-700 text-sm; */
+    @apply text-xs w-full relative min-h-screen;
+
+    &.overlay-show {
+        @apply overflow-hidden;
+    }
+}
+div#app {
+    @apply text-sm;
+}
 
 h1,
 .h1 {

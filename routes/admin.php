@@ -1,14 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Cms\Auth\NewPasswordController;
-use App\Http\Controllers\Cms\Auth\VerifyEmailController;
-use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Cms\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Cms\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Cms\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Cms\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Cms\Auth\NewPasswordController;
+use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Cms\Auth\VerifyEmailController;
 use App\Http\Controllers\Cms\DashboardController;
+use App\Http\Controllers\Cms\Settings\SystemInformationController;
+use App\Http\Controllers\Cms\Settings\UsersController;
+use App\Http\Controllers\Cms\Support\PromptController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,5 +76,50 @@ Route::middleware('auth:admin')->group(function () {
  */
 
 Route::middleware('auth:admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('ventas')->name('sales.')->group(function () {
+        //
+    });
+
+    Route::prefix('modulos')->name('modules.')->group(function () {
+        //
+    });
+
+    Route::prefix('soporte')->name('support.')->group(function () {
+        Route::post('/terminal', [PromptController::class, 'exeCommand'])->name('console.exec');
+        Route::get('/terminal', [PromptController::class, 'index'])->name('console');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Settings Routes
+    |--------------------------------------------------------------------------
+    |
+     */
+    Route::prefix('configuracion')->name('settings.')->group(function () {
+        Route::get('informacion-del-sistema', [SystemInformationController::class, 'index'])->name('info');
+
+        /*
+        |--------------------------------------------------------------------------
+        | General Settings Routes
+        |--------------------------------------------------------------------------
+        |
+         */
+
+        /*
+        |--------------------------------------------------------------------------
+        | Advanced Settings Routes
+        |--------------------------------------------------------------------------
+        |
+         */
+        Route::prefix('avanzado')->name('advanced.')->group(function () {
+            Route::get('usuarios', [UsersController::class, 'index'])->name('users.index');
+            Route::get('usuarios/{id}', [UsersController::class, 'show'])->name('users.show');
+        });
+    });
+
 });

@@ -20,6 +20,24 @@ module.exports = {
                 sans: ["Nunito", ...defaultTheme.fontFamily.sans],
                 body: ["Nunito Sans", ...defaultTheme.fontFamily.sans],
             },
+            fontSize: {
+                "4xl": "2rem",
+                "line-height": "3rem",
+            },
+            borderRadius: {
+                xl: "10px",
+            },
+            boxShadow: {
+                DEFAULT: "1px 1px 5px 0 rgba(0, 0, 0, 0.16)",
+            },
+            spacing: {
+                "1/1": "100%",
+                "3/4": "75%",
+                "9/16": "56.25%",
+            },
+            animation: {
+                "spin-slow": "spin 3s linear infinite",
+            },
         },
         colors: {
             transparent: "transparent",
@@ -148,6 +166,18 @@ module.exports = {
                 900: "#ff9e02",
             },
             pink: "#F1F2F7",
+            admin: {
+                DEFAULT: "#145388",
+                100: "#F3F6F9",
+                200: "#C4D4E1",
+                300: "#A1BACF",
+                400: "#5B87AC",
+                500: "#145388",
+                600: "#124B7A",
+                700: "#0C3252",
+                800: "#09253D",
+                900: "#061929",
+            },
         },
     },
     variants: {
@@ -159,5 +189,6 @@ module.exports = {
     plugins: [
         require("@tailwindcss/forms"),
         require("@tailwindcss/typography"),
+        require("@tailwindcss/aspect-ratio"),
     ],
 };

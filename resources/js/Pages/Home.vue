@@ -91,7 +91,7 @@ const shortText = (text, length) => {
                 </p>
                 <div class="self-end items-end w-full">
                     <div class="grid grid-cols-2 gap-0 text-sm">
-                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn_primary text-center py-2 text-lg transition ease-in delay-150">
+                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn-primary text-center py-2 text-lg transition ease-in delay-150">
                             Ver mas
                         </Link>
                     </div>
