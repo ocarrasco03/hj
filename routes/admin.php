@@ -118,7 +118,12 @@ Route::middleware('auth:admin')->group(function () {
          */
         Route::prefix('avanzado')->name('advanced.')->group(function () {
             Route::get('usuarios', [UsersController::class, 'index'])->name('users.index');
+            Route::get('usuarios/nuevo', [UsersController::class, 'create'])->name('users.create');
+            Route::post('usuarios/nuevo', [UsersController::class, 'store'])->name('users.store');
             Route::get('usuarios/{id}', [UsersController::class, 'show'])->name('users.show');
+            Route::put('usuarios/{id}', [UsersController::class, 'update'])->name('users.update');
+            Route::delete('usuarios/{user}', [UsersController::class, 'destroy'])->name('users.delete');
+            Route::put('usuarios/{user}', [UsersController::class, 'restore'])->name('users.restore');
         });
     });
 

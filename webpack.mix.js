@@ -34,7 +34,7 @@ mix.copy('resources/images', 'public/images');
 
 // Fonts
 mix.copy(
-    "node_modules/line-awesome/dist/line-awesome/fonts/**/*",
+    ["node_modules/line-awesome/dist/line-awesome/fonts/**/*","resources/fonts/*"],
     "public/fonts"
 );
 

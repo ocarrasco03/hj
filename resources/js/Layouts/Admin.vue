@@ -351,7 +351,7 @@ onMounted(() => {
                 <Link
                     class="link"
                     :class="{ active: route().current('admin.sales.*') }"
-                    data-target="[data-menu=catalogs]"
+                    data-target="[data-menu=customers]"
                     @click="showMenuDetail"
                 >
                     <span class="icon la la-users"></span>
@@ -360,7 +360,7 @@ onMounted(() => {
                 <Link
                     class="link"
                     :class="{ active: route().current('admin.sales.*') }"
-                    data-target="[data-menu=catalogs]"
+                    data-target="[data-menu=analytics]"
                     @click="showMenuDetail"
                 >
                     <span class="icon la la-chart-area"></span>
@@ -398,72 +398,18 @@ onMounted(() => {
             <!-- Sales -->
             <div class="menu-detail" data-menu="sales">
                 <div class="menu-detail-wrapper">
-                    <h6 class="uppercase">Authentication</h6>
-                    <a href="auth-login.html">
-                        <span class="la la-user"></span>
-                        Login
-                    </a>
-                    <a href="auth-forgot-password.html">
-                        <span class="la la-user-lock"></span>
-                        Forgot Password
-                    </a>
-                    <a href="auth-register.html">
-                        <span class="la la-user-plus"></span>
-                        Register
-                    </a>
-                    <hr />
-                    <h6 class="uppercase">Blog</h6>
-                    <a href="blog-list.html">
-                        <span class="la la-list"></span>
-                        List
-                    </a>
-                    <a href="blog-list-card-rows.html">
-                        <span class="la la-list"></span>
-                        List - Card Rows
-                    </a>
-                    <a href="blog-list-card-columns.html">
-                        <span class="la la-list"></span>
-                        List - Card Columns
-                    </a>
-                    <a href="blog-add.html">
-                        <span class="la la-layer-group"></span>
-                        Add Post
-                    </a>
-                    <hr />
-                    <h6 class="uppercase">Errors</h6>
-                    <a href="errors-403.html" target="_blank">
-                        <span class="la la-exclamation-circle"></span>
-                        403 Error
-                    </a>
-                    <a href="errors-404.html" target="_blank">
-                        <span class="la la-exclamation-circle"></span>
-                        404 Error
-                    </a>
-                    <a href="errors-500.html" target="_blank">
-                        <span class="la la-exclamation-circle"></span>
-                        500 Error
-                    </a>
-                    <a href="errors-under-maintenance.html" target="_blank">
-                        <span class="la la-exclamation-circle"></span>
-                        Under Maintenance
-                    </a>
-                    <hr />
-                    <a href="pages-pricing.html">
-                        <span class="la la-dollar"></span>
-                        Pricing
-                    </a>
-                    <a href="pages-faqs-layout-1.html">
-                        <span class="la la-question-circle"></span>
-                        FAQs - Layout 1
-                    </a>
-                    <a href="pages-faqs-layout-2.html">
-                        <span class="la la-question-circle"></span>
-                        FAQs - Layout 2
-                    </a>
-                    <a href="pages-invoice.html">
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-shopping-cart"></span>
+                        Pedidos
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
                         <span class="la la-file-invoice-dollar"></span>
-                        Invoice
-                    </a>
+                        Facturas
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="hj hj-product-return"></span>
+                        Devoluciones
+                    </Link>
                 </div>
             </div>
 
@@ -493,6 +439,50 @@ onMounted(() => {
                 </div>
             </div>
 
+            <!-- Customers -->
+            <div class="menu-detail" data-menu="customers">
+                <div class="menu-detail-wrapper">
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-archive"></span>
+                        Clientes
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-cubes"></span>
+                        Direcciones
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-sitemap"></span>
+                        Servicio al Cliente
+                    </Link>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="menu-detail" data-menu="analytics">
+                <div class="menu-detail-wrapper">
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-archive"></span>
+                        Productos
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-cubes"></span>
+                        Ventas
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-sitemap"></span>
+                        Visitas
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-car-alt"></span>
+                        Clientes
+                    </Link>
+                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                        <span class="la la-image"></span>
+                        Envios
+                    </Link>
+                </div>
+            </div>
+
             <!-- Modules -->
             <div class="menu-detail" data-menu="modules">
                 <div class="menu-detail-wrapper">
@@ -510,7 +500,7 @@ onMounted(() => {
                         UPS
                     </Link>
                     <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
-                        <span class="hj-mercado-libre"></span>
+                        <span class="hj hj-mercado-libre"></span>
                         Mercado Libre
                     </Link>
                     <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
@@ -528,7 +518,7 @@ onMounted(() => {
                         BBVA Bancomer
                     </Link> -->
                     <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
-                        <span class="hj-bbva"></span>
+                        <span class="hj hj-bbva"></span>
                         Bancomer
                     </Link>
                 </div>

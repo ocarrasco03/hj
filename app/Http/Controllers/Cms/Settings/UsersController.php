@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Cms\Settings;
 
+use App\Http\Controllers\Controller;
 use App\Models\Cms\Admin;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
+use Illuminate\Validation\Rules;
 
 class UsersController extends Controller
 {
@@ -16,9 +19,9 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $users = Admin::paginate(15);
+        $users = Admin::withTrashed()->paginate(15);
 
-        return Inertia::render('Cms/Settings/Users', ['users' => $users]);
+        return Inertia::render('Cms/Settings/Advanced/Users', ['users' => $users]);
     }
 
     /**
@@ -28,7 +31,8 @@ class UsersController extends Controller
      */
     public function create()
     {
-        //
+        $roles = Role::where('guard_name', 'admin')->get();
+        return Inertia::render('Cms/Settings/Advanced/Users/Create', ['roles' => $roles]);
     }
 
     /**
@@ -39,7 +43,12 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'unique:admins,username', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
+        ]);
     }
 
     /**
@@ -79,11 +88,32 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Admin $user)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $user->delete();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => true, 'message' => $th->getMessage()]);
+        }
+        DB::commit();
+        return response()->json(['success' => true, 'message' => 'El usuario ' . $user->name . 'ha sido eliminado exitosamente']);
+    }
+
+    public function restore($user)
+    {
+        DB::beginTransaction();
+        try {
+            $user = Admin::withTrashed()->find($user);
+            $user->restore();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+        DB::commit();
+        return redirect()->back();
     }
 }

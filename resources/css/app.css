@@ -16,6 +16,9 @@
 /* Animate.css */
 @import "animate.css/animate.css";
 
+/* Sweet Alert */
+@import 'sweetalert2/dist/sweetalert2.css';
+
 
 @import 'tailwindcss/base';
 @import 'base';
@@ -23,3 +26,4 @@
 @import 'components';
 @import 'tailwindcss/utilities';
 @import 'utilities';
+@import 'fonts';

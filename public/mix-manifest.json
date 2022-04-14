@@ -2,6 +2,8 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/images/bg.jpg": "/images/bg.jpg",
+    "/images/check-partial.svg": "/images/check-partial.svg",
+    "/images/check.svg": "/images/check.svg",
     "/fonts/la-brands-400.eot": "/fonts/la-brands-400.eot",
     "/fonts/la-brands-400.svg": "/fonts/la-brands-400.svg",
     "/fonts/la-brands-400.ttf": "/fonts/la-brands-400.ttf",
@@ -17,6 +19,8 @@
     "/fonts/la-solid-900.ttf": "/fonts/la-solid-900.ttf",
     "/fonts/la-solid-900.woff": "/fonts/la-solid-900.woff",
     "/fonts/la-solid-900.woff2": "/fonts/la-solid-900.woff2",
-    "/images/check-partial.svg": "/images/check-partial.svg",
-    "/images/check.svg": "/images/check.svg"
+    "/fonts/Hj.eot": "/fonts/Hj.eot",
+    "/fonts/Hj.svg": "/fonts/Hj.svg",
+    "/fonts/Hj.ttf": "/fonts/Hj.ttf",
+    "/fonts/Hj.woff": "/fonts/Hj.woff"
 }
