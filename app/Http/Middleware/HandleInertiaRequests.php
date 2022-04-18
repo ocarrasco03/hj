@@ -39,20 +39,19 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'flash' => [
-                'message' => fn() => $request->session()->get('message'),
-            ],
+            'permissions' => fn() => auth()->guard('admin')->check() ? auth()->user()->getAllPermissions()->pluck('name') : [],
+            'isSuperAdmin' => fn() => auth()->guard('admin')->check() ? auth()->user()->hasRole('Super Administrador') : false,
             'toast' => fn() => Session::get('toast'),
             'cartTotalItems' => Cart::countItems(),
             'search' => fn() => Session::get('search')
-                ? Session::get('search')
-                : [
-                    'year' => date('Y'),
-                    'make' => null, 'model' => null,
-                    'engine' => null,
-                    'category' => null,
-                    'subcategory' => null
-                ],
+            ? Session::get('search')
+            : [
+                'year' => date('Y'),
+                'make' => null, 'model' => null,
+                'engine' => null,
+                'category' => null,
+                'subcategory' => null,
+            ],
         ]);
     }
 }

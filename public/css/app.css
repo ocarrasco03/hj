@@ -7794,7 +7794,11 @@ Forms
                     transition-property: all;
                     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
                     transition-duration: 200ms;
-                    transition-timing-function: linear; }.admin-checkbox input[partial] + span:after {
+                    transition-timing-function: linear; }.admin-checkbox input:disabled + span:before{
+  --tw-border-opacity: 1;
+  border-color: rgb(182 182 182 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 243 243 / var(--tw-bg-opacity)); }.admin-checkbox input[partial] + span:after {
                     background: url(../images/check-partial.svg);
                 }.admin-checkbox:hover input + span:before{
   --tw-border-opacity: 1;
@@ -9095,8 +9099,7 @@ Forms
   width: 50%; }.w-px{
   width: 1px; }.w-64{
   width: 16rem; }.w-80{
-  width: 20rem; }.w-10{
-  width: 2.5rem; }.w-20{
+  width: 20rem; }.w-20{
   width: 5rem; }.max-w-xl{
   max-width: 36rem; }.max-w-6xl{
   max-width: 72rem; }.max-w-xs{
@@ -9707,9 +9710,7 @@ Forms
   --tw-bg-opacity: 1;
   background-color: rgb(13 12 12 / var(--tw-bg-opacity)); }.hover\:bg-gray-50:hover{
   --tw-bg-opacity: 1;
-  background-color: rgb(243 243 243 / var(--tw-bg-opacity)); }.hover\:bg-admin-500:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(20 83 136 / var(--tw-bg-opacity)); }.hover\:text-gray-500:hover{
+  background-color: rgb(243 243 243 / var(--tw-bg-opacity)); }.hover\:text-gray-500:hover{
   --tw-text-opacity: 1;
   color: rgb(151 151 151 / var(--tw-text-opacity)); }.hover\:text-gray-400:hover{
   --tw-text-opacity: 1;

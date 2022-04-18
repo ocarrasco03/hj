@@ -296,6 +296,14 @@ Forms
             }
         }
 
+        &:disabled {
+            + span {
+                &:before {
+                    @apply border-gray-300 bg-gray-50;
+                }
+            }
+        }
+
         &[partial] {
             + span {
                 &:after {
