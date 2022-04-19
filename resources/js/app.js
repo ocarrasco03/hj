@@ -3,6 +3,7 @@ require("./bootstrap");
 import { createApp, h } from "vue";
 import { createInertiaApp, usePage } from "@inertiajs/inertia-vue3";
 import { InertiaProgress } from "@inertiajs/progress";
+import { i18nVue } from 'laravel-vue-i18n'
 import Layout from "@/Layouts/App.vue";
 import { initFacebookSdk } from "@/facebook";
 
@@ -23,6 +24,9 @@ initFacebookSdk().then(
         setup({ el, app, props, plugin }) {
             return createApp({ render: () => h(app, props) })
                 .use(plugin)
+                .use(i18nVue, {
+                    resolve: lang => import(`../../lang/${lang}.json`),
+                })
                 .mixin({
                     methods: {
                         route,

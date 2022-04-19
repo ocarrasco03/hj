@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+require('laravel-vue-i18n/mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -18,6 +19,7 @@ mix.options({
 
 mix.js('resources/js/app.js', 'public/js')
     .vue()
+    .i18n()
     .postCss('resources/css/app.css', 'public/css', [
         require('postcss-import'),
         require('tailwindcss/nesting'),
