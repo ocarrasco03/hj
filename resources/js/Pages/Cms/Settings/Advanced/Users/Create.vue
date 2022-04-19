@@ -2,13 +2,15 @@
 import { computed, onMounted, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Cms/Pagination.vue";
-import ValidationErrors from '@/Components/Cms/ValidationErrors.vue';
+import ValidationErrors from "@/Components/Cms/ValidationErrors.vue";
 import Swal from "sweetalert2";
 import axios from "axios";
 import nprogress from "nprogress";
+import { trans } from "laravel-vue-i18n";
 
 const props = defineProps({
     roles: Object,
+    modules: Object,
 });
 
 const form = useForm({
@@ -21,50 +23,106 @@ const form = useForm({
     permissions: [],
 });
 
-const submit = () => {
-    form.post(route("admin.settings.advanced.users.store"), {
-        onError: (error) => {
-            console.log(error);
-        },
-    });
+const errors = ref({});
+
+const rules = {
+    name: ["required"],
+    username: ["required"],
+    email: ["required", "email"],
+    password: ["required"],
+    role: ["required"],
 };
-const pattern =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const showPassword = (event) =>
-    (event.target.previousElementSibling.type =
-        event.target.previousElementSibling.type === "password"
-            ? "text"
-            : "password");
+const validate = (form) => {
+    let flag = true;
 
-const loadPermissions = () => {
-    if (form.role === "Super Administrador") {
-        modules.forEach((element) => {
-            form.permissions.push(element + ".create");
-            form.permissions.push(element + ".read");
-            form.permissions.push(element + ".update");
-            form.permissions.push(element + ".delete");
-        });
-    } else {
-        form.permissions = []
-        modules.forEach((element) => {
-            form.permissions.push(element + ".create");
-            form.permissions.push(element + ".read");
-            form.permissions.push(element + ".update");
+    const error = {};
+
+    for (let key in rules) {
+        for (let rule in rules[key]) {
+            switch (rules[key][rule]) {
+                case "required":
+                    if (
+                        form[key] === "" ||
+                        typeof form[key] === undefined ||
+                        typeof form[key] === null ||
+                        form[key] === null
+                    ) {
+                        error[key] = trans("validation.required", {
+                            attribute: key,
+                        });
+                        flag = false;
+                    }
+                    break;
+
+                case "email":
+                    if (!pattern.test(form[key])) {
+                        error[key] = trans("validation.email", {
+                            attribute: key,
+                        });
+                        flag = false;
+                    }
+                    break;
+
+                case "string":
+                    if (typeof form[key] !== 'string') {
+                        error[key] = trans("validation.string", {
+                            attribute: key,
+                        });
+                        flag = false;
+                    }
+                    break;
+            }
+        }
+    }
+
+    if (!flag) errors.value = error;
+
+    return flag;
+};
+
+const submit = () => {
+    if (validate(form)) {
+        form.post(route("admin.settings.advanced.users.store"), {
+            onError: (error) => {
+                if (typeof error === "object") {
+                    errors.value = error;
+                } else {
+                    console.error(error);
+                }
+            },
         });
     }
 };
 
-const modules = [
-    "Dashboard",
-    "Ventas",
-    "Catalogos",
-    "Clientes",
-    "Estadisticas",
-    "Modulos",
-    "Soporte",
-    "Configuración",
-];
+const cleanSpace = (event) =>
+    (event.target.value = event.target.value.replace(/\s+/g, ""));
+
+const pattern =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+const showPassword = (event) => {
+    if (event.target.previousElementSibling.type === "password") {
+        event.target.previousElementSibling.type = "text";
+        event.target.classList.add("la-low-vision");
+        event.target.classList.remove("la-eye");
+    } else {
+        event.target.previousElementSibling.type = "password";
+        event.target.classList.add("la-eye");
+        event.target.classList.remove("la-low-vision");
+    }
+};
+
+const loadPermissions = () => {
+    form.permissions = [];
+    props.roles.forEach((element) => {
+        if (form.role === element.name) {
+            element.abilities.forEach((ability) => {
+                form.permissions.push(ability);
+            });
+        }
+    });
+};
 </script>
 
 <script context="module">
@@ -113,11 +171,10 @@ export default {
                 <Link
                     :href="route('admin.settings.advanced.users.index')"
                     class="btn btn-admin btn-outlined rounded-full uppercase ml-2"
-                    >
+                >
                     <i class="las la-undo"></i>
                     <span class="hidden lg:block ml-2">Regresar</span>
-                </Link
-                >
+                </Link>
             </div>
         </div>
     </section>
@@ -141,7 +198,13 @@ export default {
                             type="text"
                             class="form-control"
                             placeholder="John Doe"
+                            :class="{ 'is-invalid': errors.name }"
                         />
+                        <small
+                            v-if="errors.name"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.name }}</small
+                        >
                     </div>
                     <div class="mb-5">
                         <label class="label block mb-2" for="username"
@@ -153,7 +216,14 @@ export default {
                             type="text"
                             class="form-control"
                             placeholder="demo123"
+                            @keyup="cleanSpace"
+                            :class="{ 'is-invalid': errors.username }"
                         />
+                        <small
+                            v-if="errors.username"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.username }}</small
+                        >
                     </div>
                     <div class="mb-5">
                         <label class="label block mb-2" for="email"
@@ -167,8 +237,9 @@ export default {
                             placeholder="example@example.com"
                             :class="{
                                 'is-invalid':
-                                    !pattern.test(form.email) &&
-                                    form.email.length > 0,
+                                    (!pattern.test(form.email) &&
+                                        form.email.length > 0) ||
+                                    errors.email,
                             }"
                         />
                         <small
@@ -179,12 +250,20 @@ export default {
                             class="block mt-2 invalid-feedback"
                             >El email no es valido!</small
                         >
+                        <small
+                            v-else-if="errors.email"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.email }}</small
+                        >
                     </div>
                     <div class="mb-5">
-                        <label class="label block mb-2" for="password"
-                            >Contraseña</label
+                        <label class="label block mb-2" for="password">{{
+                            $t("Password")
+                        }}</label>
+                        <label
+                            class="form-control-addon-within"
+                            :class="{ 'is-invalid': errors.password }"
                         >
-                        <label class="form-control-addon-within">
                             <input
                                 id="password"
                                 v-model="form.password"
@@ -197,20 +276,27 @@ export default {
                                 class="btn btn-link text-gray-300 dark:text-gray-700 hover:text-admin-500 dark:hover:text-primary text-xl leading-none mr-4 la la-eye"
                             ></button>
                         </label>
+                        <small
+                            v-if="errors.password"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.password }}</small
+                        >
                     </div>
                     <div class="mb-5">
                         <label
                             class="label block mb-2"
                             for="password_confirmation"
-                            >Confirmar Contraseña</label
+                            >{{ $t("Confirm Password") }}</label
                         >
                         <label
                             class="form-control-addon-within"
                             :class="{
                                 'is-invalid':
-                                    form.password !==
+                                    (form.password !==
                                         form.password_confirmation &&
-                                    form.password_confirmation.length > 0,
+                                        form.password_confirmation.length >
+                                            0) ||
+                                    errors.password_confirmation,
                             }"
                         >
                             <input
@@ -233,6 +319,11 @@ export default {
                             class="block mt-2 invalid-feedback"
                             >Las contraseñas deben coincidir!</small
                         >
+                        <small
+                            v-else-if="errors.password_confirmation"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.password_confirmation }}</small
+                        >
                     </div>
                 </div>
             </div>
@@ -247,9 +338,11 @@ export default {
                             >
                             <div class="custom-select">
                                 <select
+                                    id="role"
                                     class="form-control"
                                     v-model="form.role"
                                     @change="loadPermissions"
+                                    :class="{ 'is-invalid': errors.role }"
                                 >
                                     <option :value="null" disabled>
                                         Asigna un Rol
@@ -258,7 +351,23 @@ export default {
                                         v-for="(role, index, key) in roles"
                                         :key="key"
                                     >
-                                        <option :value="role.name">
+                                        <option
+                                            :value="role.name"
+                                            v-if="
+                                                role.name ===
+                                                    'Super Administrador' &&
+                                                $page.props.isSuperAdmin
+                                            "
+                                        >
+                                            {{ role.name }}
+                                        </option>
+                                        <option
+                                            :value="role.name"
+                                            v-else-if="
+                                                role.name !==
+                                                'Super Administrador'
+                                            "
+                                        >
                                             {{ role.name }}
                                         </option>
                                     </template>
@@ -267,6 +376,11 @@ export default {
                                     class="custom-select-icon la la-caret-down"
                                 ></div>
                             </div>
+                            <small
+                                v-if="errors.role"
+                                class="block mt-2 invalid-feedback"
+                                >{{ errors.role }}</small
+                            >
                         </div>
                         <div class="mb-5">
                             <table
@@ -287,10 +401,24 @@ export default {
                                 </thead>
                                 <tbody>
                                     <tr
+                                        v-if="
+                                            form.role === 'Super Administrador'
+                                        "
+                                    >
+                                        <td
+                                            colspan="5"
+                                            class="text-center font-medium"
+                                        >
+                                            Los permisos de Super Administrador
+                                            no pueden ser modificados
+                                        </td>
+                                    </tr>
+                                    <tr
+                                        v-else
                                         v-for="(module, key) in modules"
                                         :key="key"
                                     >
-                                        <td>{{ module }}</td>
+                                        <td>{{ module.name }}</td>
                                         <td>
                                             <label
                                                 class="admin-checkbox flex justify-center items-center"
@@ -298,7 +426,13 @@ export default {
                                                 <input
                                                     type="checkbox"
                                                     v-model="form.permissions"
-                                                    :value="module + '.create'"
+                                                    :value="
+                                                        module.prefix +
+                                                        '.create'
+                                                    "
+                                                    :disabled="
+                                                        form.role === null
+                                                    "
                                                 />
                                                 <span></span>
                                             </label>
@@ -310,7 +444,12 @@ export default {
                                                 <input
                                                     type="checkbox"
                                                     v-model="form.permissions"
-                                                    :value="module + '.read'"
+                                                    :value="
+                                                        module.prefix + '.read'
+                                                    "
+                                                    :disabled="
+                                                        form.role === null
+                                                    "
                                                 />
                                                 <span></span>
                                             </label>
@@ -322,7 +461,13 @@ export default {
                                                 <input
                                                     type="checkbox"
                                                     v-model="form.permissions"
-                                                    :value="module + '.update'"
+                                                    :value="
+                                                        module.prefix +
+                                                        '.update'
+                                                    "
+                                                    :disabled="
+                                                        form.role === null
+                                                    "
                                                 />
                                                 <span></span>
                                             </label>
@@ -334,7 +479,13 @@ export default {
                                                 <input
                                                     type="checkbox"
                                                     v-model="form.permissions"
-                                                    :value="module + '.delete'"
+                                                    :value="
+                                                        module.prefix +
+                                                        '.delete'
+                                                    "
+                                                    :disabled="
+                                                        form.role === null
+                                                    "
                                                 />
                                                 <span></span>
                                             </label>

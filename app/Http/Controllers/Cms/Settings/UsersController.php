@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Cms\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Illuminate\Validation\Rules;
 
 class UsersController extends Controller
 {
@@ -31,8 +33,23 @@ class UsersController extends Controller
      */
     public function create()
     {
-        $roles = Role::where('guard_name', 'admin')->get();
-        return Inertia::render('Cms/Settings/Advanced/Users/Create', ['roles' => $roles]);
+        $roles = [];
+        $modules = [];
+
+        foreach (Role::where('guard_name', 'admin')->get() as $role) {
+            $roles[] = ['name' => $role->name, 'abilities' => $role->permissions->pluck('name')];
+        }
+
+        foreach (Permission::where('guard_name', 'admin')->orderBy('id', 'asc')->pluck('name') as $module) {
+            $module = explode('.', $module);
+            $module = $module[0];
+
+            if (!$this->in_array_recursive($module, $modules, true)) {
+                $modules[] = ['name' => ucfirst(str_replace('-', ' ', $module)), 'prefix' => $module];
+            }
+        }
+
+        return Inertia::render('Cms/Settings/Advanced/Users/Create', ['roles' => $roles, 'modules' => $modules]);
     }
 
     /**
@@ -47,8 +64,34 @@ class UsersController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'unique:admins,username', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', 'min:8', Password::defaults()],
+            'role' => ['required', 'string'],
         ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user = new Admin();
+            $user->name = $request->input('name');
+            $user->username = $request->input('username');
+            $user->email = $request->input('email');
+            $user->password = Hash::make($request->input('password'));
+            $user->save();
+
+            $user->syncRoles($request->input('role'));
+
+            if ($request->input('role') !== 'Super Administrador') {
+                $user->syncPermissions($request->input('permissions'));
+            }
+
+            DB::commit();
+        } catch (\Throwable$th) {
+            DB::rollBack();
+            // throw $th;
+            return redirect()->back()->withErrors($th->getMessage());
+        }
+
+        return redirect(route('admin.settings.advanced.users.index'));
     }
 
     /**
@@ -95,7 +138,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->delete();
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             DB::rollBack();
             return response()->json(['error' => true, 'message' => $th->getMessage()]);
         }
@@ -109,11 +152,29 @@ class UsersController extends Controller
         try {
             $user = Admin::withTrashed()->find($user);
             $user->restore();
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             DB::rollBack();
             throw $th;
         }
         DB::commit();
         return redirect()->back();
+    }
+
+    /**
+     * Checks if a value exists in an array
+     *
+     * @param mixed $needle
+     * @param array $haystack
+     * @param boolean $strict
+     * @return boolean
+     */
+    public function in_array_recursive(mixed $needle, array $haystack, bool $strict = false): bool
+    {
+        foreach ($haystack as $item) {
+            if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && $this->in_array_recursive($needle, $item, $strict))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
