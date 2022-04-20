@@ -117,13 +117,24 @@ Route::middleware('auth:admin')->group(function () {
         |
          */
         Route::prefix('avanzado')->name('advanced.')->group(function () {
-            Route::get('usuarios', [UsersController::class, 'index'])->name('users.index');
-            Route::get('usuarios/nuevo', [UsersController::class, 'create'])->name('users.create');
-            Route::post('usuarios/nuevo', [UsersController::class, 'store'])->name('users.store');
-            Route::get('usuarios/{id}', [UsersController::class, 'show'])->name('users.show');
-            Route::put('usuarios/{id}', [UsersController::class, 'update'])->name('users.update');
-            Route::delete('usuarios/{user}', [UsersController::class, 'destroy'])->name('users.delete');
-            Route::put('usuarios/{user}', [UsersController::class, 'restore'])->name('users.restore');
+            Route::prefix('usuarios')->name('users.')->group(function () {
+                Route::get('/', [UsersController::class, 'index'])->name('index');
+                Route::get('/nuevo', [UsersController::class, 'create'])->name('create');
+                Route::post('/nuevo', [UsersController::class, 'store'])->name('store');
+                Route::get('/{id}', [UsersController::class, 'show'])->name('show');
+                Route::put('/{id}', [UsersController::class, 'update'])->name('update');
+                Route::delete('/{user}', [UsersController::class, 'destroy'])->name('delete');
+                Route::put('/{user}', [UsersController::class, 'restore'])->name('restore');
+            });
+            Route::prefix('importar')->name('import.')->group(function () {
+                //
+            });
+            Route::prefix('exportar')->name('export.')->group(function () {
+                //
+            });
+            Route::prefix('respaldos')->name('backup.')->group(function () {
+                //
+            });
         });
     });
 

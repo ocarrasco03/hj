@@ -32,7 +32,9 @@ const confirmDelete = (event) => {
                 )
                 .then((res) => {
                     if (res.data.success) {
-                        props.users.data[event.target.dataset.index].deleted_at = new Date(Date.now()).toISOString();
+                        props.users.data[
+                            event.target.dataset.index
+                        ].deleted_at = new Date(Date.now()).toISOString();
                         Swal.fire("Eliminado!", res.data.message, "success");
                     } else {
                         Swal.fire({
@@ -53,6 +55,26 @@ const confirmDelete = (event) => {
                 });
         }
     });
+};
+
+const form = useForm({
+    query: "",
+});
+
+const search = () => {
+    form.get(route("admin.settings.advanced.users.index"));
+};
+
+const getRoleNames = (roles) => {
+    let name = "";
+
+    if (roles.length > 0) {
+        roles.forEach(element => {
+            name = name === '' ? element.name : name;
+        });
+    }
+
+    return name;
 };
 </script>
 
@@ -86,31 +108,10 @@ export default {
             </ul>
         </div>
         <div class="lg:flex items-center ml-auto mt-5 lg:mt-0">
-            <!-- Layout -->
-            <!-- <div class="flex mt-5 lg:mt-0">
-                <a
-                    href="#"
-                    class="btn btn-icon btn-icon-large btn-outlined btn-admin"
-                >
-                    <span class="la la-bars"></span>
-                </a>
-                <a
-                    href="#"
-                    class="btn btn-icon btn-icon-large btn-outlined btn-admin-secondary ml-2"
-                >
-                    <span class="la la-list"></span>
-                </a>
-                <a
-                    href="#"
-                    class="btn btn-icon btn-icon-large btn-outlined btn-admin-secondary ml-2"
-                >
-                    <span class="la la-th-large"></span>
-                </a>
-            </div> -->
             <!-- Search -->
             <form
                 class="flex items-center lg:ml-2 mt-5 lg:mt-0"
-                @submit.prevent=""
+                @submit.prevent="search"
             >
                 <label
                     class="form-control-addon-within rounded-full border-admin-secondary"
@@ -119,6 +120,7 @@ export default {
                         type="text"
                         class="form-control border-none"
                         placeholder="Search"
+                        v-model="form.query"
                     />
                     <button
                         type="button"
@@ -127,24 +129,12 @@ export default {
                 </label>
             </form>
             <div class="flex mt-5 lg:mt-0">
-                <!-- Sort By -->
-                <div class="dropdown lg:ml-2">
-                    <button
-                        class="btn btn-outlined btn-admin-secondary uppercase"
-                        data-toggle="dropdown-menu"
-                    >
-                        Ordenar
-                        <span
-                            class="ml-3 la la-caret-down text-xl leading-none"
-                        ></span>
-                    </button>
-                    <!-- <div class="dropdown-menu">
-                        <a href="#">Ascending</a>
-                        <a href="#">Descending</a>
-                    </div> -->
-                </div>
                 <!-- Add New -->
-                <Link :href="route('admin.settings.advanced.users.create')" class="btn btn-admin uppercase ml-2">Agregar</Link>
+                <Link
+                    :href="route('admin.settings.advanced.users.create')"
+                    class="btn btn-admin uppercase ml-2"
+                    >Agregar</Link
+                >
             </div>
         </div>
     </section>
@@ -176,13 +166,20 @@ export default {
                             </label>
                         </th>
                         <th class="text-left">Usuario</th>
-                        <th class="text-left hidden md:table-cell">Nombre de Usuario</th>
+                        <th class="text-left hidden md:table-cell">
+                            Nombre de Usuario
+                        </th>
                         <th class="text-left hidden md:table-cell">Email</th>
                         <th class="w-px hidden md:table-cell">Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-if="users.data.length === 0">
+                        <td class="text-center" colspan="6">
+                            No se encontraron registros
+                        </td>
+                    </tr>
                     <tr v-for="(user, index, key) in users.data" :key="key">
                         <td class="hidden md:table-cell">
                             <label class="admin-checkbox">
@@ -197,7 +194,9 @@ export default {
                             </label>
                         </td>
                         <td>{{ user.name }}</td>
-                        <td class="hidden md:table-cell">{{ user.username }}</td>
+                        <td class="hidden md:table-cell">
+                            {{ user.username }}
+                        </td>
                         <td class="hidden md:table-cell">{{ user.email }}</td>
                         <td class="text-center hidden md:table-cell">
                             <span
@@ -212,13 +211,21 @@ export default {
                             >
                         </td>
                         <td class="items-center text-center">
-                            <Link  v-if="!user.deleted_at" class="btn btn-outlined btn-admin btn-icon">
+                            <Link
+                                :href="route('admin.settings.advanced.users.show', {id: user.id})"
+                                v-if="!user.deleted_at"
+                                class="btn btn-outlined btn-admin btn-icon"
+                                as="button"
+                                method="get"
+                                :disabled="!$can('usuarios.update') || (getRoleNames(user.roles) === 'Super Administrador' && !$page.props.isSuperAdmin)"
+                            >
                                 <span class="la la-pen"></span>
                             </Link>
-                            <button v-if="!user.deleted_at"
+                            <button
+                                v-if="!user.deleted_at"
                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
                                 @click="confirmDelete"
-                                :disabled="user.id === $page.props.auth.user.id"
+                                :disabled="user.id === $page.props.auth.user.id || !$can('usuarios.delete')"
                             >
                                 <span
                                     class="la la-trash-alt"
@@ -226,13 +233,20 @@ export default {
                                     :data-index="index"
                                 ></span>
                             </button>
-                            <Link v-if="user.deleted_at"
-                                :href="route('admin.settings.advanced.users.restore', {user: user.id})"
+                            <Link
+                                v-if="user.deleted_at"
+                                :href="
+                                    route(
+                                        'admin.settings.advanced.users.restore',
+                                        { user: user.id }
+                                    )
+                                "
                                 class="btn btn-outlined btn-admin ml-2 btn-icon rounded-full"
                                 preserve-scroll
-                                method="put" as="button"
+                                method="put"
+                                as="button"
                             >
-                                <span  class="la la-redo-alt"></span>
+                                <span class="la la-redo-alt"></span>
                             </Link>
                         </td>
                     </tr>

@@ -143,6 +143,11 @@ class Product extends Model implements Buyable, HasMedia
         return $this->belongsToMany(Product::class);
     }
 
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
     public function toSearchableArray()
     {
         return [

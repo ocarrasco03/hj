@@ -8,11 +8,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Attributes\SearchUsingPrefix;
+use Laravel\Scout\Searchable;
 use Spatie\Permission\Traits\HasRoles;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, HasApiTokens, Notifiable, SoftDeletes, HasRoles;
+    use HasFactory;
+    use HasApiTokens;
+    use Notifiable;
+    use SoftDeletes;
+    use HasRoles;
+    use Searchable;
 
     protected $guard = 'admin';
 
@@ -43,4 +50,19 @@ class Admin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    #[SearchUsingPrefix(['email'])]
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'username' => $this->username,
+            'email' => $this->email,
+        ];
+    }
 }

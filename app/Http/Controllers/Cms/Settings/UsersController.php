@@ -19,9 +19,15 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = Admin::withTrashed()->paginate(15);
+        if (!is_null($request->input('query'))) {
+            $users = Admin::search($request->input('query'))->withTrashed()->paginate(15);
+        } else {
+            $users = Admin::withTrashed()->paginate(15);
+        }
+
+        $users->load('roles');
 
         return Inertia::render('Cms/Settings/Advanced/Users', ['users' => $users]);
     }
@@ -97,12 +103,33 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Cms\Admin  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Admin $id)
     {
-        //
+        $roles = [];
+        $modules = [];
+        $user = [];
+
+        foreach (Role::where('guard_name', 'admin')->get() as $role) {
+            $roles[] = ['name' => $role->name, 'abilities' => $role->permissions->pluck('name')];
+        }
+
+        foreach (Permission::where('guard_name', 'admin')->orderBy('id', 'asc')->pluck('name') as $module) {
+            $module = explode('.', $module);
+            $module = $module[0];
+
+            if (!$this->in_array_recursive($module, $modules, true)) {
+                $modules[] = ['name' => ucfirst(str_replace('-', ' ', $module)), 'prefix' => $module];
+            }
+        }
+
+        $user = $id->toArray();
+        $user['role'] = count($id->getRoleNames()) > 0 ? $id->getRoleNames()[0] : null;
+        $user['permissions'] = $id->getAllPermissions()->pluck('name');
+
+        return Inertia::render('Cms/Settings/Advanced/Users/Edit', ['roles' => $roles, 'modules' => $modules, 'user' => $user]);
     }
 
     /**
