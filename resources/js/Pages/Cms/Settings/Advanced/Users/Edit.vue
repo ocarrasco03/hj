@@ -28,7 +28,6 @@ const rules = {
     name: ["required"],
     username: ["required"],
     email: ["required", "email"],
-    password: ["required"],
     role: ["required"],
 };
 
@@ -82,7 +81,7 @@ const validate = (form) => {
 
 const submit = () => {
     if (validate(form)) {
-        form.post(route("admin.settings.advanced.users.store"), {
+        form.put(route("admin.settings.advanced.users.update", {id: props.user.id}), {
             onError: (error) => {
                 if (typeof error === "object") {
                     errors.value = error;
@@ -255,7 +254,9 @@ export default {
                             >{{ errors.email }}</small
                         >
                     </div>
-                    <div class="mb-5">Cambiar contraseña</div>
+                    <div class="mb-5">
+                        <Link class="btn btn-admin" :href="route('admin.settings.advanced.users.password.email', {email: user.email})" as="button" method="post" v-text="'Enviar link para cambiar contraseña'" />
+                    </div>
                 </div>
             </div>
             <div class="lg:w-1/2">

@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Cms\Settings;
 
-use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use App\Models\Cms\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
-use Inertia\Inertia;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password as RulePassword;
 
 class UsersController extends Controller
 {
@@ -69,8 +71,8 @@ class UsersController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'unique:admins,username', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', 'min:8', Password::defaults()],
+            'email' => ['required', 'unique:admins,email', 'email', 'max:255'],
+            'password' => ['required', 'confirmed', 'min:8', RulePassword::defaults()],
             'role' => ['required', 'string'],
         ]);
 
@@ -91,13 +93,13 @@ class UsersController extends Controller
             }
 
             DB::commit();
-        } catch (\Throwable$th) {
-            DB::rollBack();
+        } catch (\Throwable $th) {
             // throw $th;
+            DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());
         }
 
-        return redirect(route('admin.settings.advanced.users.index'));
+        return redirect(route('admin.settings.advanced.users.index'))->with(['toast' => ['type' => 'success', 'message' => 'Usuario creado exitosamente!']]);
     }
 
     /**
@@ -133,26 +135,57 @@ class UsersController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Cms\Admin  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Admin $id)
     {
-        //
+        $flag = false;
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'role' => ['required', 'string'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->input() as $key => $value) {
+                if ($id->$key !== $value && $key !== 'role' && $key !== 'permissions') {
+                    if ($key === 'username' || $key === 'email') {
+                        $request->validate([
+                            'username' => ['unique:admins,username'],
+                            'email' => ['unique:admins,email']
+                        ]);
+                    }
+                    $id->$key = $value;
+                    $flag = true;
+                }
+            }
+
+            if ($flag) {
+                $id->save();
+            }
+
+            if (!$id->hasRole($request->input('role'))) {
+                $id->syncRoles($request->input('role'));
+            }
+
+            if ($request->input('role') !== 'Super Administrador') {
+                $id->syncPermissions($request->input('permissions'));
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return redirect()->back()->withErrors($th->getMessage());
+        }
+        DB::commit();
+
+        return redirect(route('admin.settings.advanced.users.index'))->with(['toast' => ['type' => 'success', 'message' => 'Usuario actualizado']]);
     }
 
     /**
@@ -165,7 +198,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->delete();
-        } catch (\Throwable$th) {
+        } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['error' => true, 'message' => $th->getMessage()]);
         }
@@ -185,6 +218,28 @@ class UsersController extends Controller
         }
         DB::commit();
         return redirect()->back();
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // We will send the password reset link to this user. Once we have attempted
+        // to send the link, we will examine the response then see the message we
+        // need to show to the user. Finally, we'll send out a proper response.
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return back()->with(['toast' => ['type' => 'success', 'message' =>  __($status)]]);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)],
+        ]);
     }
 
     /**

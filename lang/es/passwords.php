@@ -14,10 +14,9 @@ return [
     */
 
     'reset' => '¡Su contraseña ha sido restablecida!',
-    'sent' => 'We have emailed your password reset link!',
+    'sent' => '¡Le hemos enviado un link para cambiar su contraseña!',
     'throttled' => 'Por favor espere antes de volver a intentarlo.',
     'token' => 'Este token de restablecimiento de contraseña es inválido.',
     'user' => "No se ha encontrado un usuario con esa dirección de correo.",
     'password' => 'Las contraseñas deben tener al menos seis caracteres y coincidir con la confirmación.'
-
 ];

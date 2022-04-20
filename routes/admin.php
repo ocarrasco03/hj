@@ -125,6 +125,7 @@ Route::middleware('auth:admin')->group(function () {
                 Route::put('/{id}', [UsersController::class, 'update'])->name('update');
                 Route::delete('/{user}', [UsersController::class, 'destroy'])->name('delete');
                 Route::put('/{user}', [UsersController::class, 'restore'])->name('restore');
+                Route::post('/', [UsersController::class, 'resetPassword'])->name('password.email');
             });
             Route::prefix('importar')->name('import.')->group(function () {
                 //
