@@ -53,5 +53,7 @@
     "Go back": "Regresar",
     "Last updated": "Última actualización",
     "Discount": "Descuento",
+    "Brand": "Marca",
+    "Category": "Categoria",
     "Showing :from - :to of :total items": "Mostrando :from - :to de :total registros"
 }

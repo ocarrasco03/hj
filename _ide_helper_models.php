@@ -44,6 +44,7 @@ namespace App\Models\Catalogs{
  * @property int $id
  * @property int $brand_id
  * @property int|null $supplier_id
+ * @property int $status_id
  * @property string $sku
  * @property string $name
  * @property string|null $description
@@ -55,6 +56,7 @@ namespace App\Models\Catalogs{
  * @property float $stock
  * @property float $weight
  * @property array|null $notes
+ * @property string|null $attributes
  * @property string $condition
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Tag[] $tags
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -66,24 +68,28 @@ namespace App\Models\Catalogs{
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Category[] $categories
  * @property-read int|null $categories_count
  * @property-read mixed $average_rating
- * @property-read mixed $catalog
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
  * @property-read mixed $sum_rating
  * @property-read mixed $thumb
  * @property-read mixed $user_average_rating
  * @property-read mixed $user_sum_rating
  * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders
+ * @property-read int|null $orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\willvincent\Rateable\Rating[] $ratings
  * @property-read int|null $ratings_count
  * @property-read \Illuminate\Database\Eloquent\Collection|Product[] $related
  * @property-read int|null $related_count
+ * @property-read \App\Models\Configs\Status|null $status
  * @property-read \App\Models\Catalogs\Supplier|null $supplier
  * @property-read int|null $tags_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Product crawler($term)
  * @method static \Database\Factories\Catalogs\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Product newQuery()
  * @method static \Illuminate\Database\Query\Builder|Product onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Product query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereAttributes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereBrandId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereCondition($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereCost($value)
@@ -97,6 +103,7 @@ namespace App\Models\Catalogs{
  * @method static \Illuminate\Database\Eloquent\Builder|Product wherePriceWoTax($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSku($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Product whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSupplierId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTags($value)
@@ -215,6 +222,45 @@ namespace App\Models\Configs{
 
 namespace App\Models\Configs{
 /**
+ * App\Models\Configs\Status
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $prefix
+ * @property int $level
+ * @property string|null $module_name
+ * @property int $logable
+ * @property int $send_email
+ * @property int $shipped
+ * @property int $delivered
+ * @property int $paid
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders
+ * @property-read int|null $orders_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Status canceled()
+ * @method static \Database\Factories\Configs\StatusFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Status newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Status query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereDelivered($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereLogable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereModuleName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status wherePaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status wherePrefix($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereSendEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereShipped($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Status whereUpdatedAt($value)
+ */
+	class Status extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
  * App\Models\Configs\Tag
  *
  * @property int $id
@@ -239,6 +285,47 @@ namespace App\Models\Configs{
 	class Tag extends \Eloquent {}
 }
 
+namespace App\Models\Sales{
+/**
+ * App\Models\Sales\Order
+ *
+ * @property string $id
+ * @property int $user_id
+ * @property int $status_id
+ * @property float $subtotal
+ * @property float $discount
+ * @property float $tax
+ * @property float $total
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Configs\Status|null $canceledOrders
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\Product[] $products
+ * @property-read int|null $products_count
+ * @property-read \App\Models\Configs\Status $status
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\Sales\OrderFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Order onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order search($term)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereDiscount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereTax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|Order withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Order withoutTrashed()
+ */
+	class Order extends \Eloquent {}
+}
+
 namespace App\Models{
 /**
  * App\Models\User
@@ -255,6 +342,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders
+ * @property-read int|null $orders_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory(...$parameters)
@@ -276,6 +365,43 @@ namespace App\Models{
  * @method static \Illuminate\Database\Query\Builder|User withoutTrashed()
  */
 	class User extends \Eloquent {}
+}
+
+namespace App\Models\User{
+/**
+ * App\Models\User\Address
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $type
+ * @property string $line_1
+ * @property string|null $line_2
+ * @property string $city
+ * @property string $state
+ * @property string $country
+ * @property string $zip_code
+ * @property string $references
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\User\AddressFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereReferences($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipCode($value)
+ */
+	class Address extends \Eloquent {}
 }
 
 namespace App\Models\Vehicles{

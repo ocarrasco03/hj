@@ -3,6 +3,7 @@
 namespace App\Models\Catalogs;
 
 use App\Models\Configs\Category;
+use App\Models\Configs\Status;
 use App\Models\Sales\Order;
 use App\Models\Vehicles\Catalog;
 use App\Packages\Shoppingcart\Contracts\Buyable;
@@ -32,7 +33,7 @@ class Product extends Model implements Buyable, HasMedia
      *
      * @var array
      */
-    protected $with = ['brand', 'ratings', 'categories', 'catalogs'];
+    protected $with = ['brand', 'ratings', 'categories', 'related', 'status'];
 
     protected $appends = ['thumb', 'media'];
     /**
@@ -161,7 +162,7 @@ class Product extends Model implements Buyable, HasMedia
      */
     public function related()
     {
-        return $this->belongsToMany(Product::class);
+        return $this->belongsToMany(Product::class, 'related_products', 'product_id', 'related_id');
     }
 
     /**
@@ -184,6 +185,37 @@ class Product extends Model implements Buyable, HasMedia
         return $this->belongsToMany(Category::class, 'products_categories');
     }
 
+    /**
+     * Get the status of the current order
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function scopeCrawler($query, $term)
+    {
+        return $query->where('sku', 'like', $term . '%')
+            ->orWhere('name', 'like', '%' . $term . '%')
+            ->orWhere('description', 'like', '%' . $term . '%')
+            ->orWhere('notes', 'like', '%' . $term . '%')
+            ->orWhere('attributes', 'like', '%' . $term . '%')
+            ->orWhere('description', 'like', '%' . $term . '%')
+            ->orWhereHas('brand', function ($query) use ($term) {
+                return $query->where('name', 'like', $term . '%');
+            })
+            ->orWhereHas('categories', function ($query) use ($term) {
+                return $query->where('name', 'like', $term . '%');
+            });
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function catalogs()
     {
         return $this->hasMany(Catalog::class);

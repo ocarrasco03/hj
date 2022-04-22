@@ -341,7 +341,7 @@ onMounted(() => {
                 </Link>
                 <Link
                     class="link"
-                    :class="{ active: route().current('admin.sales.*') }"
+                    :class="{ active: route().current('admin.catalogs.*') }"
                     data-target="[data-menu=catalogs]"
                     @click="showMenuDetail"
                 >
@@ -350,7 +350,7 @@ onMounted(() => {
                 </Link>
                 <Link
                     class="link"
-                    :class="{ active: route().current('admin.sales.*') }"
+                    :class="{ active: route().current('admin.customers.*') }"
                     data-target="[data-menu=customers]"
                     @click="showMenuDetail"
                 >
@@ -359,7 +359,7 @@ onMounted(() => {
                 </Link>
                 <Link
                     class="link"
-                    :class="{ active: route().current('admin.sales.*') }"
+                    :class="{ active: route().current('admin.analytics.*') }"
                     data-target="[data-menu=analytics]"
                     @click="showMenuDetail"
                 >
@@ -398,7 +398,7 @@ onMounted(() => {
             <!-- Sales -->
             <div class="menu-detail" data-menu="sales">
                 <div class="menu-detail-wrapper">
-                    <Link :href="route('admin.sales.orders.index')" :class="{'active': route().current('admin.sales.orders.index')}" @click="hideMenuDetail">
+                    <Link :href="route('admin.sales.orders.index')" :class="{'active': route().current('admin.sales.orders.*')}" @click="hideMenuDetail">
                         <span class="la la-shopping-cart"></span>
                         Pedidos
                     </Link>
@@ -416,23 +416,23 @@ onMounted(() => {
             <!-- Catalogs -->
             <div class="menu-detail" data-menu="catalogs">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link :href="route('admin.catalogs.products.index')" :class="{'active': route().current('admin.catalogs.products.*')}" @click="hideMenuDetail">
                         <span class="la la-archive"></span>
                         Productos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.catalogs.bundles.*')}" @click="hideMenuDetail">
                         <span class="la la-cubes"></span>
                         Paquetes
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.catalogs.categories.*')}" @click="hideMenuDetail">
                         <span class="la la-sitemap"></span>
                         Categorias
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.catalogs.vehicles.*')}" @click="hideMenuDetail">
                         <span class="la la-car-alt"></span>
                         Vehiculos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.catalogs.media.*')}" @click="hideMenuDetail">
                         <span class="la la-image"></span>
                         Archivos
                     </Link>
@@ -442,15 +442,15 @@ onMounted(() => {
             <!-- Customers -->
             <div class="menu-detail" data-menu="customers">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.customers.customer.*')}" @click="hideMenuDetail">
                         <span class="la la-archive"></span>
                         Clientes
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.customers.addresses.*')}" @click="hideMenuDetail">
                         <span class="la la-cubes"></span>
                         Direcciones
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link href="#" :class="{'active': route().current('admin.customers.customer.service.*')}" @click="hideMenuDetail">
                         <span class="la la-sitemap"></span>
                         Servicio al Cliente
                     </Link>

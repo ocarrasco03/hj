@@ -7,6 +7,7 @@ use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Cms\Auth\NewPasswordController;
 use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Cms\Auth\VerifyEmailController;
+use App\Http\Controllers\Cms\Catalogs\ProductController;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\Sales\OrdersController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
@@ -87,6 +88,41 @@ Route::middleware('auth:admin')->group(function () {
             Route::get('/', [OrdersController::class, 'index'])->name('index');
             Route::get('/{order}', [OrdersController::class, 'show'])->name('show');
         });
+    });
+
+    Route::prefix('catalogos')->name('catalogs.')->group(function () {
+        Route::prefix('productos')->name('products.')->group(function () {
+            Route::get('/', [ProductController::class, 'index'])->name('index');
+            Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        });
+        Route::prefix('paquetes')->name('bundles.')->group(function () {
+            //
+        });
+        Route::prefix('categorias')->name('categories.')->group(function () {
+            //
+        });
+        Route::prefix('vehiculos')->name('vehicles.')->group(function () {
+            //
+        });
+        Route::prefix('archivos')->name('media.')->group(function () {
+            //
+        });
+    });
+
+    Route::prefix('clientes')->name('customers.')->group(function () {
+        Route::name('customer.')->group(function () {
+            //
+        });
+        Route::prefix('direcciones')->name('addresses.')->group(function () {
+            //
+        });
+        Route::prefix('servicio-al-cliente')->name('customer.service.')->group(function () {
+            //
+        });
+    });
+
+    Route::prefix('estadisticas')->name('analytics.')->group(function () {
+        //
     });
 
     Route::prefix('modulos')->name('modules.')->group(function () {

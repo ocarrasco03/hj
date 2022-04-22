@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('brand_id');
             $table->foreignId('supplier_id')->nullable();
+            $table->foreignId('status_id')->default(1);
             $table->string('sku');
             $table->string('name');
             $table->longText('description')->nullable();
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->float('stock')->unsigned()->default(0);
             $table->float('weight')->unsigned()->default(0);
             $table->jsonb('notes')->nullable();
+            $table->text('attributes')->nullable();
             $table->string('condition')->default('new');
             $table->text('tags')->nullable();
             $table->timestamps();
@@ -35,6 +37,14 @@ return new class extends Migration
 
             $table->foreign('brand_id')->references('id')->on('brands');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
+        });
+
+        Schema::create('related_products', function (Blueprint $table) {
+            $table->foreignId('product_id');
+            $table->foreignId('related_id');
+
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('related_id')->references('id')->on('products');
         });
 
         Schema::create('products_categories', function (Blueprint $table) {
