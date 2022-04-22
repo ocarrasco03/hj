@@ -904,6 +904,17 @@ Forms
         }
     }
 
+    &-admin {
+        thead {
+            tr {
+                th {
+                    @apply text-admin-500;
+                }
+            }
+
+        }
+    }
+
     &-striped {
         tbody {
             tr {
@@ -934,6 +945,16 @@ Forms
         tbody {
             tr {
                 @apply border-none;
+            }
+        }
+    }
+
+    &-condensed {
+        tbody {
+            tr {
+                td {
+                    @apply py-1;
+                }
             }
         }
     }
@@ -1101,6 +1122,10 @@ Forms
     padding-bottom: 2px;
 
     &-primary {
+        @apply bg-yellow-500;
+    }
+
+    &-admin {
         @apply bg-admin-500;
     }
 
@@ -1129,6 +1154,10 @@ Forms
 
         &.badge {
             &-primary {
+                @apply border-yellow-500 text-yellow-500;
+            }
+
+            &-admin {
                 @apply border-admin text-admin;
             }
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Cms\Sales;
 
 use App\Http\Controllers\Controller;
+use App\Models\Sales\Order;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class OrdersController extends Controller
 {
@@ -12,9 +14,31 @@ class OrdersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, Order $orders)
     {
-        //
+        $statusable = $request->has('status') && strlen($request['status']) > 0;
+        $searcheable = $request->has('query') && strlen($request['query']) > 0;
+
+        $orders = $orders->when($statusable, function ($query) use ($request) {
+                            $status = strtoupper($request->input('status'));
+                            return $query->whereHas('status', function ($query) use ($status) {
+                                return $query->where('prefix', $status);
+                            });
+                        })->when($searcheable, function ($query) use ($request) {
+                            return $query->search($request->input('query'));
+                        })->paginate(15);
+
+        if ($statusable) {
+            $orders->appends(['status' => $request->input('status')]);
+        }
+
+        if ($searcheable) {
+            $orders->appends(['query' => $request->input('query')]);
+        }
+
+        return Inertia::render('Cms/Sales/Orders/Order', [
+            'orders' => $orders,
+        ]);
     }
 
     /**
@@ -41,12 +65,13 @@ class OrdersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Sales\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order)
     {
-        //
+        $order->load('products');
+        return Inertia::render('Cms/Sales/Orders/Show', ['order' => $order]);
     }
 
     /**

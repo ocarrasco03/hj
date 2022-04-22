@@ -3,6 +3,7 @@
 namespace App\Models\Catalogs;
 
 use App\Models\Configs\Category;
+use App\Models\Sales\Order;
 use App\Models\Vehicles\Catalog;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use App\Traits\Categorizable;
@@ -119,31 +120,6 @@ class Product extends Model implements Buyable, HasMedia
     }
 
     /**
-     * The model belongs to a supplier model
-     *
-     * @return void
-     */
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    /**
-     * The model belongs to a brand model
-     *
-     * @return void
-     */
-    public function brand()
-    {
-        return $this->belongsTo(Brand::class);
-    }
-
-    public function related()
-    {
-        return $this->belongsToMany(Product::class);
-    }
-
-    /**
      * Get the indexable data array for the model.
      *
      * @return array
@@ -158,6 +134,51 @@ class Product extends Model implements Buyable, HasMedia
         ];
     }
 
+    /**
+     * Get the supplier that owns the product.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * Get the brand that owns the product.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    /**
+     * Get all the products that are related to this
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function related()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+
+    /**
+     * Get all the orders that belongs the product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_products');
+    }
+
+    /**
+     * Get all the categories that belongs to the product
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'products_categories');
@@ -180,8 +201,4 @@ class Product extends Model implements Buyable, HasMedia
         }
     }
 
-    public function getCatalogAttribute()
-    {
-        //
-    }
 }

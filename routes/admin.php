@@ -8,6 +8,7 @@ use App\Http\Controllers\Cms\Auth\NewPasswordController;
 use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Cms\Auth\VerifyEmailController;
 use App\Http\Controllers\Cms\DashboardController;
+use App\Http\Controllers\Cms\Sales\OrdersController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Settings\UsersController;
 use App\Http\Controllers\Cms\Support\PromptController;
@@ -82,7 +83,10 @@ Route::middleware('auth:admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('ventas')->name('sales.')->group(function () {
-        //
+        Route::prefix('pedidos')->name('orders.')->group(function () {
+            Route::get('/', [OrdersController::class, 'index'])->name('index');
+            Route::get('/{order}', [OrdersController::class, 'show'])->name('show');
+        });
     });
 
     Route::prefix('modulos')->name('modules.')->group(function () {

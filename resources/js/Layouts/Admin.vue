@@ -398,7 +398,7 @@ onMounted(() => {
             <!-- Sales -->
             <div class="menu-detail" data-menu="sales">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link :href="route('admin.sales.orders.index')" :class="{'active': route().current('admin.sales.orders.index')}" @click="hideMenuDetail">
                         <span class="la la-shopping-cart"></span>
                         Pedidos
                     </Link>

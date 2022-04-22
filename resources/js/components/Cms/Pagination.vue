@@ -6,9 +6,18 @@ import Dropdown from '@/Components/Cms/Dropdown.vue';
 
 defineProps({
     links: Array,
-    total: Number,
-    from: Number,
-    to: Number,
+    total: {
+        type: Number,
+        default: 0
+    },
+    from: {
+        type: Number,
+        default: 0
+    },
+    to: {
+        type: Number,
+        default: 0
+    },
     perPage: {
         type: Number,
         default: null
@@ -28,7 +37,8 @@ defineProps({
             <div
                 class="flex items-center ml-auto p-5 border-t lg:border-t-0 border-gray-200 dark:border-gray-900"
             >
-                Mostrando {{ from }} - {{ to }} de {{ total }} registros
+                {{ $t('Showing :from - :to of :total items', {from: from, to: to, total: total}) }}
+                <!-- Mostrando {{ from }} - {{ to }} de {{ total }} registros -->
             </div>
             <div class="flex items-center p-5 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-900" v-if="perPage !== null">
                 <span class="mr-2">Mostrar</span>
