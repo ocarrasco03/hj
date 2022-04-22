@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Cms\Settings;
 
-use Inertia\Inertia;
+use App\Http\Controllers\Controller;
 use App\Models\Cms\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules\Password as RulePassword;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
 {
@@ -21,15 +21,14 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, Admin $users)
     {
-        if (!is_null($request->input('query'))) {
-            $users = Admin::search($request->input('query'))->withTrashed()->paginate(15);
+        if ($request->has('query') && strlen($request['query']) > 0) {
+            $users = $users->search($request->input('query'))->withTrashed()->paginate(15);
+            $users->load('roles');
         } else {
-            $users = Admin::withTrashed()->paginate(15);
+            $users = $users->withTrashed()->with('roles')->paginate(15);
         }
-
-        $users->load('roles');
 
         return Inertia::render('Cms/Settings/Advanced/Users', ['users' => $users]);
     }
@@ -143,8 +142,6 @@ class UsersController extends Controller
      */
     public function update(Request $request, Admin $id)
     {
-        $flag = false;
-
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255'],
@@ -159,15 +156,14 @@ class UsersController extends Controller
                     if ($key === 'username' || $key === 'email') {
                         $request->validate([
                             'username' => ['unique:admins,username'],
-                            'email' => ['unique:admins,email']
+                            'email' => ['unique:admins,email'],
                         ]);
                     }
                     $id->$key = $value;
-                    $flag = true;
                 }
             }
 
-            if ($flag) {
+            if ($id->isDirty()) {
                 $id->save();
             }
 
@@ -234,7 +230,7 @@ class UsersController extends Controller
         );
 
         if ($status == Password::RESET_LINK_SENT) {
-            return back()->with(['toast' => ['type' => 'success', 'message' =>  __($status)]]);
+            return back()->with(['toast' => ['type' => 'success', 'message' => __($status)]]);
         }
 
         throw ValidationException::withMessages([

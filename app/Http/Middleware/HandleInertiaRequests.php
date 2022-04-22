@@ -39,8 +39,8 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'permissions' => fn() => auth()->guard('admin')->check() ? auth()->user()->getAllPermissions()->pluck('name') : [],
-            'isSuperAdmin' => fn() => auth()->guard('admin')->check() ? auth()->user()->hasRole('Super Administrador') : false,
+            'permissions' => fn() => auth()->guard('admin')->check() ? auth()->guard('admin')->user()->getAllPermissions()->pluck('name') : [],
+            'isSuperAdmin' => fn() => auth()->guard('admin')->check() ? auth()->guard('admin')->user()->hasRole('Super Administrador') : false,
             'toast' => fn() => Session::get('toast'),
             'cartTotalItems' => Cart::countItems(),
             'search' => fn() => Session::get('search')

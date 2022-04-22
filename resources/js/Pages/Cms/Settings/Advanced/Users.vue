@@ -262,6 +262,7 @@ export default {
             :total="users.total"
             :from="users.from"
             :to="users.to"
+            v-if="users.data.length > 0"
         />
     </div>
 </template>
