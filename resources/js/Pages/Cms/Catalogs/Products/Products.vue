@@ -306,7 +306,7 @@ export default {
         </div>
     </div>
     <div
-        class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
+        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
     >
         <Pagination
             :links="products.links"
