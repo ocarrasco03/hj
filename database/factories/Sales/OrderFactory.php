@@ -3,6 +3,7 @@
 namespace Database\Factories\Sales;
 
 use App\Models\Configs\Status;
+use App\Models\Sales\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrderFactory extends Factory
 {
+    protected $model = Order::class;
+    
     /**
      * Define the model's default state.
      *
@@ -19,7 +22,7 @@ class OrderFactory extends Factory
     public function definition()
     {
         $userIds = User::all()->pluck('id')->toArray();
-        $statusIds = Status::where('module_name', null)->pluck('id')->toArray();
+        $statusIds = Status::where('module_name', $this->model)->pluck('id')->toArray();
 
         $subtotal = $this->faker->randomFloat(2,0,100000);
         $discount = $this->faker->randomFloat(2,0,($subtotal / 2));

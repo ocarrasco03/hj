@@ -4,7 +4,7 @@ import { Link, useForm } from "@inertiajs/inertia-vue3";
 import Toast from "@/Components/Toast.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Cms/CustomDropdown.vue";
-import DropdownLink from '@/Components/Cms/DropdownLink.vue';
+import DropdownLink from "@/Components/Cms/DropdownLink.vue";
 
 const showingNavigationDropdown = ref(false);
 const showSideBar = ref(true);
@@ -22,9 +22,94 @@ const hideOverlay = () => {
     document.body.removeChild(overlayToRemove);
 };
 
+const showOverlay = (workspace) => {
+    if (document.querySelector(".overlay")) return;
+
+    document.body.classList.add("overlay-show");
+    const overlay = document.createElement("div");
+    if (workspace) {
+        overlay.setAttribute("class", "overlay workspace");
+    } else {
+        overlay.setAttribute("class", "overlay");
+    }
+
+    document.body.appendChild(overlay);
+    overlay.classList.add("active");
+};
+
 // Set/update the viewportWidth value
 const setViewportWidth = () => {
     viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+};
+
+const hideMenuDetail = () => {
+    const menuBar = document.querySelector(".menu-bar");
+    const menuItems = document.querySelector(".menu-items");
+    if (menuBar !== null) {
+        menuBar.querySelectorAll(".menu-detail.open").forEach((menuDetail) => {
+            hideOverlay();
+
+            if (!menuBar.classList.contains("menu-wide")) {
+                menuDetail.classList.remove("open");
+            }
+        });
+    }
+};
+
+const showMenuDetail = (event) => {
+    const menuBar = document.querySelector(".menu-bar");
+    const menuItems = document.querySelector(".menu-items");
+
+    const menuLink = event.target.closest(".link");
+    const menu = menuLink.dataset.target;
+    const selectedMenu = menuBar.querySelector(menu);
+
+    if (menuBar !== null) {
+        if (!menuBar.classList.contains("menu-wide")) {
+            if (selectedMenu) {
+                showOverlay(true);
+            } else {
+                hideOverlay();
+            }
+
+            hideMenuDetail();
+
+            if (selectedMenu) {
+                showOverlay(true);
+                selectedMenu.classList.add("open");
+            } else {
+                hideOverlay();
+            }
+        }
+    }
+};
+
+// AnimateCSS
+const animateCSS = (element, animation, prefix = "animate__") => {
+    return new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`;
+        const node = element;
+
+        node.classList.add(
+            `${prefix}animated`,
+            `${prefix}faster`,
+            animationName
+        );
+
+        const handleAnimationEnd = (event) => {
+            event.stopPropagation();
+            node.classList.remove(
+                `${prefix}animated`,
+                `${prefix}faster`,
+                animationName
+            );
+            resolve("Animation Ended.");
+        };
+
+        node.addEventListener("animationend", handleAnimationEnd, {
+            once: true,
+        });
+    });
 };
 
 // Watch the viewport width
@@ -35,17 +120,6 @@ const watchWidth = () => {
     const xl = 1280;
 
     const menuBar = document.querySelector(".menu-bar");
-
-    // Hide Menu Detail
-    const hideMenuDetail = () => {
-        menuBar.querySelectorAll(".menu-detail.open").forEach((menuDetail) => {
-            hideOverlay();
-
-            if (!menuBar.classList.contains("menu-wide")) {
-                menuDetail.classList.remove("open");
-            }
-        });
-    };
 
     // Hide Sidebar
     const hideSidebar = () => {
@@ -83,98 +157,19 @@ const watchWidth = () => {
     }
 };
 
-const showOverlay = (workspace) => {
-    if (document.querySelector(".overlay")) return;
-
-    document.body.classList.add("overlay-show");
-    const overlay = document.createElement("div");
-    if (workspace) {
-        overlay.setAttribute("class", "overlay workspace");
-    } else {
-        overlay.setAttribute("class", "overlay");
-    }
-
-    document.body.appendChild(overlay);
-    overlay.classList.add("active");
-};
-
-const hideMenuDetail = () => {
-    const menuBar = document.querySelector(".menu-bar");
-    const menuItems = document.querySelector(".menu-items");
-    menuBar.querySelectorAll(".menu-detail.open").forEach((menuDetail) => {
-        hideOverlay();
-
-        if (!menuBar.classList.contains("menu-wide")) {
-            menuDetail.classList.remove("open");
-        }
-    });
-};
-
-const showMenuDetail = (event) => {
-    const menuBar = document.querySelector(".menu-bar");
-    const menuItems = document.querySelector(".menu-items");
-
-    const menuLink = event.target.closest(".link");
-    const menu = menuLink.dataset.target;
-    const selectedMenu = menuBar.querySelector(menu);
-
-    if (!menuBar.classList.contains("menu-wide")) {
-        if (selectedMenu) {
-            showOverlay(true);
-        } else {
-            hideOverlay();
-        }
-
-        hideMenuDetail();
-
-        if (selectedMenu) {
-            showOverlay(true);
-            selectedMenu.classList.add("open");
-        } else {
-            hideOverlay();
-        }
-    }
-};
-
-// AnimateCSS
-const animateCSS = (element, animation, prefix = "animate__") => {
-    return new Promise((resolve, reject) => {
-        const animationName = `${prefix}${animation}`;
-        const node = element;
-
-        node.classList.add(
-            `${prefix}animated`,
-            `${prefix}faster`,
-            animationName
-        );
-
-        const handleAnimationEnd = (event) => {
-            event.stopPropagation();
-            node.classList.remove(
-                `${prefix}animated`,
-                `${prefix}faster`,
-                animationName
-            );
-            resolve("Animation Ended.");
-        };
-
-        node.addEventListener("animationend", handleAnimationEnd, {
-            once: true,
-        });
-    });
-};
-
 onMounted(() => {
     const menuBar = document.querySelector(".menu-bar");
-    document.addEventListener("click", (event) => {
-        if (
-            !event.target.closest(".menu-items a") &&
-            !event.target.closest(".menu-detail") &&
-            !menuBar.classList.contains("menu-wide")
-        ) {
-            hideMenuDetail();
-        }
-    });
+    if (menuBar !== null) {
+        document.addEventListener("click", (event) => {
+            if (
+                !event.target.closest(".menu-items a") &&
+                !event.target.closest(".menu-detail") &&
+                !menuBar.classList.contains("menu-wide")
+            ) {
+                hideMenuDetail();
+            }
+        });
+    }
     // On resize events, recalculate
     window.addEventListener(
         "resize",
@@ -237,33 +232,50 @@ onMounted(() => {
                 </label> -->
 
                 <!-- Notifications -->
-                <Dropdown buttonClasses="relative flex items-center h-full btn-link ml-1 px-2 text-2xl leading-none la la-bell" width="80" class="self-stretch">
+                <Dropdown
+                    buttonClasses="relative flex items-center h-full btn-link ml-1 px-2 text-2xl leading-none la la-bell"
+                    width="80"
+                    class="self-stretch"
+                >
                     <template #trigger>
-                        <span class="absolute top-0 right-0 rounded-full border border-primary -mt-1 -mr-1 px-2 leading-tight text-xs font-body">3</span>
+                        <span
+                            class="absolute top-0 right-0 rounded-full border border-primary -mt-1 -mr-1 px-2 leading-tight text-xs font-body"
+                            >3</span
+                        >
                     </template>
                     <template #menu>
                         <div class="flex items-center px-5 py-2">
                             <h5 class="mb-0 uppercase">Notificaciones</h5>
-                            <button class="btn btn-outlined rounded-full btn-warning uppercase ml-auto">Borrar</button>
+                            <button
+                                class="btn btn-outlined rounded-full btn-warning uppercase ml-auto"
+                            >
+                                Borrar
+                            </button>
                         </div>
-                        <hr>
-                        <div class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900">
+                        <hr />
+                        <div
+                            class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900"
+                        >
                             <a href="#">
                                 <h6 class="uppercase">Heading One</h6>
                             </a>
                             <p>Lorem ipsum dolor, sit amet consectetur.</p>
                             <small>Today</small>
                         </div>
-                        <hr>
-                        <div class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900">
+                        <hr />
+                        <div
+                            class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900"
+                        >
                             <a href="#">
                                 <h6 class="uppercase">Heading Two</h6>
                             </a>
                             <p>Mollitia sequi dolor architecto aut deserunt.</p>
                             <small>Yesterday</small>
                         </div>
-                        <hr>
-                        <div class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900">
+                        <hr />
+                        <div
+                            class="p-5 hover:bg-admin-100 dark:hover:bg-admin-900"
+                        >
                             <a href="#">
                                 <h6 class="uppercase">Heading Three</h6>
                             </a>
@@ -274,33 +286,52 @@ onMounted(() => {
                 </Dropdown>
 
                 <!-- User Menu -->
-                <Dropdown buttonClasses="flex items-center ml-4 text-gray-700" width="64">
+                <Dropdown
+                    buttonClasses="flex items-center ml-4 text-gray-700"
+                    width="64"
+                >
                     <template #trigger>
                         <span class="avatar">JD</span>
                     </template>
                     <template #menu>
                         <div class="p-5">
-                            <h5 class="uppercase">{{ $page.props.auth.user.name }}</h5>
+                            <h5 class="uppercase">
+                                {{ $page.props.auth.user.name }}
+                            </h5>
                             <p>Editor</p>
                         </div>
-                        <hr>
+                        <hr />
                         <div class="p-5">
-                            <a href="#"
-                                class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin dark:hover:text-admin">
-                                <span class="la la-user-circle text-2xl leading-none mr-2 "></span>
+                            <a
+                                href="#"
+                                class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin dark:hover:text-admin"
+                            >
+                                <span
+                                    class="la la-user-circle text-2xl leading-none mr-2"
+                                ></span>
                                 View Profile
                             </a>
-                            <a href="#"
-                                class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin dark:hover:text-admin mt-5">
-                                <span class="la la-key text-2xl leading-none mr-2 "></span>
+                            <a
+                                href="#"
+                                class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin dark:hover:text-admin mt-5"
+                            >
+                                <span
+                                    class="la la-key text-2xl leading-none mr-2"
+                                ></span>
                                 Change Password
                             </a>
                         </div>
-                        <hr>
+                        <hr />
                         <div class="p-5">
-                            <DropdownLink :href="route('admin.logout')" method="post" as="button">
-                                <span class="la la-power-off text-2xl leading-none mr-2 "></span>
-                                Salir
+                            <DropdownLink
+                                :href="route('admin.logout')"
+                                method="post"
+                                as="button"
+                            >
+                                <span
+                                    class="la la-power-off text-2xl leading-none mr-2"
+                                ></span>
+                                {{ $t("Logout") }}
                             </DropdownLink>
                         </div>
                     </template>
@@ -309,7 +340,10 @@ onMounted(() => {
         </header>
 
         <!-- Sidebar -->
-        <aside class="menu-bar menu-sticky" :class="{ 'menu-hidden': !showSideBar }">
+        <aside
+            class="menu-bar menu-sticky"
+            :class="{ 'menu-hidden': !showSideBar }"
+        >
             <div class="menu-items">
                 <!-- <div class="menu-header hidden">
                     <a href="#" class="flex items-center mx-8 mt-8">
@@ -335,6 +369,12 @@ onMounted(() => {
                     :class="{ active: route().current('admin.sales.*') }"
                     data-target="[data-menu=sales]"
                     @click="showMenuDetail"
+                    v-if="
+                        $can('order.read') ||
+                        $can('refound.read') ||
+                        $can('cancelation.read') ||
+                        $can('invoice.read')
+                    "
                 >
                     <span class="icon la la-store-alt"></span>
                     <span class="title">Ventas</span>
@@ -344,6 +384,13 @@ onMounted(() => {
                     :class="{ active: route().current('admin.catalogs.*') }"
                     data-target="[data-menu=catalogs]"
                     @click="showMenuDetail"
+                    v-if="
+                        $can('product.read') ||
+                        $can('bundle.read') ||
+                        $can('category.read') ||
+                        $can('vehicle.read') ||
+                        $can('file.read')
+                    "
                 >
                     <span class="icon la la-book-open"></span>
                     <span class="title">Catalogos</span>
@@ -353,6 +400,11 @@ onMounted(() => {
                     :class="{ active: route().current('admin.customers.*') }"
                     data-target="[data-menu=customers]"
                     @click="showMenuDetail"
+                    v-if="
+                        $can('customer.read') ||
+                        $can('address.read') ||
+                        $can('customer-service.read')
+                    "
                 >
                     <span class="icon la la-users"></span>
                     <span class="title">Clientes</span>
@@ -362,6 +414,7 @@ onMounted(() => {
                     :class="{ active: route().current('admin.analytics.*') }"
                     data-target="[data-menu=analytics]"
                     @click="showMenuDetail"
+                    v-if="$can('analytics.read')"
                 >
                     <span class="icon la la-chart-area"></span>
                     <span class="title">Estad&iacute;sticas</span>
@@ -371,6 +424,7 @@ onMounted(() => {
                     :class="{ active: route().current('admin.modules.*') }"
                     data-target="[data-menu=modules]"
                     @click="showMenuDetail"
+                    v-if="$can('module.read')"
                 >
                     <span class="icon la la-cubes"></span>
                     <span class="title">Modulos</span>
@@ -380,6 +434,11 @@ onMounted(() => {
                     :class="{ active: route().current('admin.support.*') }"
                     data-target="[data-menu=support]"
                     @click="showMenuDetail"
+                    v-if="
+                        $can('support.read') ||
+                        $can('log.read') ||
+                        $can('terminal.read')
+                    "
                 >
                     <span class="icon la la-headset"></span>
                     <span class="title">Soporte</span>
@@ -389,6 +448,19 @@ onMounted(() => {
                     :class="{ active: route().current('admin.settings.*') }"
                     data-target="[data-menu=settings]"
                     @click="showMenuDetail"
+                    v-if="
+                        $can('store.read') ||
+                        $can('seo.read') ||
+                        $can('tag.read') ||
+                        $can('search.read') ||
+                        $can('slider.read') ||
+                        $can('user.read') ||
+                        $can('role.read') ||
+                        $can('permission.read') ||
+                        $can('import.read') ||
+                        $can('export.read') ||
+                        $can('backup.read')
+                    "
                 >
                     <span class="icon la la-gears"></span>
                     <span class="title">Configuración</span>
@@ -398,15 +470,36 @@ onMounted(() => {
             <!-- Sales -->
             <div class="menu-detail" data-menu="sales">
                 <div class="menu-detail-wrapper">
-                    <Link :href="route('admin.sales.orders.index')" :class="{'active': route().current('admin.sales.orders.*')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.sales.orders.index')"
+                        :class="{
+                            active: route().current('admin.sales.orders.*'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('product.read')"
+                    >
                         <span class="la la-shopping-cart"></span>
                         Pedidos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('invoice.read')"
+                    >
                         <span class="la la-file-invoice-dollar"></span>
                         Facturas
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('refound.read')"
+                    >
                         <span class="hj hj-product-return"></span>
                         Devoluciones
                     </Link>
@@ -416,23 +509,64 @@ onMounted(() => {
             <!-- Catalogs -->
             <div class="menu-detail" data-menu="catalogs">
                 <div class="menu-detail-wrapper">
-                    <Link :href="route('admin.catalogs.products.index')" :class="{'active': route().current('admin.catalogs.products.*')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.catalogs.products.index')"
+                        :class="{
+                            active: route().current(
+                                'admin.catalogs.products.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('product.read')"
+                    >
                         <span class="la la-archive"></span>
                         Productos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.catalogs.bundles.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.catalogs.bundles.*'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('bundle.read')"
+                    >
                         <span class="la la-cubes"></span>
                         Paquetes
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.catalogs.categories.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current(
+                                'admin.catalogs.categories.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('category.read')"
+                    >
                         <span class="la la-sitemap"></span>
                         Categorias
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.catalogs.vehicles.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current(
+                                'admin.catalogs.vehicles.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('vehicle.read')"
+                    >
                         <span class="la la-car-alt"></span>
                         Vehiculos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.catalogs.media.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.catalogs.media.*'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('file.read')"
+                    >
                         <span class="la la-image"></span>
                         Archivos
                     </Link>
@@ -442,15 +576,42 @@ onMounted(() => {
             <!-- Customers -->
             <div class="menu-detail" data-menu="customers">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.customers.customer.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current(
+                                'admin.customers.customer.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('customer.read')"
+                    >
                         <span class="la la-archive"></span>
                         Clientes
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.customers.addresses.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current(
+                                'admin.customers.addresses.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('address.read')"
+                    >
                         <span class="la la-cubes"></span>
                         Direcciones
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.customers.customer.service.*')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current(
+                                'admin.customers.customer.service.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('customer-service.read')"
+                    >
                         <span class="la la-sitemap"></span>
                         Servicio al Cliente
                     </Link>
@@ -460,23 +621,53 @@ onMounted(() => {
             <!-- Analytics -->
             <div class="menu-detail" data-menu="analytics">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-archive"></span>
                         Productos
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-cubes"></span>
                         Ventas
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-sitemap"></span>
                         Visitas
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-car-alt"></span>
                         Clientes
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-image"></span>
                         Envios
                     </Link>
@@ -487,29 +678,65 @@ onMounted(() => {
             <div class="menu-detail" data-menu="modules">
                 <div class="menu-detail-wrapper">
                     <h6 class="uppercase">Envios</h6>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="lab la-fedex"></span>
                         FEDEX
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="lab la-dhl"></span>
                         DHL
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="lab la-ups"></span>
                         UPS
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="hj hj-mercado-libre"></span>
                         Mercado Libre
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-shipping-fast"></span>
                         Otros
                     </Link>
                     <hr />
                     <h6 class="uppercase">Pagos</h6>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-cc-paypal"></span>
                         PayPal
                     </Link>
@@ -517,7 +744,13 @@ onMounted(() => {
                         <span class="la la-cc-visa"></span>
                         BBVA Bancomer
                     </Link> -->
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="hj hj-bbva"></span>
                         Bancomer
                     </Link>
@@ -527,15 +760,36 @@ onMounted(() => {
             <!-- Support -->
             <div class="menu-detail" data-menu="support">
                 <div class="menu-detail-wrapper">
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('support.read')"
+                    >
                         <span class="la la-life-ring"></span>
                         Tickets
                     </Link>
-                    <Link href="#" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        href="#"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('log.read')"
+                    >
                         <span class="la la-bug"></span>
                         Logs
                     </Link>
-                    <Link :href="route('admin.support.console')" :class="{'active': route().current('admin.support.console')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.support.console')"
+                        :class="{
+                            active: route().current('admin.support.console'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('terminal.read')"
+                    >
                         <span class="la la-terminal"></span>
                         Terminal
                     </Link>
@@ -545,51 +799,141 @@ onMounted(() => {
             <!-- Settings -->
             <div class="menu-detail" data-menu="settings">
                 <div class="menu-detail-wrapper">
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                    >
                         <span class="la la-info-circle"></span>
                         Información del Sistema
                     </Link>
                     <hr />
                     <h6 class="uppercase">General</h6>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('store.read')"
+                    >
                         <span class="la la-store"></span>
                         Tienda
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('seo.read')"
+                    >
                         <span class="la la-bullseye"></span>
                         SEO
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('tag.read')"
+                    >
                         <span class="la la-tags"></span>
-                        Slider
+                        Etiquetas
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('search.read')"
+                    >
                         <span class="la la-search"></span>
                         Busqueda
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current('admin.settings.info'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('slider.read')"
+                    >
                         <span class="la la-images"></span>
                         Slider
                     </Link>
                     <hr />
                     <h6 class="uppercase">Avanzado</h6>
-                    <Link :href="route('admin.settings.advanced.users.index')" :class="{'active': route().current('admin.settings.advanced.users.index')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.advanced.users.index')"
+                        :class="{
+                            active: route().current(
+                                'admin.settings.advanced.users.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('user.read')"
+                    >
                         <span class="la la-user-tie"></span>
                         Usuarios
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="
+                            route(
+                                'admin.settings.advanced.roles.permissions.index'
+                            )
+                        "
+                        :class="{
+                            active: route().current(
+                                'admin.settings.advanced.roles.permissions.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('role.read') || $can('permission.read')"
+                    >
                         <span class="la la-user-tag"></span>
                         Roles y Permisos
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current(
+                                'admin.settings.advanced.import.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('import.read')"
+                    >
                         <span class="la la-cloud-upload-alt"></span>
                         Importar
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current(
+                                'admin.settings.advanced.export.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('export.read')"
+                    >
                         <span class="la la-cloud-download-alt"></span>
                         Exportar
                     </Link>
-                    <Link :href="route('admin.settings.info')" :class="{'active': route().current('admin.settings.info')}" @click="hideMenuDetail">
+                    <Link
+                        :href="route('admin.settings.info')"
+                        :class="{
+                            active: route().current(
+                                'admin.settings.advanced.backup.*'
+                            ),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('backup.read')"
+                    >
                         <span class="la la-server"></span>
                         Respaldar
                     </Link>

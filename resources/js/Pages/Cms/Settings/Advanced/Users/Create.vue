@@ -179,7 +179,7 @@ export default {
         </div>
     </section>
 
-    <div class="container px-0">
+    <div class="w-full px-0">
         <ValidationErrors class="mb-4" />
         <form
             @submit.prevent="submit"

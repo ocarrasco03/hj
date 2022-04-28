@@ -106,7 +106,7 @@ export default {
     </section>
 
     <div
-        class="container pb-5 px-0 lg:flex space-y-4 lg:space-y-0 lg:space-x-4"
+        class="w-full pb-5 px-0 lg:flex space-y-4 lg:space-y-0 lg:space-x-4"
     >
         <div class="lg:w-1/4">
             <div class="card p-5">

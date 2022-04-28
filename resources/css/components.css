@@ -911,7 +911,18 @@ Forms
                     @apply text-admin-500;
                 }
             }
+        }
 
+        &-first-col {
+            tbody {
+                tr {
+                    td {
+                        &:nth-of-type(1) {
+                            @apply border-r font-bold text-admin;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1635,7 +1646,80 @@ select {
 }
 
 .modal {
-    @apply hidden fixed top-0 right-0 bottom-0 left-0 w-full h-full overflow-y-auto z-50;
+    @apply fixed top-0 right-0 bottom-0 left-0 w-full h-full overflow-y-auto z-50;
+
+    .modal-dialog {
+        @apply flex mx-auto p-5;
+
+        &-centered {
+            @apply items-center h-full;
+        }
+
+        &-scrollable {
+            @apply max-h-screen;
+
+            .modal-content {
+                @apply flex flex-col;
+
+                .modal-body {
+                    @apply overflow-y-auto;
+                }
+            }
+        }
+
+        .modal-content {
+            @apply rounded-xl bg-white shadow;
+
+            .modal-header {
+                @apply flex flex-shrink-0 items-center p-5 border-b border-gray-200;
+
+                .close {
+                    @apply ml-auto text-2xl leading-none;
+
+                    &:hover {
+                        @apply text-primary;
+                    }
+                }
+            }
+
+            .modal-body {
+                @apply m-5;
+            }
+
+            .modal-footer {
+                @apply flex flex-shrink-0 p-5 border-t border-gray-200;
+            }
+        }
+    }
+
+    &.active {
+        @apply block;
+    }
+
+    &-aside {
+        .modal-dialog {
+            @apply relative mr-0 h-full;
+
+            .modal-content {
+                @apply absolute flex flex-col top-0 right-0 bottom-0 rounded-none;
+
+                .modal-header {
+                    min-height: 5rem;
+                }
+
+                .modal-body {
+                    @apply overflow-y-scroll;
+                }
+
+                .modal-footer {
+                    @apply mt-auto;
+                }
+            }
+        }
+    }
+}
+.modal-admin {
+    @apply fixed inset-0 px-4 py-6 sm:px-0 top-0 right-0 bottom-0 left-0 w-full h-full overflow-y-auto z-50;
 
     .modal-dialog {
         @apply flex mx-auto p-5;

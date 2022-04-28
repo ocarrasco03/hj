@@ -10,6 +10,7 @@ use App\Http\Controllers\Cms\Auth\VerifyEmailController;
 use App\Http\Controllers\Cms\Catalogs\ProductController;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\Sales\OrdersController;
+use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Settings\UsersController;
 use App\Http\Controllers\Cms\Support\PromptController;
@@ -166,6 +167,12 @@ Route::middleware('auth:admin')->group(function () {
                 Route::delete('/{user}', [UsersController::class, 'destroy'])->name('delete');
                 Route::put('/{user}', [UsersController::class, 'restore'])->name('restore');
                 Route::post('/', [UsersController::class, 'resetPassword'])->name('password.email');
+            });
+            Route::prefix('roles-y-permisos')->name('roles.permissions.')->group(function () {
+                Route::get('/', [RolesPermissionsController::class, 'index'])->middleware(['permission:role.read|permission.read'])->name('index');
+                Route::post('/nuevo-rol', [RolesPermissionsController::class, 'store'])->middleware(['permission:role.create'])->name('save.role');
+                Route::post('/nuevo-permiso', [RolesPermissionsController::class, 'storePermission'])->middleware(['role_or_permission:permission.create|Super Administrador'])->name('save.permission');
+                Route::put('/{rol}/asignar-permisos', [RolesPermissionsController::class, 'update'])->middleware(['permission:permission.update'])->name('update.permissions');
             });
             Route::prefix('importar')->name('import.')->group(function () {
                 //

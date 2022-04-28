@@ -8,14 +8,31 @@ import { v4 as uuidv4 } from "uuid";
 
 const props = defineProps({
     users: Number,
+    orders: {
+        type: Object,
+        default: {},
+    },
     visitors: {
         type: Object,
         default: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-            data: [0,0,0,0,0,0,0,0,0,0,0,0]
-        }
-    }
-})
+            labels: [
+                "Ene",
+                "Feb",
+                "Mar",
+                "Abr",
+                "May",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dic",
+            ],
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        },
+    },
+});
 
 let colors = {
     primary: "20, 83, 136",
@@ -32,8 +49,6 @@ const labels = [
 ];
 
 const dataArr = [1250, 1300, 1550, 900, 1800, 1100, 1600];
-
-
 </script>
 
 <script context="module">
@@ -120,7 +135,7 @@ export default {
         <div class="lg:w-1/2 lg:px-4 pt-5 lg:pt-0 -mx-4">
             <!-- Lines -->
             <div class="flex flex-wrap">
-                <div class="w-1/2 lg:w-1/4 px-4">
+                <div class="w-1/2 lg:mb-5 px-4">
                     <div class="card p-5">
                         <h6 class="chart-heading uppercase"></h6>
                         <h4 class="chart-value text-2xl mt-2"></h4>
@@ -134,7 +149,7 @@ export default {
                         />
                     </div>
                 </div>
-                <div class="w-1/2 lg:w-1/4 px-4">
+                <div class="w-1/2 lg:mb-5 px-4">
                     <div class="card p-5">
                         <h6 class="chart-heading uppercase"></h6>
                         <h4 class="chart-value text-2xl mt-2"></h4>
@@ -147,7 +162,7 @@ export default {
                         />
                     </div>
                 </div>
-                <div class="w-1/2 lg:w-1/4 px-4 mt-5 lg:mt-0">
+                <div class="w-1/2 px-4 mt-5 lg:mt-0">
                     <div class="card p-5">
                         <h6 class="chart-heading uppercase"></h6>
                         <h4 class="chart-value text-2xl mt-2"></h4>
@@ -161,7 +176,7 @@ export default {
                         />
                     </div>
                 </div>
-                <div class="w-1/2 lg:w-1/4 px-4 mt-5 lg:mt-0">
+                <div class="w-1/2 px-4 mt-5 lg:mt-0">
                     <div class="card p-5">
                         <h6 class="chart-heading uppercase"></h6>
                         <h4 class="chart-value text-2xl mt-2"></h4>
@@ -182,27 +197,45 @@ export default {
                 <table class="table table-list mt-3 w-full">
                     <thead>
                         <tr class="text-admin-500">
-                            <th class="text-left uppercase">
-                                Orden #
-                            </th>
-                            <th class="w-px uppercase">Views</th>
-                            <th class="w-px uppercase">Status</th>
+                            <th class="text-left uppercase">Orden #</th>
+                            <th class="w-px uppercase">{{ $t("Total") }}</th>
+                            <th class="w-px uppercase">{{ $t("Status") }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, key) in 5" :key="key">
-                            <td>{{ uuidv4() }}</td>
-                            <td class="text-center">100</td>
+                        <tr v-for="(order, key) in orders" :key="key">
+                            <td>{{ order.id }}</td>
                             <td class="text-center">
-                                <div class="badge badge-outlined badge-danger uppercase">
-                                    Cancelado
-                                </div>
+                                {{ $formatPrice(order.total) }}
+                            </td>
+                            <td class="text-center">
+                                <span
+                                    v-if="!order.deleted_at"
+                                    class="badge badge-outlined uppercase"
+                                    :class="{
+                                        'badge-admin': order.status.level === 1,
+                                        'badge-success':
+                                            order.status.level === 2,
+                                        'badge-danger':
+                                            order.status.level === 3,
+                                    }"
+                                    >{{ order.status.name }}</span
+                                >
+                                <span
+                                    v-else
+                                    class="badge badge-outlined badge-danger uppercase"
+                                    >Eliminado</span
+                                >
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="flex items-center justify-end">
-                    <a href="#" class="btn btn-admin rounded-full mt-5">Ver Todo</a>
+                    <Link
+                        :href="route('admin.sales.orders.index')"
+                        class="btn btn-admin mt-5"
+                        v-text="$t('View all')"
+                    />
                 </div>
             </div>
         </div>

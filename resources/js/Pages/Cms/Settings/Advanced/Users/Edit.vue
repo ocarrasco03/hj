@@ -404,7 +404,7 @@ export default {
                         </table>
                     </div>
                     <div class="mb-5 lg:flex lg:justify-end">
-                        <button type="submit" class="btn btn-admin text-right">
+                        <button type="submit" class="btn btn-admin text-right" :disabled="!form.isDirty">
                             Guardar
                         </button>
                     </div>

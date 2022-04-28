@@ -132,7 +132,7 @@ export default {
     </section>
 
     <div
-        class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
+        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
     >
         <div class="card w-full py-4">
             <table
@@ -165,7 +165,7 @@ export default {
                             {{ $t("Total") }}
                         </th>
                         <th class="hidden md:table-cell">{{ $t("Status") }}</th>
-                        <th class="hidden md:table-cell">
+                        <th class="hidden lg:table-cell">
                             {{ $t("Created") }}
                         </th>
                         <th>Actions</th>
@@ -224,7 +224,7 @@ export default {
                                 >Eliminado</span
                             >
                         </td>
-                        <td class="text-center hidden md:table-cell">
+                        <td class="text-center hidden lg:table-cell">
                             {{ formatedDate(order.created_at) }}
                         </td>
                         <td class="items-center text-center">
@@ -238,15 +238,14 @@ export default {
                                 class="btn btn-outlined btn-admin btn-icon"
                                 as="button"
                                 method="get"
-                                :disabled="!$can('pedidos.update')"
+                                :disabled="!$can('order.update')"
                             >
                                 <span class="la la-eye"></span>
                             </Link>
                             <button
-                                v-if="!order.deleted_at"
+                                v-if="!order.deleted_at && $can('order.delete')"
                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
                                 @click="confirmDelete"
-                                :disabled="!$can('pedidos.delete')"
                             >
                                 <span
                                     class="la la-trash-alt"
@@ -254,21 +253,6 @@ export default {
                                     :data-index="index"
                                 ></span>
                             </button>
-                            <Link
-                                v-if="order.deleted_at"
-                                :href="
-                                    route(
-                                        'admin.settings.advanced.users.restore',
-                                        { order: order.id }
-                                    )
-                                "
-                                class="btn btn-outlined btn-admin ml-2 btn-icon rounded-full"
-                                preserve-scroll
-                                method="put"
-                                as="button"
-                            >
-                                <span class="la la-redo-alt"></span>
-                            </Link>
                         </td>
                     </tr>
                 </tbody>
@@ -276,7 +260,7 @@ export default {
         </div>
     </div>
     <div
-        class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
+        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
     >
         <Pagination
             :links="orders.links"

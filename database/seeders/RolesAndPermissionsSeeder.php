@@ -16,66 +16,66 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $modules = [
-            'Dashboard',
-            'Ventas',
-            'Pedidos',
-            'Facturas',
-            'Devoluciones',
-            'Catalogos',
-            'Productos',
-            'Paquetes',
-            'Categorias',
-            'Vehiculos',
-            'Archivos',
-            'Clientes',
-            'Direcciones',
-            'Servicio al Cliente',
-            'Estadisticas',
-            'Modulos',
-            'Envios',
-            'Pagos',
-            'Soporte',
-            'Tickets',
-            'Logs',
-            'Terminal',
-            'Configuracion',
-            'Tienda',
-            'SEO',
-            'Etiquetas',
-            'Busqueda',
-            'Slider',
-            'Usuarios',
-            'Permisos',
-            'Roles',
-            'Importar',
-            'Exportar',
-            'Respaldos',
-        ];
+        // $modules = [
+        //     'Dashboard',
+        //     'Ventas',
+        //     'Pedidos',
+        //     'Facturas',
+        //     'Devoluciones',
+        //     'Catalogos',
+        //     'Productos',
+        //     'Paquetes',
+        //     'Categorias',
+        //     'Vehiculos',
+        //     'Archivos',
+        //     'Clientes',
+        //     'Direcciones',
+        //     'Servicio al Cliente',
+        //     'Estadisticas',
+        //     'Modulos',
+        //     'Envios',
+        //     'Pagos',
+        //     'Soporte',
+        //     'Tickets',
+        //     'Logs',
+        //     'Terminal',
+        //     'Configuracion',
+        //     'Tienda',
+        //     'SEO',
+        //     'Etiquetas',
+        //     'Busqueda',
+        //     'Slider',
+        //     'Usuarios',
+        //     'Permisos',
+        //     'Roles',
+        //     'Importar',
+        //     'Exportar',
+        //     'Respaldos',
+        // ];
 
-        $abilities = ['create', 'read', 'update', 'delete'];
-        $admin = [];
+        // $abilities = ['create', 'read', 'update', 'delete'];
+        // $admin = [];
 
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create permissions
-        foreach ($modules as $module) {
-            $module = strtolower(str_replace('', '-', $module));
-            foreach ($abilities as $ability) {
-                Permission::create(['name' => $module . '.' . $ability, 'guard_name' => 'admin']);
-                if (rand(0,1) === 1) {
-                    $admin[] = $module . '.' . $ability;
-                }
-            }
-        }
-        
+        // foreach ($modules as $module) {
+        //     $module = strtolower(str_replace('', '-', $module));
+        //     foreach ($abilities as $ability) {
+        //         Permission::create(['name' => $module . '.' . $ability, 'guard_name' => 'admin']);
+        //         if (rand(0,1) === 1) {
+        //             $admin[] = $module . '.' . $ability;
+        //         }
+        //     }
+        // }
+
         $role = Role::create(['name' => 'Super Administrador', 'guard_name' => 'admin']);
         $role->givePermissionTo(Permission::all());
 
         // create roles and assign created permissions
-        $role = Role::create(['name' => 'Administrador', 'guard_name' => 'admin'])
-            ->givePermissionTo($admin);
+        // $role = Role::create(['name' => 'Administrador', 'guard_name' => 'admin'])
+        //     ->givePermissionTo($admin);
 
     }
 }

@@ -3,7 +3,7 @@ require("./bootstrap");
 import { createApp, h } from "vue";
 import { createInertiaApp, usePage } from "@inertiajs/inertia-vue3";
 import { InertiaProgress } from "@inertiajs/progress";
-import { i18nVue } from 'laravel-vue-i18n'
+import { i18nVue } from "laravel-vue-i18n";
 import Layout from "@/Layouts/App.vue";
 import { initFacebookSdk } from "@/facebook";
 
@@ -25,7 +25,7 @@ initFacebookSdk().then(
             return createApp({ render: () => h(app, props) })
                 .use(plugin)
                 .use(i18nVue, {
-                    resolve: lang => import(`../../lang/${lang}.json`),
+                    resolve: (lang) => import(`../../lang/${lang}.json`),
                 })
                 .mixin({
                     methods: {
@@ -34,6 +34,14 @@ initFacebookSdk().then(
                             usePage().props.value.permissions.indexOf(
                                 permission
                             ) !== -1 || usePage().props.value.isSuperAdmin,
+                        $formatPrice: (
+                            number,
+                            options = {
+                                style: "currency",
+                                currency: "MXN",
+                                minimumFractionDigits: 2,
+                            }
+                        ) => Intl.NumberFormat("es-MX", options).format(number),
                     },
                 })
                 .mount(el);
