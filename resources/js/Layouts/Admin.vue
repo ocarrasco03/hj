@@ -944,6 +944,16 @@ onMounted(() => {
         <!-- Content -->
         <main class="workspace">
             <slot></slot>
+            <footer class="mt-auto">
+                <div class="footer-admin">
+                    <span class="uppercase">© {{ new Date().getFullYear() }} HJ ACCO AUTOPARTES SA DE CV</span>
+                    <nav class="ml-auto">
+                        <Link class="text-admin hover:text-admin-700" v-text="$t('Support')" />
+                        <span class="divider">|</span>
+                        <Link class="text-admin hover:text-admin-700" v-text="$t('Docs')" />
+                    </nav>
+                </div>
+            </footer>
         </main>
     </div>
 </template>

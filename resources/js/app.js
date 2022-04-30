@@ -42,6 +42,7 @@ initFacebookSdk().then(
                                 minimumFractionDigits: 2,
                             }
                         ) => Intl.NumberFormat("es-MX", options).format(number),
+                        back: () => window.history.back(),
                     },
                 })
                 .mount(el);

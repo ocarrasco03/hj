@@ -754,14 +754,6 @@ Forms
 /*
    Footer
   */
-.dark .footer {
-    @apply border-gray-800;
-
-    .divider {
-        @apply text-gray-700;
-    }
-}
-
 .footer {
     @apply bg-gradient-to-b from-black via-secondary-500 to-secondary-500 bottom-0 static;
 
@@ -774,6 +766,22 @@ Forms
         &:first-child {
             @apply ml-0;
         }
+    }
+}
+
+.dark .footer-admin {
+    @apply border-gray-800;
+
+    .divider {
+        @apply text-gray-700;
+    }
+}
+
+.footer-admin {
+    @apply flex flex-auto items-center border-t border-gray-300 mt-10 py-5 leading-none font-body text-xs;
+
+    .divider {
+        @apply text-gray-500 mx-2;
     }
 }
 

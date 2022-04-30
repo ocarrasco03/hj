@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Cms\Catalogs;
 
-use App\Http\Controllers\Controller;
-use App\Models\Catalogs\Product;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Catalogs\Brand;
+use App\Models\Catalogs\Product;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
@@ -54,12 +55,13 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Catalogs\Product  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        //
+        $brands = Brand::all()->pluck('name');
+        return Inertia::render('Cms/Catalogs/Products/Show', ['product' => $product, 'brands' => $brands]);
     }
 
     /**

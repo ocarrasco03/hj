@@ -78,7 +78,14 @@ class ImportImages extends Command
                                 ->toMediaCollection('products');
                         }
                     }
+                } else if (is_dir('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku)) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
                 }
+
                 $bar->advance();
             }
             $bar->finish();

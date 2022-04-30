@@ -167,7 +167,7 @@ export default {
             <div class="flex mt-5 lg:mt-0">
                 <!-- Add New -->
                 <Link
-                    :href="route('admin.settings.advanced.users.index')"
+                    @click="back"
                     class="btn btn-admin btn-outlined rounded-full uppercase ml-2"
                 >
                     <i class="las la-undo"></i>

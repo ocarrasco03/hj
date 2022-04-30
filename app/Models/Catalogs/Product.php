@@ -43,7 +43,7 @@ class Product extends Model implements Buyable, HasMedia
      */
     protected $fillable = [
         'brand_id',
-        'supplier_id',
+        'status_id',
         'sku',
         'slug',
         'name',
