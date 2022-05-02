@@ -2,21 +2,22 @@
 
 namespace App\Models\Catalogs;
 
-use App\Models\Configs\Category;
-use App\Models\Configs\Status;
-use App\Models\Sales\Order;
-use App\Models\Vehicles\Catalog;
-use App\Packages\Shoppingcart\Contracts\Buyable;
-use App\Traits\Categorizable;
 use App\Traits\Taggeable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Sales\Order;
+use App\Traits\Categorizable;
 use Laravel\Scout\Searchable;
+use App\Models\Configs\Status;
+use App\Models\Configs\Category;
+use App\Models\Vehicles\Catalog;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Facades\DB;
 use willvincent\Rateable\Rateable;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Packages\Shoppingcart\Contracts\Buyable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements Buyable, HasMedia
 {
@@ -195,14 +196,21 @@ class Product extends Model implements Buyable, HasMedia
         return $this->belongsTo(Status::class);
     }
 
+    /**
+     * Crawling search engine scope
+     *
+     * @param \App\Models\Catalogs\Product $query
+     * @param String $term
+     * @return \App\Models\Catalogs\Product
+     */
     public function scopeCrawler($query, $term)
     {
         return $query->where('sku', 'like', $term . '%')
             ->orWhere('name', 'like', '%' . $term . '%')
-            ->orWhere('description', 'like', '%' . $term . '%')
-            ->orWhere('notes', 'like', '%' . $term . '%')
+            ->orWhere(DB::raw('lower(description)'), 'like', '%' . strtolower($term) . '%')
+            ->orWhere(DB::raw('lower(notes)'), 'like', '%' . strtolower($term) . '%')
             ->orWhere('attributes', 'like', '%' . $term . '%')
-            ->orWhere('description', 'like', '%' . $term . '%')
+            ->orWhere('tags', 'like', '%' . $term . '%')
             ->orWhereHas('brand', function ($query) use ($term) {
                 return $query->where('name', 'like', $term . '%');
             })

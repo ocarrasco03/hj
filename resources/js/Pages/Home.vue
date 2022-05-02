@@ -10,14 +10,14 @@ import HjLabel from "@/Components/Label.vue";
 import HjTextarea from "@/Components/Textarea.vue";
 import { Inertia } from "@inertiajs/inertia";
 import axios from "axios";
-import NProgress from 'nprogress';
+import NProgress from "nprogress";
 import { InertiaProgress } from "@inertiajs/progress";
-import Slider from '@/Components/Slider.vue';
-import SearchPanel from '@/Components/SearchPanel.vue';
+import Slider from "@/Components/Slider.vue";
+import SearchPanel from "@/Components/SearchPanel.vue";
 
 defineProps({
-    products: Object
-})
+    products: Object,
+});
 
 const form = useForm({
     email: "",
@@ -31,25 +31,24 @@ const suscribe = useForm({
     email: "",
 });
 
-
 const submitContact = () => {
-    form.post(route('contact.form'), {
+    form.post(route("contact.form"), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset('email', 'name', 'phone', 'subject', 'message');
+            form.reset("email", "name", "phone", "subject", "message");
             document.getElementById("message").value = "";
         },
-    })
+    });
 };
 
 const submitSuscribe = () => {};
 
 const shortText = (text, length) => {
     if (text !== null && text.length > 0) {
-        return text.slice(0, length) + ((text.length > length) ? "..." : "");
+        return text.slice(0, length) + (text.length > length ? "..." : "");
     }
     return;
-}
+};
 </script>
 
 <template>
@@ -76,12 +75,13 @@ const shortText = (text, length) => {
                         :fill="'#000'"
                     />
                 </div>
-                <span class="font-bold text-2xl">
-                    $ {{ item.price }}
-                </span>
+                <span class="font-bold text-2xl"> $ {{ item.price }} </span>
                 <div id="rate" class="flex flex-row space-x-1">
                     <template v-for="(i, key) in 5" :key="key">
-                        <i v-if="i <= item.averageRating" class="fas fa-star text-yellow-500"></i>
+                        <i
+                            v-if="i <= item.averageRating"
+                            class="fas fa-star text-yellow-500"
+                        ></i>
                         <i v-else class="fal fa-star text-secondary-500"></i>
                     </template>
                 </div>
@@ -91,7 +91,10 @@ const shortText = (text, length) => {
                 </p>
                 <div class="self-end items-end w-full">
                     <div class="grid grid-cols-2 gap-0 text-sm">
-                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn-primary text-center py-2 text-lg transition ease-in delay-150">
+                        <Link
+                            :href="route('product.show', { slug: item.slug })"
+                            class="col-span-2 btn btn-primary text-center py-2 text-lg transition ease-in delay-150"
+                        >
                             Ver mas
                         </Link>
                     </div>
@@ -147,18 +150,24 @@ const shortText = (text, length) => {
                                 placeholder="Asunto"
                                 required
                             />
-                            <HjTextarea
-                                class="block mt-1 w-full row-span-2"
+                            <textarea
+                                class="block mt-1 w-full row-span-2 resize-none border-2 border-gray-500 focus:border-gray-900 focus:ring-0 rounded shadow-sm"
                                 name="message"
                                 id="message"
                                 placeholder="Mensaje"
                                 v-model="form.message"
-                            ></HjTextarea>
+                            ></textarea>
                         </div>
                     </div>
                     <div class="flex justify-end mt-7 items-center">
-                        <HjButton class="flex space-x-1" :disabled="form.processing">
-                            <i class="fas fa-spinner-third fa-spin mr-2" v-if="form.processing"></i>
+                        <HjButton
+                            class="flex space-x-1"
+                            :disabled="form.processing"
+                        >
+                            <i
+                                class="fas fa-spinner-third fa-spin mr-2"
+                                v-if="form.processing"
+                            ></i>
                             <span>Enviar</span>
                         </HjButton>
                     </div>
