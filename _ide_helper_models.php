@@ -208,7 +208,10 @@ namespace App\Models\Configs{
  *
  * @property int $id
  * @property string $name
- * @property int $parent
+ * @property Category|null $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection|Category[] $children
+ * @property-read int|null $children_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Category allParents()
  * @method static \Database\Factories\Configs\CategoryFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Category newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Category newQuery()
@@ -533,6 +536,7 @@ namespace App\Models\Vehicles{
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Model[] $models
  * @property-read int|null $models_count
  * @method static \Database\Factories\Vehicles\YearFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Year findByYear($year)
  * @method static \Illuminate\Database\Eloquent\Builder|Year newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Year newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Year query()
