@@ -22,4 +22,19 @@ class Category extends Model
             'name' => $this->name,
         ];
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent');
+    }
+
+    public function scopeAllParents($query)
+    {
+        return $query->where('parent', 0)->get();
+    }
 }

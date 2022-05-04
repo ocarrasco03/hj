@@ -83,7 +83,7 @@ const getThumb = (url) => {
                             </a>
 
                         </h3>
-                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn_primary text-center py-2 text-xs transition ease-in delay-150">
+                        <Link :href="route('product.show', {slug: item.slug})" class="col-span-2 btn btn-primary text-center py-2 text-xs transition ease-in delay-150">
                             Ver mas
                         </Link>
                     </div>

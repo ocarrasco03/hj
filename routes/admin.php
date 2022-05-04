@@ -92,9 +92,12 @@ Route::middleware('auth:admin')->group(function () {
     });
 
     Route::prefix('catalogos')->name('catalogs.')->group(function () {
-        Route::prefix('productos')->name('products.')->group(function () {
-            Route::get('/', [ProductController::class, 'index'])->name('index');
-            Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::controller(ProductController::class)->prefix('productos')->name('products.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{product}', 'show')->name('show');
+            Route::put('/{product}', 'update')->name('update');
+            Route::post('/upload/{product}', 'upload')->name('upload.file');
+            Route::delete('/remove/{product}/{id}', 'remove')->name('remove.file');
         });
         Route::prefix('paquetes')->name('bundles.')->group(function () {
             //

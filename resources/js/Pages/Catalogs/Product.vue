@@ -394,41 +394,18 @@ const eventChange = (event) => {
         <h4>Productos Similares</h4>
     </SectionTitle>
     <div class="container divide-y-2">
-        <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch"
-        >
-            <ProductItem
-                :rating="5"
-                :description="product.description"
-                :name="product.name"
-                :sku="product.sku"
-                :slug="product.slug"
-                :price="product.price"
-            />
-            <ProductItem
-                :rating="5"
-                :description="product.description"
-                :name="product.name"
-                :sku="product.sku"
-                :slug="product.slug"
-                :price="product.price"
-            />
-            <ProductItem
-                :rating="5"
-                :description="product.description"
-                :name="product.name"
-                :sku="product.sku"
-                :slug="product.slug"
-                :price="product.price"
-            />
-            <ProductItem
-                :rating="5"
-                :description="product.description"
-                :name="product.name"
-                :sku="product.sku"
-                :slug="product.slug"
-                :price="product.price"
-            />
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch">
+            <template v-for="(related, key) in product.related" :key="key">
+                <ProductItem
+                    :rating="5"
+                    :description="related.description"
+                    :name="related.name"
+                    :sku="related.sku"
+                    :slug="related.slug"
+                    :price="related.price"
+                    :image="related.media.length > 0 ? related.media[0].original_url : undefined"
+                />
+            </template>
         </div>
         <div></div>
     </div>

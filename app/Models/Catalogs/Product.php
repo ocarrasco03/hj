@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted;
 
 class Product extends Model implements Buyable, HasMedia
 {
@@ -34,7 +35,7 @@ class Product extends Model implements Buyable, HasMedia
      *
      * @var array
      */
-    protected $with = ['brand', 'ratings', 'categories', 'related', 'status'];
+    protected $with = ['brand', 'ratings', 'categories', 'status'];
 
     protected $appends = ['thumb', 'media'];
     /**
@@ -55,12 +56,13 @@ class Product extends Model implements Buyable, HasMedia
         'unit',
         'stock',
         'notes',
+        'attributes',
         'weight',
         'condition',
     ];
 
     protected $casts = [
-        'notes' => 'array',
+        'attributes' => 'array',
     ];
 
     /**
@@ -217,6 +219,28 @@ class Product extends Model implements Buyable, HasMedia
             ->orWhereHas('categories', function ($query) use ($term) {
                 return $query->where('name', 'like', $term . '%');
             });
+    }
+
+    /**
+     * Delete the associated media with the given id.
+     * You may also pass a media object.
+     *
+     *
+     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted
+     */
+    public function deleteMedia(int|string|Media $mediaId): void
+    {
+        if ($mediaId instanceof Media) {
+            $mediaId = $mediaId->getKey();
+        }
+
+        $media = $this->media()->find($mediaId);
+
+        if (! $media) {
+            throw MediaCannotBeDeleted::doesNotBelongToModel($mediaId, $this);
+        }
+
+        $media->delete();
     }
 
     /**

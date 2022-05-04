@@ -27,4 +27,9 @@ class Year extends Model
     {
         return $this->hasMany(Catalog::class);
     }
+
+    public function scopeFindByYear($query, $year)
+    {
+        return $query->where('year', $year)->first();
+    }
 }

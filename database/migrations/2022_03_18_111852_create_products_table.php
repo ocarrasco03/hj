@@ -27,8 +27,8 @@ return new class extends Migration
             $table->string('unit')->default('pza');
             $table->float('stock')->unsigned()->default(0);
             $table->float('weight')->unsigned()->default(0);
-            $table->jsonb('notes')->nullable();
-            $table->text('attributes')->nullable();
+            $table->text('notes')->nullable();
+            $table->jsonb('attributes')->nullable();
             $table->string('condition')->default('new');
             $table->text('tags')->nullable();
             $table->timestamps();

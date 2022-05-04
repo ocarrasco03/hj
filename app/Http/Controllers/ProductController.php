@@ -49,7 +49,7 @@ class ProductController extends Controller
     public function show($slug)
     {
         $product = Product::where('slug', $slug)->firstOrFail();
-        $product->load('ratings', 'brand');
+        $product->load('ratings', 'related');
 
 
         $rate = $product->averageRating;

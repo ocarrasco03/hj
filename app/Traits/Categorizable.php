@@ -28,6 +28,26 @@ trait Categorizable
         }
     }
 
+    /**
+     * Remove all current categories and set the given ones
+     *
+     * @param array|\Illuminate\Support\Collection|string|int ...$categories
+     * @return $this
+     */
+    public function syncCategories(...$categories)
+    {
+        $this->categories()->detach();
+        $ids = [];
+
+        $categories = collect($categories)->flatten();
+        foreach ($categories as $category) {
+            $category = Category::where('name', $category)->first();
+            $ids[] = $category->id;
+        }
+
+        $this->category($ids);
+    }
+
     public function categoryRemove($id)
     {
         if (is_array($id)) {

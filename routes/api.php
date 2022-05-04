@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\VehiclesController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,5 +27,14 @@ Route::name('api.')->group(function () {
     Route::get('engines', [SearchController::class, 'getEngines'])->name('engines');
     Route::get('categories', [SearchController::class, 'getCategories'])->name('categories');
     Route::get('subcategories/{parent}', [SearchController::class, 'getSubCategories'])->name('subcategories');
-    
+
+    Route::controller(VehiclesController::class)->prefix('vehiculos')->name('vehicles.')->group(function () {
+        Route::get('years', 'years')->name('year.names');
+        Route::get('makes', 'makes')->name('makes');
+        Route::get('make-names', 'makeNames')->name('makes.names');
+        Route::get('models', 'modelNames')->name('models.names');
+        Route::get('models/{make}', 'modelNamesByMake')->name('models.make');
+        Route::get('models/{make}/{year}', 'modelNamesByAppliaction')->name('models.application');
+    });
+
 });

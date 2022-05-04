@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\Cms\Catalogs;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UploadImage;
 use App\Models\Catalogs\Brand;
 use App\Models\Catalogs\Product;
-use App\Http\Controllers\Controller;
+use App\Models\Configs\Category;
+use App\Models\Vehicles\Manufacturer;
+use App\Models\Vehicles\Year;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
 {
@@ -38,7 +44,16 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $brands = Brand::all()->pluck('name');
+        $categories = Category::allParents();
+        $categories->load('children');
+
+        return Inertia::render('Cms/Catalogs/Products/Create', [
+            'brands' => $brands,
+            'categories' => $categories,
+            'years' => Year::orderByDesc('year')->get()->pluck('year'),
+            'makes' => Manufacturer::orderBy('name', 'asc')->get()->pluck('name'),
+        ]);
     }
 
     /**
@@ -61,30 +76,69 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $brands = Brand::all()->pluck('name');
-        return Inertia::render('Cms/Catalogs/Products/Show', ['product' => $product, 'brands' => $brands]);
-    }
+        $categories = Category::allParents();
+        $categories->load('children');
+        $product->load('related', 'catalogs');
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return Inertia::render('Cms/Catalogs/Products/Show', [
+            'product' => $product,
+            'brands' => $brands,
+            'categories' => $categories,
+            'years' => Year::orderByDesc('year')->get()->pluck('year'),
+            'makes' => Manufacturer::orderBy('name', 'asc')->get()->pluck('name'),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Catalogs\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'brand' => ['required', 'string'],
+            'status' => ['string', 'nullable'],
+            'sku' => ['required', 'string'],
+            'name' => ['required', 'string'],
+            'description' => ['string', 'nullable'],
+            'cost' => ['numeric'],
+            'price_wo_tax' => ['required','numeric'],
+            'price' => ['required','numeric'],
+            'stock' => ['numeric'],
+            'notes' => ['string','nullable'],
+            'attributes' => ['json','nullable'],
+            'condition' => ['required', 'string'],
+            'category' => ['string'],
+            'subcategory' => ['string'],
+        ]);
+        DB::beginTransaction();
+        try {
+            $product->sku = $request->input('sku');
+            $product->name = $request->input('name');
+            $product->description = $request->input('description');
+            $product->cost = $request->input('cost');
+            $product->price_wo_tax = $request->input('price_wo_tax');
+            $product->price = $request->input('price');
+            $product->stock = $request->input('stock');
+            $product->notes = $request->input('notes');
+            $product->attributes = $request->input('attributes');
+            $product->condition = $request->input('condition');
+
+            $product->syncCategories([$request->input('category'),$request->input('subcategory')]);
+
+            if ($product->isDirty()) {
+                $product->save();
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+            return redirect()->back()->withErrors($th->getMessage())->with(['toast' => ['type' => 'error', 'message' => $th->getMessage()]]);
+        }
+        DB::commit();
+        return redirect()->back()->with(['toast' => ['type' => 'success', 'message' => 'Producto actualiado correctamente']]);
     }
 
     /**
@@ -96,5 +150,36 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function upload(UploadImage $request, Product $product)
+    {
+        try {
+            if ($request->hasFile('image')) {
+                $product->addMedia($request->file('image'))->withResponsiveImages()->toMediaCollection('products');
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+            return redirect()->back()
+                ->withErrors($th->getMessage())
+                ->with(['toast' => ['type' => 'error', 'message' => $th->getMessage()]]);
+        }
+
+        return redirect()->back()->with(['toast' => ['type' => 'success', 'message' => 'Imagen cargada exitosamente!']]);
+    }
+
+    public function remove(Product $product, $id)
+    {
+        try {
+            $media = Media::findByUuid($id);
+            $product->deleteMedia($media->id);
+        } catch (\Throwable $th) {
+            throw $th;
+            return redirect()->back()
+                ->withErrors($th->getMessage())
+                ->with(['toast' => ['type' => 'error', 'message' => $th->getMessage()]]);
+        }
+
+        return redirect()->back()->with(['toast' => ['type' => 'success', 'message' => 'Imagen eliminada exitosamente!']]);
     }
 }

@@ -14,13 +14,12 @@ class Catalog extends Model
      *
      * @var array
      */
-    // protected $with = [
-    //     'product',
-    //     'year',
-    //     'make',
-    //     'model',
-    //     'engine',
-    // ];
+    protected $with = [
+        'year',
+        'make',
+        'model',
+        'engine',
+    ];
 
     /**
      * The attributes that are mass assignable.
