@@ -139,16 +139,6 @@ class Product extends Model implements Buyable, HasMedia
     }
 
     /**
-     * Get the supplier that owns the product.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    /**
      * Get the brand that owns the product.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
