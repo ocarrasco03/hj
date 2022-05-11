@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Main\Home\ProductResource;
 use App\Models\Catalogs\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -43,7 +44,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $slug
      * @return \Illuminate\Http\Response
      */
     public function show($slug)
@@ -54,7 +55,10 @@ class ProductController extends Controller
 
         $rate = $product->averageRating;
 
-        return Inertia::render('Catalogs/Product', ['product' => $product, 'rate' => $rate]);
+        return Inertia::render('Catalogs/Product', [
+            // 'product' => $product, 'rate' => $rate
+            'product' => new ProductResource(Product::where('slug', $slug)->firstOrFail())
+        ]);
     }
 
     /**

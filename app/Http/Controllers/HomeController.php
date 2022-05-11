@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use Inertia\Inertia;
+use App\Http\Resources\Main\Home\MostSelledCollection;
 use App\Mail\ContactForm;
 use App\Models\Catalogs\Product;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
@@ -19,20 +20,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::where('stock','>', 0)->get()->random(8);
-        $products->load('ratings');
-        $mostSelled = [];
-        foreach ($products as $product) {
-            $mostSelled[] = [
-                'sku' => $product->sku,
-                'name' => $product->name,
-                'description' => $product->description,
-                'slug' => $product->slug,
-                'price' => $product->price,
-                'averageRating' => $product->averageRating,
-            ];
-        }
-        return Inertia::render('Home', ['products' => $mostSelled]);
+        return Inertia::render('Home', [
+            'products' => new MostSelledCollection(Product::where('stock', '>', 0)->get()->random(8))
+        ]);
     }
 
     /**
@@ -116,7 +106,7 @@ class HomeController extends Controller
 
             Mail::to('ocarrasco@hjautopartes.com.mx')->send(new ContactForm($request->input()));
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             return Redirect::route('home')->with(['toast' => ['type' => 'danger', 'message' => $e->getMessage()]]);
         }
 

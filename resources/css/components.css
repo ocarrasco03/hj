@@ -40,10 +40,12 @@ Table of Contents
 37. Avatar
 38. Full Layout
 39. Container
+40. Images Carousel Hoverable
+41. Ticket
 -------------------------------------------------------------------*/
 
 /*
-Forms
+* Forms
 */
 .label {
     @apply text-sm font-bold;
@@ -1966,5 +1968,59 @@ select {
         .action {
             @apply opacity-100;
         }
+    }
+}
+
+/**
+* Ticket
+*/
+.w_ticket {
+    @apply relative box-border w-full mt-9 lg:mt-6 mx-auto mb-0 py-14 px-8 shadow-sm;
+    background: #efe5c1;
+    &:before {
+        @apply absolute left-0 w-full h-5;
+        content: "";
+    }
+    &:before {
+        @apply -top-5;
+        background: radial-gradient(
+                circle,
+                transparent,
+                transparent 50%,
+                #efe5c1 50%,
+                #efe5c1 100%
+            )
+            3px -15px / 41px 40px repeat-x;
+    }
+    .heading {
+        @apply text-center;
+        h4 {
+            @apply text-2xl;
+        }
+    }
+    .detail {
+        @apply w-full bg-white mt-2;
+        .ticket-item {
+            @apply text-base font-medium;
+        }
+    }
+}
+
+/**
+* Autocomplete
+*/
+.autocomplete {
+    @apply relative inline-block border;
+    &-items {
+        @apply absolute border border-gray-500 border-t-0 border-b-0 z-50;
+        div {
+            @apply py-2 px-4 cursor-pointer bg-white border-b border-b-gray-500;
+            &:hover {
+                @apply bg-gray-400;
+            }
+        }
+    }
+    &-active {
+        @apply bg-blue-500 text-white;
     }
 }

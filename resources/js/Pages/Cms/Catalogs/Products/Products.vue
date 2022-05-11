@@ -134,6 +134,12 @@ export default {
                     class="btn btn-admin uppercase ml-2"
                     >Agregar</Link
                 >
+                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                    <span class="las la-cloud-upload-alt"></span>
+                </button>
+                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                    <span class="las la-cloud-download-alt"></span>
+                </button>
             </div>
         </div>
     </section>

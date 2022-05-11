@@ -78,9 +78,51 @@ class ImportImages extends Command
                                 ->toMediaCollection('products');
                         }
                     }
-                } else if (is_dir('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku)) {
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG')) {
                     if (file_exists('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')) {
                         $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/LINEA_VERDE_IMG')) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/LINEA_AZUL_IMG/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/CUBRE POLVOS/MA')) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/CUBRE POLVOS/MA/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/CUBRE POLVOS/MA/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/DIRECCION Y SUSPENSION/MA')) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/DIRECCION Y SUSPENSION/MA/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/DIRECCION Y SUSPENSION/MA/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/JUNTAS HOMOCINETICAS/MA_medidas')) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/JUNTAS HOMOCINETICAS/MA_medidas/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/JUNTAS HOMOCINETICAS/MA_medidas/' . $product->sku . '.jpg')
+                            ->withResponsiveImages()
+                            ->toMediaCollection('products');
+                    }
+                }
+
+                if (is_dir('/Users/oscar/Documents/HJ/Images/copy/SOPORTES/MA')) {
+                    if (file_exists('/Users/oscar/Documents/HJ/Images/copy/SOPORTES/MA/' . $product->sku . '.jpg')) {
+                        $product->addMedia('/Users/oscar/Documents/HJ/Images/copy/SOPORTES/MA/' . $product->sku . '.jpg')
                             ->withResponsiveImages()
                             ->toMediaCollection('products');
                     }

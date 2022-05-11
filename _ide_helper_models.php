@@ -43,7 +43,6 @@ namespace App\Models\Catalogs{
  *
  * @property int $id
  * @property int $brand_id
- * @property int|null $supplier_id
  * @property int $status_id
  * @property string $sku
  * @property string $name
@@ -55,8 +54,8 @@ namespace App\Models\Catalogs{
  * @property string $unit
  * @property float $stock
  * @property float $weight
- * @property array|null $notes
- * @property string|null $attributes
+ * @property string|null $notes
+ * @property array|null $attributes
  * @property string $condition
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Tag[] $tags
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -68,11 +67,10 @@ namespace App\Models\Catalogs{
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Category[] $categories
  * @property-read int|null $categories_count
  * @property-read mixed $average_rating
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
  * @property-read mixed $sum_rating
- * @property-read mixed $thumb
  * @property-read mixed $user_average_rating
  * @property-read mixed $user_sum_rating
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders
  * @property-read int|null $orders_count
@@ -80,9 +78,9 @@ namespace App\Models\Catalogs{
  * @property-read int|null $ratings_count
  * @property-read \Illuminate\Database\Eloquent\Collection|Product[] $related
  * @property-read int|null $related_count
- * @property-read \App\Models\Configs\Status|null $status
- * @property-read \App\Models\Catalogs\Supplier|null $supplier
+ * @property-read \App\Models\Configs\Status $status
  * @property-read int|null $tags_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Product applicationSearch($year = null, $make = null, $model = null, $engine = null, $category = null, $subcategory = null)
  * @method static \Illuminate\Database\Eloquent\Builder|Product crawler($term)
  * @method static \Database\Factories\Catalogs\ProductFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
@@ -105,7 +103,6 @@ namespace App\Models\Catalogs{
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereStock($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Product whereSupplierId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTags($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
@@ -114,33 +111,6 @@ namespace App\Models\Catalogs{
  * @method static \Illuminate\Database\Query\Builder|Product withoutTrashed()
  */
 	class Product extends \Eloquent implements \App\Packages\Shoppingcart\Contracts\Buyable, \Spatie\MediaLibrary\HasMedia {}
-}
-
-namespace App\Models\Catalogs{
-/**
- * App\Models\Catalogs\Supplier
- *
- * @property int $id
- * @property string $name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Catalogs\Product[] $products
- * @property-read int|null $products_count
- * @method static \Database\Factories\Catalogs\SupplierFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier newQuery()
- * @method static \Illuminate\Database\Query\Builder|Supplier onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier query()
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Supplier whereUpdatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|Supplier withTrashed()
- * @method static \Illuminate\Database\Query\Builder|Supplier withoutTrashed()
- */
-	class Supplier extends \Eloquent {}
 }
 
 namespace App\Models\Cms{
@@ -190,27 +160,14 @@ namespace App\Models\Cms{
 
 namespace App\Models\Configs{
 /**
- * App\Models\Configs\Categorizable
- *
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $categorizable
- * @property-read \App\Models\Configs\Category|null $category
- * @property-read \App\Models\Catalogs\Product|null $products
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Categorizable query()
- */
-	class Categorizable extends \Eloquent {}
-}
-
-namespace App\Models\Configs{
-/**
  * App\Models\Configs\Category
  *
  * @property int $id
  * @property string $name
- * @property Category|null $parent
+ * @property int|null $parent_id
  * @property-read \Illuminate\Database\Eloquent\Collection|Category[] $children
  * @property-read int|null $children_count
+ * @property-read Category|null $parent
  * @method static \Illuminate\Database\Eloquent\Builder|Category allParents()
  * @method static \Database\Factories\Configs\CategoryFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Category newModelQuery()
@@ -218,9 +175,171 @@ namespace App\Models\Configs{
  * @method static \Illuminate\Database\Eloquent\Builder|Category query()
  * @method static \Illuminate\Database\Eloquent\Builder|Category whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Category whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Category whereParent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Category whereParentId($value)
  */
 	class Category extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\City
+ *
+ * @property int $id
+ * @property int $country_id
+ * @property int $state_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Configs\Country $country
+ * @property-read \App\Models\Configs\State $state
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\ZipCode[] $zipCodes
+ * @property-read int|null $zip_codes_count
+ * @method static \Database\Factories\Configs\CityFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|City newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|City newQuery()
+ * @method static \Illuminate\Database\Query\Builder|City onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|City query()
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereCountryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereStateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|City whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|City withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|City withoutTrashed()
+ */
+	class City extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\Country
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $prefix
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Address[] $addresses
+ * @property-read int|null $addresses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\City[] $cities
+ * @property-read int|null $cities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\State[] $states
+ * @property-read int|null $states_count
+ * @method static \Database\Factories\Configs\CountryFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Country onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country wherePrefix($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Country withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Country withoutTrashed()
+ */
+	class Country extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\Currency
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\Configs\CurrencyFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Currency whereUpdatedAt($value)
+ */
+	class Currency extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\Neighborhood
+ *
+ * @property int $id
+ * @property int $zip_code_id
+ * @property string $name
+ * @property string $type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Configs\ZipCode $zipCode
+ * @method static \Database\Factories\Configs\NeighborhoodFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Neighborhood onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Neighborhood whereZipCodeId($value)
+ * @method static \Illuminate\Database\Query\Builder|Neighborhood withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Neighborhood withoutTrashed()
+ */
+	class Neighborhood extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\Slider
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\Configs\SliderFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider whereUpdatedAt($value)
+ */
+	class Slider extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\State
+ *
+ * @property int $id
+ * @property int $country_id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\City[] $cities
+ * @property-read int|null $cities_count
+ * @property-read \App\Models\Configs\Country $country
+ * @method static \Database\Factories\Configs\StateFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|State newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|State newQuery()
+ * @method static \Illuminate\Database\Query\Builder|State onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|State query()
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereCountryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|State whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|State withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|State withoutTrashed()
+ */
+	class State extends \Eloquent {}
 }
 
 namespace App\Models\Configs{
@@ -264,6 +383,28 @@ namespace App\Models\Configs{
 
 namespace App\Models\Configs{
 /**
+ * App\Models\Configs\Store
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $rfc
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Database\Factories\Configs\StoreFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Store newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Store newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Store query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereRfc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Store whereUpdatedAt($value)
+ */
+	class Store extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
  * App\Models\Configs\Tag
  *
  * @property int $id
@@ -286,6 +427,42 @@ namespace App\Models\Configs{
  * @method static \Illuminate\Database\Eloquent\Builder|Tag whereUpdatedAt($value)
  */
 	class Tag extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
+ * App\Models\Configs\ZipCode
+ *
+ * @property int $id
+ * @property int $country_id
+ * @property int $state_id
+ * @property int $city_id
+ * @property string $zip_code
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Configs\City $city
+ * @property-read \App\Models\Configs\Country $country
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Neighborhood[] $neighborhoods
+ * @property-read int|null $neighborhoods_count
+ * @property-read \App\Models\Configs\State $state
+ * @method static \Database\Factories\Configs\ZipCodeFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode newQuery()
+ * @method static \Illuminate\Database\Query\Builder|ZipCode onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereCityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereCountryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereStateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ZipCode whereZipCode($value)
+ * @method static \Illuminate\Database\Query\Builder|ZipCode withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|ZipCode withoutTrashed()
+ */
+	class ZipCode extends \Eloquent {}
 }
 
 namespace App\Models\Sales{
@@ -338,7 +515,9 @@ namespace App\Models{
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
+ * @property string $phone
  * @property \Illuminate\Support\Carbon|null $acepted_terms_conditions
+ * @property int $suscribed
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -362,7 +541,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSuscribed($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|User withTrashed()
  * @method static \Illuminate\Database\Query\Builder|User withoutTrashed()
@@ -502,9 +683,9 @@ namespace App\Models\Vehicles{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Engine[] $engines
  * @property-read int|null $engines_count
- * @property-read \App\Models\Vehicles\Manufacturer $makes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Year[] $years
- * @property-read int|null $years_count
+ * @property-read \App\Models\Vehicles\Manufacturer $make
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vehicles\Year[] $year
+ * @property-read int|null $year_count
  * @method static \Database\Factories\Vehicles\ModelFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Model newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Model newQuery()

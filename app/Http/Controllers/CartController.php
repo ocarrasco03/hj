@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Catalogs\Product;
+use App\Models\Configs\Country;
+use App\Models\Sales\Order;
 use App\Packages\Shoppingcart\Cart;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -21,22 +23,12 @@ class CartController extends Controller
     {
         return Inertia::render('Cart', [
             'cart' => $cart->content(),
-            'subtotal' => $cart->subtotal(),
-            'tax' => $cart->tax(),
-            'discount' => $cart->discount(),
-            'total' => $cart->total(),
+            'subtotal' => $cart->subtotalFloat(),
+            'tax' => $cart->taxFloat(),
+            'discount' => $cart->discountFloat(),
+            'total' => $cart->totalFloat(),
             'count' => $cart->countItems(),
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -71,28 +63,6 @@ class CartController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -114,11 +84,11 @@ class CartController extends Controller
                     'discount' => $request->input('qty') > 0 ? $cart->get($request->input('id'))->discount() : null,
                     'total' => $request->input('qty') > 0 ? $cart->get($request->input('id'))->total() : null,
                 ],
-                'subtotal' => $cart->subtotal(),
-                'discount' => $cart->discount(),
-                'tax' => $cart->tax(),
-                'total' => $cart->total(),
-                'count' => $cart->count(),
+                'subtotal' => $cart->subtotalFloat(),
+                'discount' => $cart->discountFloat(),
+                'tax' => $cart->taxFloat(),
+                'total' => $cart->totalFloat(),
+                'count' => $cart->countItems(),
             ],
         ]], 200);
     }
@@ -144,11 +114,45 @@ class CartController extends Controller
         return response()->json(['success' => [
             'cart' => [
                 'items' => $cart->content(),
-                'subtotal' => $cart->subtotal(),
-                'discount' => $cart->discount(),
-                'tax' => $cart->tax(),
-                'total' => $cart->total(),
+                'subtotal' => $cart->subtotalFloat(),
+                'discount' => $cart->discountFloat(),
+                'tax' => $cart->taxFloat(),
+                'total' => $cart->totalFloat(),
             ],
         ]], 200);
+    }
+
+    public function shipping(Cart $cart)
+    {
+        if (!session()->has('checkout')) {
+            $token = now()->addMinutes(10);
+            session()->put(['checkout' => $token]);
+        }
+
+        foreach (Session::get('checkout') as $value) {
+            if ($value < now()) {
+                session()->forget('checkout');
+                return redirect()->route('cart')->with(['toast' => ['type' => 'error', 'message' => 'El token ha expirado']]);
+            }
+        }
+
+        return Inertia::render('Checkout/Shipping', [
+            'countries' => Country::all()->pluck('name'),
+            'items' => $cart->content(),
+            'tax' => $cart->taxFloat(),
+            'subtotal' => $cart->subtotalFloat(),
+            'discount' => $cart->discountFloat(),
+            'total' => $cart->totalFloat(),
+        ]);
+    }
+
+    public function processOrder(Request $request)
+    {
+        return redirect()->route('cart.process.order');
+    }
+
+    public function checkout(Order $order)
+    {
+        return Inertia::render('Checkout/Payment');
     }
 }

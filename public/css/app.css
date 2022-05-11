@@ -7254,7 +7254,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-invert:  ;
   --tw-backdrop-opacity:  ;
   --tw-backdrop-saturate:  ;
-  --tw-backdrop-sepia:  ; }html{
+  --tw-backdrop-sepia:  ; }*{
+  box-sizing: border-box; }html{
   font-family: Nunito Sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }body {
     /* @apply relative flex w-full min-h-screen bg-gray-100 text-gray-700 text-sm; */
     position: relative;
@@ -7554,8 +7555,10 @@ Table of Contents
 37. Avatar
 38. Full Layout
 39. Container
+40. Images Carousel Hoverable
+41. Ticket
 -------------------------------------------------------------------*//*
-Forms
+* Forms
 */.label{
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -9129,7 +9132,79 @@ Forms
   transition-duration: 500ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }.wrapper-img:hover .carousel-item{
   opacity: 0.4; }.wrapper-img:hover .action{
-  opacity: 1; }.visible{
+  opacity: 1; }/**
+* Ticket
+*/.w_ticket{
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2.25rem;
+  margin-bottom: 0px;
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: 0 0 #0000, 0 0 #0000, var(--tw-shadow);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); }@media (min-width: 1024px){.w_ticket{
+    margin-top: 1.5rem; } }.w_ticket {
+    background: #efe5c1;
+}.w_ticket:before{
+  position: absolute;
+  left: 0px;
+  height: 1.25rem;
+  width: 100%;
+        content: "";
+        top: -1.25rem;
+        background: radial-gradient(
+                circle,
+                transparent,
+                transparent 50%,
+                #efe5c1 50%,
+                #efe5c1 100%
+            )
+            3px -15px / 41px 40px repeat-x; }.w_ticket .heading{
+  text-align: center; }.w_ticket .heading h4{
+  font-size: 1.5rem;
+  line-height: 2rem; }.w_ticket .detail{
+  margin-top: 0.5rem;
+  width: 100%;
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity)); }.w_ticket .detail .ticket-item{
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500; }/**
+* Autocomplete
+*/.autocomplete{
+  position: relative;
+  display: inline-block;
+  border-width: 1px; }.autocomplete-items{
+  position: absolute;
+  z-index: 50;
+  border-width: 1px;
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+  --tw-border-opacity: 1;
+  border-color: rgb(151 151 151 / var(--tw-border-opacity)); }.autocomplete-items div{
+  cursor: pointer;
+  border-bottom-width: 1px;
+  --tw-border-opacity: 1;
+  border-bottom-color: rgb(151 151 151 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem; }.autocomplete-items div:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(167 167 167 / var(--tw-bg-opacity)); }.autocomplete-active{
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 113 252 / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity)); }.visible{
   visibility: visible; }.invisible{
   visibility: hidden; }.fixed{
   position: fixed; }.absolute{
@@ -9226,15 +9301,12 @@ Forms
   height: 2.25rem; }.h-4{
   height: 1rem; }.h-28{
   height: 7rem; }.h-36{
-  height: 9rem; }.h-40{
-  height: 10rem; }.h-auto{
-  height: auto; }.h-96{
-  height: 24rem; }.h-52{
-  height: 13rem; }.max-h-36{
+  height: 9rem; }.h-auto{
+  height: auto; }.h-40{
+  height: 10rem; }.h-96{
+  height: 24rem; }.max-h-36{
   max-height: 9rem; }.max-h-96{
-  max-height: 24rem; }.max-h-52{
-  max-height: 13rem; }.max-h-28{
-  max-height: 7rem; }.max-h-5{
+  max-height: 24rem; }.max-h-5{
   max-height: 1.25rem; }.min-h-screen{
   min-height: 100vh; }.w-5{
   width: 1.25rem; }.w-8{
@@ -9248,9 +9320,9 @@ Forms
   width: 11rem; }.w-24{
   width: 6rem; }.w-48{
   width: 12rem; }.w-96{
-  width: 24rem; }.w-1\/2{
-  width: 50%; }.w-px{
-  width: 1px; }.w-64{
+  width: 24rem; }.w-px{
+  width: 1px; }.w-1\/2{
+  width: 50%; }.w-64{
   width: 16rem; }.w-80{
   width: 20rem; }.w-1\/4{
   width: 25%; }.w-3\/4{
@@ -9445,11 +9517,11 @@ Forms
   --tw-bg-opacity: 1;
   background-color: rgb(27 25 25 / var(--tw-bg-opacity)); }.bg-secondary-50{
   --tw-bg-opacity: 1;
-  background-color: rgb(229 228 228 / var(--tw-bg-opacity)); }.bg-gray-300{
+  background-color: rgb(229 228 228 / var(--tw-bg-opacity)); }.bg-secondary-500{
   --tw-bg-opacity: 1;
-  background-color: rgb(182 182 182 / var(--tw-bg-opacity)); }.bg-secondary-500{
+  background-color: rgb(37 34 34 / var(--tw-bg-opacity)); }.bg-gray-300{
   --tw-bg-opacity: 1;
-  background-color: rgb(37 34 34 / var(--tw-bg-opacity)); }.bg-transparent{
+  background-color: rgb(182 182 182 / var(--tw-bg-opacity)); }.bg-transparent{
   background-color: transparent; }.bg-opacity-70{
   --tw-bg-opacity: 0.7; }.bg-opacity-75{
   --tw-bg-opacity: 0.75; }.bg-opacity-90{
@@ -9502,11 +9574,11 @@ Forms
   padding-left: 0.25rem;
   padding-right: 0.25rem; }.py-10{
   padding-top: 2.5rem;
-  padding-bottom: 2.5rem; }.px-0{
-  padding-left: 0px;
-  padding-right: 0px; }.px-10{
+  padding-bottom: 2.5rem; }.px-10{
   padding-left: 2.5rem;
-  padding-right: 2.5rem; }.pt-8{
+  padding-right: 2.5rem; }.px-0{
+  padding-left: 0px;
+  padding-right: 0px; }.pt-8{
   padding-top: 2rem; }.pt-2{
   padding-top: 0.5rem; }.pb-3{
   padding-bottom: 0.75rem; }.pb-4{
@@ -9618,11 +9690,17 @@ Forms
   --tw-text-opacity: 1;
   color: rgb(255 0 0 / var(--tw-text-opacity)); }.text-yellow-700{
   --tw-text-opacity: 1;
-  color: rgb(250 185 7 / var(--tw-text-opacity)); }.text-admin-500{
+  color: rgb(250 185 7 / var(--tw-text-opacity)); }.text-secondary-900{
+  --tw-text-opacity: 1;
+  color: rgb(13 12 12 / var(--tw-text-opacity)); }.text-admin-500{
   --tw-text-opacity: 1;
   color: rgb(20 83 136 / var(--tw-text-opacity)); }.text-green-500{
   --tw-text-opacity: 1;
-  color: rgb(205 250 145 / var(--tw-text-opacity)); }.underline{
+  color: rgb(205 250 145 / var(--tw-text-opacity)); }.text-success-700{
+  --tw-text-opacity: 1;
+  color: rgb(51 171 131 / var(--tw-text-opacity)); }.text-danger-500{
+  --tw-text-opacity: 1;
+  color: rgb(223 71 89 / var(--tw-text-opacity)); }.underline{
   -webkit-text-decoration-line: underline;
           text-decoration-line: underline; }.antialiased{
   -webkit-font-smoothing: antialiased;
@@ -9870,7 +9948,8 @@ Forms
   --tw-ring-color: transparent; }.hover\:scale-110:hover{
   --tw-scale-x: 1.1;
   --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }.hover\:border-0:hover{
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }.hover\:cursor-pointer:hover{
+  cursor: pointer; }.hover\:border-0:hover{
   border-width: 0px; }.hover\:border-transparent:hover{
   border-color: transparent; }.hover\:border-black:hover{
   --tw-border-opacity: 1;
@@ -10100,7 +10179,8 @@ Forms
     margin-left: 0.5rem; }.lg\:block{
     display: block; }.lg\:flex{
     display: flex; }.lg\:table-cell{
-    display: table-cell; }.lg\:w-1\/2{
+    display: table-cell; }.lg\:h-full{
+    height: 100%; }.lg\:w-1\/2{
     width: 50%; }.lg\:w-1\/3{
     width: 33.333333%; }.lg\:w-1\/4{
     width: 25%; }.lg\:w-3\/4{
@@ -10122,6 +10202,7 @@ Forms
     padding-left: 2rem;
     padding-right: 2rem; }.lg\:px-4{
     padding-left: 1rem;
+    padding-right: 1rem; }.lg\:pr-4{
     padding-right: 1rem; }.lg\:pt-0{
     padding-top: 0px; } }@media (min-width: 1280px){.xl\:w-3\/4{
     width: 75%; }.xl\:w-1\/2{

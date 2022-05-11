@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Main\Home\SearchCollection;
 use App\Models\Catalogs\Product;
 use App\Models\Configs\Category;
 use App\Models\Vehicles\Manufacturer;
@@ -26,65 +27,28 @@ class SearchController extends Controller
         $queries = [];
         $qTmp = ['year', 'make', 'model', 'engine', 'category', 'subcategory'];
 
+        $year = $request->has('year') && strlen($request->input('year')) > 0 ? $request->input('year') : null;
+        $make = $request->has('make') && strlen($request->input('make')) > 0 ? $request->input('make') : null;
+        $model = $request->has('model') && strlen($request->input('model')) > 0 ? $request->input('model') : null;
+        $engine = $request->has('engine') && strlen($request->input('engine')) > 0 ? $request->input('engine') : null;
+        $category = $request->has('category') && strlen($request->input('category')) > 0 ? $request->input('category') : null;
+        $subcategory = $request->has('subcategory') && strlen($request->input('subcategory')) > 0 ? $request->input('subcategory') : null;
+
         if (empty($request->all())) {
             return Inertia::render('Catalogs/Search', ['products' => $products]);
         }
 
-        if (!is_null($query)) {
+        if ($request->has('query') && strlen($request->input('query')) > 0) {
             $this->validateSessionSearchApplication();
             $products = Product::search($query)->paginate(10);
             $products->appends(['query' => $request->input('query')]);
         } else {
             $this->validateSessionSearchApplication($request->all());
-            $products = Product::withCount(['ratings as averageRating' => function ($query) {
-                $query->select(DB::raw('avg(rating)'));
-            }])
-                ->when(!is_null($request->input('year')), function ($query) use ($request) {
-                    return $query->whereHas('catalogs', function ($query) use ($request) {
-                        return $query->whereHas('year', function ($query) use ($request) {
-                            return $query->where('year', $request->input('year'));
-                        });
-                    });
-                })
-                ->when(!is_null($request->input('make')), function ($query) use ($request) {
-                    return $query->whereHas('catalogs', function ($query) use ($request) {
-                        return $query->whereHas('make', function ($query) use ($request) {
-                            return $query->where('name', $request->input('make'));
-                        });
-                    });
-                })
-                ->when(!is_null($request->input('model')), function ($query) use ($request) {
-                    return $query->whereHas('catalogs', function ($query) use ($request) {
-                        return $query->whereHas('model', function ($query) use ($request) {
-                            return $query->where('name', $request->input('model'));
-                        });
-                    });
-                })
-                ->when(!is_null($request->input('make')), function ($query) use ($request) {
-                    return $query->whereHas('catalogs', function ($query) use ($request) {
-                        return $query->whereHas('make', function ($query) use ($request) {
-                            return $query->where('name', $request->input('make'));
-                        });
-                    });
-                })
-                ->when(!is_null($request->input('category')), function ($query) use ($request) {
-                    return $query->whereHas('categories', function ($query) use ($request) {
-                        return $query->where('name', $request->input('category'))->where('parent', 0);
-                    });
-                })
-                ->when(!is_null($request->input('subcategory')), function ($query) use ($request) {
-                    return $query->whereHas('categories', function ($query) use ($request) {
-                        $parent = Category::where('name', $request->input('category'))
-                            ->where('parent', 0)
-                            ->first();
-
-                        return $query->where('name', $request->input('subcategory'))->where('parent', $parent->id);
-                    });
-                })
+            $products = Product::applicationSearch($year, $make, $model, $engine, $category, $subcategory)
                 ->paginate(10);
 
             foreach ($qTmp as $value) {
-                if (!is_null($request->input($value))) {
+                if ($request->has($value) && strlen($request->input($value)) > 0) {
                     $queries[$value] = $request->input($value);
                 }
             }
@@ -92,119 +56,7 @@ class SearchController extends Controller
             $products->appends($queries);
         }
 
-        return Inertia::render('Catalogs/Search', ['products' => $products]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    public function getYears()
-    {
-        $years = Year::select('year')->orderBy('year', 'desc')->get();
-        return $years;
-    }
-
-    public function getMakes()
-    {
-        $makes = Manufacturer::select('name')->orderBy('name', 'asc')->get();
-        return $makes;
-    }
-
-    public function getModels($year, $make)
-    {
-
-        $models = Model::select('name')
-            ->whereHas('makes', function ($query) use ($make) {
-                return $query->where('name', $make);
-            })
-            ->whereHas('years', function ($query) use ($year) {
-                return $query->where('year', $year);
-            })
-            ->orderBy('name', 'asc')->get();
-
-        return $models;
-    }
-
-    public function getEngines()
-    {
-        $years = Year::select('year')->orderBy('year', 'desc')->get();
-        return $years;
-    }
-
-    public function getCategories()
-    {
-        $categories = Category::where('parent', 0)->orderBy('name', 'asc')->get();
-        return $categories;
-    }
-
-    public function getSubCategories($parent)
-    {
-        $parent = Category::where('name', $parent)->where('parent', 0)->first();
-        $subcategories = Category::where('parent', $parent->id)->orderBy('name', 'asc')->get();
-        return $subcategories;
+        return Inertia::render('Catalogs/Search', ['products' => new SearchCollection($products)]);
     }
 
     /**

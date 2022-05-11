@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\AutocompleteController;
+use App\Http\Controllers\Api\CitiesController;
+use App\Http\Controllers\Api\CountriesController;
+use App\Http\Controllers\Api\NeighborhoodsController;
+use App\Http\Controllers\Api\StatesController;
 use App\Http\Controllers\Api\VehiclesController;
+use App\Http\Controllers\Api\ZipCodesController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,20 +27,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::name('api.')->group(function () {
-    Route::get('years', [SearchController::class, 'getYears'])->name('years');
-    Route::get('makes', [SearchController::class, 'getMakes'])->name('makes');
-    Route::get('models/{year}/{make}', [SearchController::class, 'getModels'])->name('models');
     Route::get('engines', [SearchController::class, 'getEngines'])->name('engines');
-    Route::get('categories', [SearchController::class, 'getCategories'])->name('categories');
-    Route::get('subcategories/{parent}', [SearchController::class, 'getSubCategories'])->name('subcategories');
 
-    Route::controller(VehiclesController::class)->prefix('vehiculos')->name('vehicles.')->group(function () {
-        Route::get('years', 'years')->name('year.names');
-        Route::get('makes', 'makes')->name('makes');
-        Route::get('make-names', 'makeNames')->name('makes.names');
-        Route::get('models', 'modelNames')->name('models.names');
-        Route::get('models/{make}', 'modelNamesByMake')->name('models.make');
-        Route::get('models/{make}/{year}', 'modelNamesByAppliaction')->name('models.application');
+    Route::prefix('v2')->name('v2.')->group(function () {
+        Route::get('countries', [CountriesController::class, '__invoke'])->name('countries');
+        Route::get('states/{country?}', [StatesController::class, '__invoke'])->name('states');
+        Route::get('cities/{country?}/{state?}', [CitiesController::class, '__invoke'])->name('cities');
+        Route::get('zip-codes/{country}/{state}/{city?}', [ZipCodesController::class, '__invoke'])->name('zip.code');
+        Route::get('neighborhood/{zip_code}', [NeighborhoodsController::class, '__invoke'])->name('neighborhood');
+
+        Route::controller(VehiclesController::class)->prefix('vehicles')->name('vehicles.')->group(function () {
+            Route::get('years', 'years')->name('years');
+            Route::get('makes', 'makes')->name('makes');
+            Route::get('models/{make?}/{year?}', 'models')->name('models');
+            Route::get('categories/{category?}', 'categories')->name('categories');
+        });
+
+        Route::controller(AutocompleteController::class)->prefix('autocomplete')->name('autocomplete.')->group(function () {
+            Route::get('city/{country?}/{state?}', 'cities')->name('city');
+            Route::get('zip-codes/{country}/{state}/{city?}', 'zipCodes')->name('zip.code');
+            Route::get('neighborhood/{zip_code?}', 'neighborhood')->name('neighborhood');
+        });
     });
 
 });

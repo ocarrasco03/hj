@@ -13,7 +13,7 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'parent'
+        'parent_id'
     ];
 
     public function toSearchableArray()
@@ -25,16 +25,16 @@ class Category extends Model
 
     public function parent()
     {
-        return $this->belongsTo(Category::class, 'parent');
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 
     public function scopeAllParents($query)
     {
-        return $query->where('parent', 0)->get();
+        return $query->where('parent_id', null)->get();
     }
 }

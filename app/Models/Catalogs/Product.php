@@ -2,23 +2,23 @@
 
 namespace App\Models\Catalogs;
 
-use App\Traits\Taggeable;
-use App\Models\Sales\Order;
-use App\Traits\Categorizable;
-use Laravel\Scout\Searchable;
-use App\Models\Configs\Status;
 use App\Models\Configs\Category;
+use App\Models\Configs\Status;
+use App\Models\Sales\Order;
 use App\Models\Vehicles\Catalog;
-use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\DB;
-use willvincent\Rateable\Rateable;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Packages\Shoppingcart\Contracts\Buyable;
+use App\Traits\Categorizable;
+use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use willvincent\Rateable\Rateable;
 
 class Product extends Model implements Buyable, HasMedia
 {
@@ -37,7 +37,7 @@ class Product extends Model implements Buyable, HasMedia
      */
     protected $with = ['brand', 'ratings', 'categories', 'status'];
 
-    protected $appends = ['thumb', 'media'];
+    // protected $appends = ['thumb', 'media'];
     /**
      * The attributes that are mass assignable.
      *
@@ -212,13 +212,62 @@ class Product extends Model implements Buyable, HasMedia
     }
 
     /**
+     * Crawler to search via application scope
+     *
+     * @param \App\Models\Catalogs\Product $query
+     * @param string|int $year Optional.
+     * @param string $make Optional.
+     * @param string $model Optional.
+     * @param string $engine Optional.
+     * @param string $category Optional.
+     * @param string $subcategory Optional.
+     * @return \App\Models\Catalogs\Product
+     */
+    public function scopeApplicationSearch($query, $year = null, $make = null, $model = null, $engine = null, $category = null, $subcategory = null)
+    {
+        return $query->when(!is_null($year), function ($query) use ($year) {
+            return $query->whereHas('catalogs', function ($query) use ($year) {
+                return $query->whereHas('year', function ($query) use ($year) {
+                    return $query->where('year', $year);
+                });
+            });
+        })->when(!is_null($make), function ($query) use ($make) {
+            return $query->whereHas('catalogs', function ($query) use ($make) {
+                return $query->whereHas('make', function ($query) use ($make) {
+                    return $query->where('name', $make);
+                });
+            });
+        })->when(!is_null($model), function ($query) use ($model) {
+            return $query->whereHas('catalogs', function ($query) use ($model) {
+                return $query->whereHas('model', function ($query) use ($model) {
+                    return $query->where('name', $model);
+                });
+            });
+        })->when(!is_null($engine), function ($query) use ($engine) {
+            return $query->whereHas('catalogs', function ($query) use ($engine) {
+                return $query->whereHas('engine', function ($query) use ($engine) {
+                    return $query->where('name', $engine);
+                });
+            });
+        })->when(!is_null($category), function ($query) use ($category) {
+            return $query->whereHas('categories', function ($query) use ($category) {
+                return $query->where('name', $category)->where('parent_id', null);
+            });
+        })->when(!is_null($subcategory), function ($query) use ($subcategory) {
+            return $query->whereHas('categories', function ($query) use ($subcategory) {
+                return $query->where('name', $subcategory);
+            });
+        });
+    }
+
+    /**
      * Delete the associated media with the given id.
      * You may also pass a media object.
      *
      *
      * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted
      */
-    public function deleteMedia(int|string|Media $mediaId): void
+    public function deleteMedia(int | string | Media $mediaId): void
     {
         if ($mediaId instanceof Media) {
             $mediaId = $mediaId->getKey();
@@ -226,7 +275,7 @@ class Product extends Model implements Buyable, HasMedia
 
         $media = $this->media()->find($mediaId);
 
-        if (! $media) {
+        if (!$media) {
             throw MediaCannotBeDeleted::doesNotBelongToModel($mediaId, $this);
         }
 
@@ -243,16 +292,16 @@ class Product extends Model implements Buyable, HasMedia
         return $this->hasMany(Catalog::class);
     }
 
-    public function getThumbAttribute()
-    {
-        return $this->getFirstMediaUrl('products', 'thumb');
-    }
+    // public function getThumbAttribute()
+    // {
+    //     return $this->getFirstMediaUrl('products', 'thumb');
+    // }
 
-    public function getMediaAttribute()
-    {
-        foreach ($this->media() as $media) {
-            return $media->getMediaUrl();
-        }
-    }
+    // public function getMediaAttribute()
+    // {
+    //     foreach ($this->media() as $media) {
+    //         return $media->getMediaUrl();
+    //     }
+    // }
 
 }

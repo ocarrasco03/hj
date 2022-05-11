@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone', 20);
             $table->timestamp('acepted_terms_conditions')->nullable();
+            $table->boolean('suscribed')->default(true);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -12,23 +12,21 @@ import axios from "axios";
 import nprogress from "nprogress";
 import { ref } from "vue";
 
-defineProps({
+const props = defineProps({
     product: Object,
-    rate: String,
 });
 
-const stock = usePage().props.value.product.stock;
+const stock = props.product.data.stock;
 
 const form = useForm({
-    id: usePage().props.value.product.id,
-    name:
-        usePage().props.value.product.sku +
+    id: props.product.data.id,
+    name: props.product.data.sku +
         " " +
-        usePage().props.value.product.name,
+        props.product.data.name,
     qty: 1,
-    price: usePage().props.value.product.price_wo_tax,
+    price: props.product.data.price_wo_tax,
     options: {
-        image: usePage().props.value.product.media[0].original_url,
+        image: props.product.data.image,
     },
 });
 
@@ -39,7 +37,7 @@ const fbShare = () => {
         {
             method: "feed",
             link: route("product.show", {
-                slug: usePage().props.value.product.slug,
+                slug: props.product.data.slug,
             }),
         },
         function (response) {}
@@ -54,10 +52,10 @@ const addToCart = () =>
         },
     });
 
-let previousImage = "";
+let previousImage = props.product.data.image;
 
 window.onload = () => {
-    if (usePage().props.value.product.media.length > 0) {
+    if (props.product.data.media.length > 0) {
         previousImage = document.getElementById("main-image").src;
     }
 };
@@ -104,10 +102,10 @@ const eventChange = (event) => {
 
 <template>
     <!-- <Head :title="product.name" /> -->
-    <Head :title="product.name">
+    <Head :title="product.data.name">
         <meta
             property="og:url"
-            :content="route('product.show', { slug: product.slug })"
+            :content="route('product.show', { slug: product.data.slug })"
         />
         <meta property="og:type" content="website" />
         <meta
@@ -118,15 +116,15 @@ const eventChange = (event) => {
             property="og:description"
             content="How much does culture influence creative thinking?"
         />
-        <meta property="og:image" :content="product.media[0].original_url" />
+        <meta property="og:image" :content="props.product.data.image" />
     </Head>
     <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="flex flex-col md:flex-row space-x-3">
             <div class="preview shrink-0">
                 <img
-                    v-if="product.media.length > 0"
+                    v-if="product.data.image"
                     id="main-image"
-                    :src="product.media[0].original_url"
+                    :src="product.data.image"
                     alt=""
                     srcset=""
                     height="450"
@@ -139,7 +137,7 @@ const eventChange = (event) => {
                 />
                 <div class="flex flex-row flex-wrap">
                     <template
-                        v-for="(file, key, index) in product.media"
+                        v-for="(file, key, index) in product.data.media"
                         :key="index"
                     >
                         <img
@@ -149,6 +147,7 @@ const eventChange = (event) => {
                             srcset=""
                             height="95"
                             width="95"
+                            class="hover:cursor-pointer"
                             @click="eventChange"
                             @mouseover="eventChange"
                             @mouseleave="eventChange"
@@ -157,21 +156,21 @@ const eventChange = (event) => {
                 </div>
             </div>
             <div class="detail mx-auto flex flex-col px-2 max-w-sm">
-                <h2>{{ product.name }}</h2>
-                <h4 class="text-gray-500">SKU: {{ product.sku }}</h4>
+                <h2>{{ product.data.name }}</h2>
+                <h4 class="text-gray-500">SKU: {{ product.data.sku }}</h4>
                 <div id="rate" class="flex flex-row space-x-1 mt-3">
                     <template v-for="(i, key) in 5" :key="key">
                         <i
-                            v-if="i <= rate"
+                            v-if="i <= product.data.rate"
                             class="fas fa-star text-yellow-500"
                         ></i>
                         <i v-else class="fal fa-star text-secondary-500"></i>
                     </template>
                 </div>
-                <h2 class="mt-3">$ {{ product.price }}</h2>
+                <h2 class="mt-3">$ {{ product.data.price }}</h2>
                 <div class="mt-3">
                     <ul class="list-inside">
-                        <li>Marca: {{ product.brand.name }}</li>
+                        <li>Marca: {{ product.data.brand }}</li>
                         <!-- <li>
                             OEM:
                             <span v-if="product.notes.oem">{{
@@ -181,8 +180,8 @@ const eventChange = (event) => {
                     </ul>
                 </div>
                 <div class="mt-3 flex flex-col">
-                    <h4 class="text-secondary" v-if="product.stock > 0">
-                        Disponible: {{ product.stock }}
+                    <h4 class="text-secondary" v-if="product.data.stock > 0">
+                        Disponible: {{ product.data.stock }}
                     </h4>
                     <h4 class="text-red-500" v-else>Sin Existencia</h4>
                     <div class="flex space-x-1">
@@ -220,7 +219,7 @@ const eventChange = (event) => {
                         <a
                             :href="`https://wa.me/?text=${route(
                                 'product.show',
-                                { slug: product.slug }
+                                { slug: product.data.slug }
                             )}`"
                             class="text-gray-400 hover:text-primary-900"
                             target="_blank"
@@ -236,12 +235,12 @@ const eventChange = (event) => {
         <div class="flex flex-col tabs mt-3">
             <Tabs>
                 <Tab :title="'Descripcion'" :class="'open'">
-                    {{ product.description }}
+                    {{ product.data.description }}
                 </Tab>
                 <Tab :title="'Detalles'">
                     <ul class="list-disc list-inside">
                         <li
-                            v-for="(note, key, index) in product.notes"
+                            v-for="(note, key, index) in product.data.attributes"
                             :key="index"
                             class="list-item"
                         >
@@ -260,92 +259,43 @@ const eventChange = (event) => {
                                 class="text-xs text-yellow-700 uppercase bg-black"
                             >
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">
-                                        A&ntilde;o
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">Marca</th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Modelo
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">Motor</th>
-                                    <th
+                                    <th scope="col" class="w-px px-6 py-3 bg-secondary-500 sticky top-0">A&ntilde;o</th>
+                                    <th scope="col" class="px-6 py-3 bg-secondary-500 sticky top-0">Marca</th>
+                                    <th scope="col" class="px-6 py-3 bg-secondary-500 sticky top-0">Modelo</th>
+                                    <th scope="col" class="w-px px-6 py-3 bg-secondary-500 sticky top-0">Motor</th>
+                                    <th scope="col" class="px-6 py-3 bg-secondary-500 sticky top-0">Notas</th>
+                                    <!-- <th
                                         scope="col"
                                         class="px-6 py-3 uppercase"
                                         v-for="(
                                             note, key, index
-                                        ) in product.notes"
+                                        ) in product.data.attributes"
                                         :key="index"
                                     >
                                         {{ key }}
-                                    </th>
+                                    </th> -->
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
+                                <tr v-for="(car, key) in product.data.application" :key="key"
                                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 >
-                                    <th
-                                        scope="row"
-                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                                    >
-                                        2011
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                        {{ car.year }}
                                     </th>
-                                    <td class="px-6 py-4">Nissan</td>
-                                    <td class="px-6 py-4">Versa</td>
-                                    <td class="px-6 py-4">1.6</td>
-                                    <td
+                                    <td class="px-6 py-4">{{ car.make }}</td>
+                                    <td class="px-6 py-4">{{ car.model }}</td>
+                                    <td class="px-6 py-4">{{ car.engine }}</td>
+                                    <td class="px-6 py-4">{{ car.notes }}</td>
+                                    <!-- <td
                                         class="px-6 py-4 capitalize"
                                         v-for="(
                                             note, key, index
-                                        ) in product.notes"
+                                        ) in car.attributes"
                                         :key="index"
                                     >
                                         {{ note }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                                >
-                                    <th
-                                        scope="row"
-                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                                    >
-                                        2011
-                                    </th>
-                                    <td class="px-6 py-4">Nissan</td>
-                                    <td class="px-6 py-4">Versa</td>
-                                    <td class="px-6 py-4">1.6</td>
-                                    <td
-                                        class="px-6 py-4 capitalize"
-                                        v-for="(
-                                            note, key, index
-                                        ) in product.notes"
-                                        :key="index"
-                                    >
-                                        {{ note }}
-                                    </td>
-                                </tr>
-                                <tr
-                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                                >
-                                    <th
-                                        scope="row"
-                                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                                    >
-                                        2011
-                                    </th>
-                                    <td class="px-6 py-4">Nissan</td>
-                                    <td class="px-6 py-4">Versa</td>
-                                    <td class="px-6 py-4">1.6</td>
-                                    <td
-                                        class="px-6 py-4 capitalize"
-                                        v-for="(
-                                            note, key, index
-                                        ) in product.notes"
-                                        :key="index"
-                                    >
-                                        {{ note }}
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </tbody>
                         </table>
@@ -355,7 +305,7 @@ const eventChange = (event) => {
                     <div class="w-full overscroll-none">
                         <div
                             class="flex py-2"
-                            v-for="(review, key, index) in product.ratings"
+                            v-for="(review, key, index) in product.data.reviews"
                             :key="index"
                         >
                             <div class="px-4">
@@ -395,7 +345,7 @@ const eventChange = (event) => {
     </SectionTitle>
     <div class="container divide-y-2">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch">
-            <template v-for="(related, key) in product.related" :key="key">
+            <template v-for="(related, key) in product.data.related" :key="key">
                 <ProductItem
                     :rating="5"
                     :description="related.description"

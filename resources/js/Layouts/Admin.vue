@@ -577,7 +577,7 @@ onMounted(() => {
             <div class="menu-detail" data-menu="customers">
                 <div class="menu-detail-wrapper">
                     <Link
-                        href="#"
+                        :href="route('admin.customers.customer.index')"
                         :class="{
                             active: route().current(
                                 'admin.customers.customer.*'

@@ -61,31 +61,39 @@ const shortText = (text, length) => {
         <h4>Productos Sugeridos</h4>
     </HjSectionTitle>
     <div class="container py-3">
-        <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch"
-        >
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch">
             <div
                 class="flex flex-col px-4 space-y-4 items-stretch py-2"
-                v-for="(item, key) in products"
+                v-for="(item, key) in products.data"
                 :key="key"
             >
-                <div class="flex flex-grow w-full h-36 max-h-36 bg-white">
+                <div
+                    class="flex flex-grow w-full h-36 max-h-36 bg-white items-center justify-center"
+                >
+                    <img
+                        :src="item.image"
+                        :alt="item.sku"
+                        srcset=""
+                        class="h-auto w-auto max-h-36"
+                        v-if="item.image"
+                    />
                     <HjApplicationLogo
+                        v-else
                         class="block h-36 w-auto mx-auto"
                         :fill="'#000'"
                     />
                 </div>
-                <span class="font-bold text-2xl"> $ {{ item.price }} </span>
+                <span class="font-bold text-2xl">{{ $formatPrice(item.price) }} </span>
                 <div id="rate" class="flex flex-row space-x-1">
                     <template v-for="(i, key) in 5" :key="key">
                         <i
-                            v-if="i <= item.averageRating"
+                            v-if="i <= item.rating"
                             class="fas fa-star text-yellow-500"
                         ></i>
                         <i v-else class="fal fa-star text-secondary-500"></i>
                     </template>
                 </div>
-                <h5 class="text-base font-bold">{{ item.name }}</h5>
+                <h5 class="text-base font-bold">{{ item.sku }} | {{ item.name }}</h5>
                 <p class="text-sm flex-1 text-justify">
                     {{ shortText(item.description, 100) }}
                 </p>

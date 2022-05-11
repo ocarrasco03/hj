@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\Configs\CategoryCollection;
+use App\Http\Resources\Api\Vehicles\MakeCollection;
+use App\Http\Resources\Api\Vehicles\ModelCollection;
+use App\Http\Resources\Api\Vehicles\YearCollection;
+use App\Models\Configs\Category;
 use App\Models\Vehicles\Manufacturer;
 use App\Models\Vehicles\Model;
 use App\Models\Vehicles\Year;
@@ -16,7 +21,7 @@ class VehiclesController extends Controller
      */
     public function years()
     {
-        return Year::orderByDesc('year')->get()->pluck('year');
+        return new YearCollection(Year::orderByDesc('year')->get());
     }
 
     /**
@@ -26,62 +31,45 @@ class VehiclesController extends Controller
      */
     public function makes()
     {
-        return Manufacturer::orderBy('name')->with('models')->get();
-    }
-
-    /**
-     * Gel all vehicle makes only names
-     *
-     * @return \App\Models\Vehicles\Manufacturer
-     */
-    public function makeNames()
-    {
-        return Manufacturer::orderBy('name')->get()->pluck('name');
+        return new MakeCollection(Manufacturer::orderBy('name')->get());
     }
 
     /**
      * Get all model names
      *
+     * @param string $make Optional.
+     * @param string $year Optional.
      * @return \App\Models\Vehicles\Model
      */
-    public function modelNames()
+    public function models($make = null, $year = null)
     {
-        return Model::orderBy('name')->get()->pluck('name');
+        return new ModelCollection(Model::orderBy('name')
+            ->when(!is_null($make), function ($query) use ($make) {
+                return $query->whereHas('make', function ($query) use ($make) {
+                    return $query->where('name', $make);
+                });
+            })
+            ->when(!is_null($year), function ($query) use ($year) {
+                return $query->whereHas('year', function ($query) use ($year) {
+                    return $query->where('year', $year);
+                });
+            })
+            ->get());
     }
 
     /**
-     * Get all model names by make
+     * Get all categories with subcategories
      *
-     * @param strign $make
-     * @return \App\Models\Vehicles\Model
+     * @return \App\Models\Configs\Category
      */
-    public function modelNamesByMake($make)
+    public function categories($category = null)
     {
-        return Model::orderBy('name')
-            ->whereHas('makes', function ($query) use ($make) {
-                return $query->where('name', $make);
+        return new CategoryCollection(Category::orderBy('name')
+            ->when(!is_null($category), function ($query) use ($category) {
+                return $query->where('name', $category);
             })
-            ->get()
-            ->pluck('name');
-    }
-
-    /**
-     * Get all models by make and year
-     *
-     * @param string $make
-     * @param string|integer $year
-     * @return \App\Models\Vehicles\Model
-     */
-    public function modelNamesByAppliaction($make, $year)
-    {
-        return Model::orderBy('name')
-            ->whereHas('makes', function ($query) use ($make) {
-                return $query->where('name', $make);
-            })
-            ->whereHas('years', function ($query) use ($year) {
-                return $query->where('year', $year);
-            })
-            ->get()
-            ->pluck('name');
+            ->when(is_null($category), function ($query) {
+                return $query->where('parent_id', null);
+            })->get());
     }
 }

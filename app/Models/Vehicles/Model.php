@@ -23,12 +23,12 @@ class Model extends DBModel
         'name',
     ];
 
-    public function makes()
+    public function make()
     {
         return $this->belongsTo(Manufacturer::class, 'make_id');
     }
 
-    public function years()
+    public function year()
     {
         return $this->belongsToMany(Year::class, 'models_years');
     }
@@ -48,8 +48,8 @@ class Model extends DBModel
 
         $ids = [$id];
 
-        if (count($this->years()->whereIn('year_id', $ids)->pluck('year_id')) <= 0) {
-            $this->years()->attach($id);
+        if (count($this->year()->whereIn('year_id', $ids)->pluck('year_id')) <= 0) {
+            $this->year()->attach($id);
         }
     }
 }

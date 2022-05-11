@@ -49,6 +49,7 @@ class ImportProducts extends Command
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());
+            throw $th;
         }
     }
 }

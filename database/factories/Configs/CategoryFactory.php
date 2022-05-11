@@ -26,7 +26,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'parent' => rand(0, 50)
+            'parent_id' => rand(0, 50)
         ];
     }
 }

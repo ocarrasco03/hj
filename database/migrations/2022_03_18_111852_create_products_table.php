@@ -35,7 +35,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('brand_id')->references('id')->on('brands');
-            $table->foreign('supplier_id')->references('id')->on('suppliers');
+            $table->foreign('status_id')->references('id')->on('statuses');
         });
 
         Schema::create('related_products', function (Blueprint $table) {

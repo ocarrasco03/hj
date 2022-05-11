@@ -23,8 +23,8 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
      */
     public function collection(Collection $collection)
     {
-        ini_set('max_execution_time', 0);
         ini_set('memory_limit', '2048M');
+
         foreach ($collection as $row) {
             $brand = $this->getBrand($row['brand']);
             $category = $this->getCategory($row['category']);
@@ -78,14 +78,14 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
         return $brand;
     }
 
-    public function getCategory($name, $parent = 0)
+    public function getCategory($name, $parent = null)
     {
-        $category = Category::where('parent', $parent)->where('name', $name)->first();
+        $category = Category::where('parent_id', $parent)->where('name', $name)->first();
 
         if (!$category) {
             $category = new Category();
             $category->name = $name;
-            $category->parent = $parent;
+            $category->parent_id = $parent;
             $category->save();
         }
 

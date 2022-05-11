@@ -8,6 +8,7 @@ use App\Http\Controllers\Cms\Auth\NewPasswordController;
 use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Cms\Auth\VerifyEmailController;
 use App\Http\Controllers\Cms\Catalogs\ProductController;
+use App\Http\Controllers\Cms\Customers\CustomersController;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\Sales\OrdersController;
 use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
@@ -114,8 +115,8 @@ Route::middleware('auth:admin')->group(function () {
     });
 
     Route::prefix('clientes')->name('customers.')->group(function () {
-        Route::name('customer.')->group(function () {
-            //
+        Route::name('customer.')->controller(CustomersController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
         });
         Route::prefix('direcciones')->name('addresses.')->group(function () {
             //
@@ -161,21 +162,29 @@ Route::middleware('auth:admin')->group(function () {
         |
          */
         Route::prefix('avanzado')->name('advanced.')->group(function () {
-            Route::prefix('usuarios')->name('users.')->group(function () {
-                Route::get('/', [UsersController::class, 'index'])->name('index');
-                Route::get('/nuevo', [UsersController::class, 'create'])->name('create');
-                Route::post('/nuevo', [UsersController::class, 'store'])->name('store');
-                Route::get('/{id}', [UsersController::class, 'show'])->name('show');
-                Route::put('/{id}', [UsersController::class, 'update'])->name('update');
-                Route::delete('/{user}', [UsersController::class, 'destroy'])->name('delete');
-                Route::put('/{user}', [UsersController::class, 'restore'])->name('restore');
-                Route::post('/', [UsersController::class, 'resetPassword'])->name('password.email');
+            Route::prefix('usuarios')->controller(UsersController::class)->name('users.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/nuevo', 'create')->name('create');
+                Route::post('/nuevo', 'store')->name('store');
+                Route::get('/{id}', 'show')->name('show');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{user}', 'destroy')->name('delete');
+                Route::put('/{user}', 'restore')->name('restore');
+                Route::post('/', 'resetPassword')->name('password.email');
             });
-            Route::prefix('roles-y-permisos')->name('roles.permissions.')->group(function () {
-                Route::get('/', [RolesPermissionsController::class, 'index'])->middleware(['permission:role.read|permission.read'])->name('index');
-                Route::post('/nuevo-rol', [RolesPermissionsController::class, 'store'])->middleware(['permission:role.create'])->name('save.role');
-                Route::post('/nuevo-permiso', [RolesPermissionsController::class, 'storePermission'])->middleware(['role_or_permission:permission.create|Super Administrador'])->name('save.permission');
-                Route::put('/{rol}/asignar-permisos', [RolesPermissionsController::class, 'update'])->middleware(['permission:permission.update'])->name('update.permissions');
+            Route::prefix('roles-y-permisos')->controller(RolesPermissionsController::class)->name('roles.permissions.')->group(function () {
+                Route::get('/', 'index')
+                    ->middleware(['permission:role.read|permission.read'])
+                    ->name('index');
+                Route::post('/nuevo-rol', 'store')
+                    ->middleware(['permission:role.create'])
+                    ->name('save.role');
+                Route::post('/nuevo-permiso', 'storePermission')
+                    ->middleware(['role_or_permission:permission.create|Super Administrador'])
+                    ->name('save.permission');
+                Route::put('/{rol}/asignar-permisos', 'update')
+                    ->middleware(['permission:permission.update'])
+                    ->name('update.permissions');
             });
             Route::prefix('importar')->name('import.')->group(function () {
                 //
