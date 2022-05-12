@@ -9485,13 +9485,13 @@ Table of Contents
   border-color: rgb(224 224 224 / var(--tw-border-opacity)); }.border-transparent{
   border-color: transparent; }.border-gray-500{
   --tw-border-opacity: 1;
-  border-color: rgb(151 151 151 / var(--tw-border-opacity)); }.border-black{
+  border-color: rgb(151 151 151 / var(--tw-border-opacity)); }.border-yellow-500{
+  --tw-border-opacity: 1;
+  border-color: rgb(251 198 10 / var(--tw-border-opacity)); }.border-black{
   --tw-border-opacity: 1;
   border-color: rgb(0 0 0 / var(--tw-border-opacity)); }.border-secondary-400{
   --tw-border-opacity: 1;
-  border-color: rgb(70 67 67 / var(--tw-border-opacity)); }.border-yellow-500{
-  --tw-border-opacity: 1;
-  border-color: rgb(251 198 10 / var(--tw-border-opacity)); }.border-red-500{
+  border-color: rgb(70 67 67 / var(--tw-border-opacity)); }.border-red-500{
   --tw-border-opacity: 1;
   border-color: rgb(255 0 0 / var(--tw-border-opacity)); }.border-secondary-500{
   --tw-border-opacity: 1;

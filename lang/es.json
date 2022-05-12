@@ -106,5 +106,9 @@
     "Create new role": "Crear nuevo rol",
     "Create new permission": "Crear nuevo permiso",
     "Showing :from - :to of :total items": "Mostrando :from - :to de :total registros",
-    "Out of stock": "Agotado"
+    "Out of stock": "Agotado",
+    "Select a Year": "Selecciona un Año",
+    "Select a Make": "Selecciona una Armadora",
+    "Select a Model": "Selecciona un Modelo",
+    "Select an Engine": "Selecciona un Motor"
 }

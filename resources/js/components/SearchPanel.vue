@@ -17,7 +17,7 @@
                     @change="getModels"
                 >
                     <option :value="null" disabled>
-                        {{ $t('Select a year') }}
+                        {{ $t('Select a Year') }}
                     </option>
                     <template v-for="(year, key) in years" :key="key">
                         <option :value="year.year">{{ year.year }}</option>
@@ -38,7 +38,7 @@
                     @change="getModels"
                 >
                     <option :value="null" disabled>
-                        Selecciona una Armadora
+                        {{ $t('Select a Make') }}
                     </option>
                     <template v-for="(make, key) in makes" :key="key">
                         <option :value="make.make">{{ make.make }}</option>
@@ -58,7 +58,7 @@
                     :disabled="models.length === 0"
                     v-model="form.model"
                 >
-                    <option :value="null" disabled selected>Selecciona un Modelo</option>
+                    <option :value="null" disabled selected>{{ $t('Select a Model') }}</option>
                     <template v-for="(model, key) in models" :key="key">
                         <option :value="model.model">{{ model.model }}</option>
                     </template>
@@ -77,7 +77,7 @@
                     :disabled="engines.length === 0"
                     v-model="form.engine"
                 >
-                    <option :value="null" disabled>Selecciona un Motor</option>
+                    <option :value="null" disabled>{{ $t('Select an Engine') }}</option>
                     <template v-for="(engine, key) in engines" :key="key">
                         <option :value="engine">{{ engine }}</option>
                     </template>

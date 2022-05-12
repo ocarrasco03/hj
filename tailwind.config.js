@@ -17,8 +17,8 @@ module.exports = {
         },
         extend: {
             fontFamily: {
-                sans: ["Nunito", ...defaultTheme.fontFamily.sans],
-                body: ["Nunito Sans", ...defaultTheme.fontFamily.sans],
+                sans: ["Montserrat"  ,"Nunito", ...defaultTheme.fontFamily.sans],
+                body: ["Montserrat", "Nunito Sans", ...defaultTheme.fontFamily.sans],
             },
             fontSize: {
                 "4xl": "2rem",
