@@ -59,7 +59,7 @@ const props = defineProps({
 const setCategory = (type = "parent") => {
     let name;
     props.product.categories.map((element) => {
-        if (element.parent === 0) {
+        if (element.parent_id === null) {
             name = element.name;
             index.value = props.categories.findIndex(
                 (object) => object.name === element.name
