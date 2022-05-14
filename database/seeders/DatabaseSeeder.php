@@ -22,6 +22,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Cms\Admin::factory(10)->create();
         \App\Models\User::factory()->create(['name'=> 'Oscar Carrasco', 'email' => 'ocarrasco@hjautopartes.com.mx']);
         \App\Models\User::factory(10)->create();
-        \App\Models\Sales\Order::factory(100)->create();
+        // \App\Models\Sales\Order::factory(100)->create();
     }
 }

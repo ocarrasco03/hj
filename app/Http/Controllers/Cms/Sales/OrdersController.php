@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cms\Sales;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Cms\Sales\OrderResource;
 use App\Models\Sales\Order;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,14 +20,14 @@ class OrdersController extends Controller
         $statusable = $request->has('status') && strlen($request['status']) > 0;
         $searcheable = $request->has('query') && strlen($request['query']) > 0;
 
-        $orders = $orders->when($statusable, function ($query) use ($request) {
-                            $status = strtoupper($request->input('status'));
-                            return $query->whereHas('status', function ($query) use ($status) {
-                                return $query->where('prefix', $status);
-                            });
-                        })->when($searcheable, function ($query) use ($request) {
-                            return $query->search($request->input('query'));
-                        })->paginate(15);
+        $orders = $orders->orderByDesc('updated_at')->when($statusable, function ($query) use ($request) {
+            $status = strtoupper($request->input('status'));
+            return $query->whereHas('status', function ($query) use ($status) {
+                return $query->where('prefix', $status);
+            });
+        })->when($searcheable, function ($query) use ($request) {
+            return $query->search($request->input('query'));
+        })->paginate(15);
 
         if ($statusable) {
             $orders->appends(['status' => $request->input('status')]);
@@ -70,8 +71,7 @@ class OrdersController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('products');
-        return Inertia::render('Cms/Sales/Orders/Show', ['order' => $order]);
+        return Inertia::render('Cms/Sales/Orders/Show', ['order' => new OrderResource($order)]);
     }
 
     /**

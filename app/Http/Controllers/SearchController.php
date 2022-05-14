@@ -22,7 +22,7 @@ class SearchController extends Controller
      */
     public function index(Request $request)
     {
-        $products = ['total' => 0, 'data' => [], 'links' => []];
+        $products = ['data' => [], 'links' => [], 'meta' => ['total' => 0, 'links' => []]];
         $query = $request->input('query');
         $queries = [];
         $qTmp = ['year', 'make', 'model', 'engine', 'category', 'subcategory'];

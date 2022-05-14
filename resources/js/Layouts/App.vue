@@ -63,12 +63,12 @@ const showingNavigationDropdown = ref(false);
                                 <HjNavLink :href="route('corporate')" :active="route().current('corporate')">
                                     Corporativo
                                 </HjNavLink>
-                                <HjNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <HjNavLink :href="route('product.search')" :active="route().current('product.search')">
                                     Catálogo
                                 </HjNavLink>
-                                <HjNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <!-- <HjNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Tips Tecnicos
-                                </HjNavLink>
+                                </HjNavLink> -->
                             </div>
                         </div>
                         <!-- Hamburger -->

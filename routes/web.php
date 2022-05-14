@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SearchController;
+use App\Mail\Cart\OrderCreated;
 use App\Mail\ContactForm;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,7 +22,7 @@ use Inertia\Inertia;
 
 Route::get('email', function () {
     // return new UserRegisteredMail();
-    return new ContactForm(['name' => 'Oscar Carrasco', 'email' => 'ocarrasco@hjautopartes.com.mx', 'subject' => 'Contacto', 'message' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas consequat luctus ultrices. Etiam eleifend augue et massa vestibulum, non aliquet mauris gravida. Fusce porta dapibus libero in fermentum. Suspendisse hendrerit auctor lorem, vel malesuada erat scelerisque ac. Mauris auctor posuere arcu, ut congue dui ultricies faucibus. Sed lobortis pretium tempor. Donec metus nisi, bibendum sit amet dictum ut, consequat nec justo. Phasellus ultricies lorem in sem porta commodo. Vestibulum non risus sed turpis egestas suscipit. Pellentesque laoreet metus sit amet fringilla semper. Proin in pulvinar nisl. Morbi at metus fel', 'phone' => '6621043512']);
+    return new OrderCreated();
 });
 
 /*
@@ -81,7 +82,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::delete('/{id}', 'destroy')->name('destroy');
             Route::get('/envio','shipping')->name('shipping');
             Route::post('/pedido','processOrder')->name('process.order');
-            Route::get('/pedido/pagar','checkout')->name('checkout');
+            Route::get('/pedido/{order}/pagar','checkout')->name('checkout');
         });
     });
 });

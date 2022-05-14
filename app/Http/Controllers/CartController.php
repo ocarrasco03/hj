@@ -2,18 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Catalogs\Product;
+use App\Http\Requests\Cart\ShippingRequest;
 use App\Models\Configs\Country;
+use App\Models\Configs\Status;
 use App\Models\Sales\Order;
 use App\Packages\Shoppingcart\Cart;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class CartController extends Controller
 {
+    protected static $affiliate;
+
+    public function __construct()
+    {
+        self::$affiliate = config('bbva.affiliate');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -124,8 +133,12 @@ class CartController extends Controller
 
     public function shipping(Cart $cart)
     {
+        if ($cart->countItems() === 0) {
+            return redirect()->route('cart');
+        }
+
         if (!session()->has('checkout')) {
-            $token = now()->addMinutes(10);
+            $token = now()->addMinutes(20);
             session()->put(['checkout' => $token]);
         }
 
@@ -146,13 +159,80 @@ class CartController extends Controller
         ]);
     }
 
-    public function processOrder(Request $request)
+    /**
+     * Processing and create the order
+     *
+     * @param ShippingRequest $request
+     * @param Order $order
+     * @param Cart $cart
+     * @return \Illuminate\Http\Response
+     */
+    public function processOrder(ShippingRequest $request, Order $order, Cart $cart)
     {
-        return redirect()->route('cart.process.order');
+        DB::beginTransaction();
+
+        $status = Status::where('prefix', 'AWAITING_CHEQUE_PAYMENT')->where('module_name', Order::class)->first();
+
+        try {
+            $order->user_id = auth()->user()->id;
+            $order->status_id = $status->id;
+            $order->subtotal = $request->input('subtotal');
+            $order->discount = $request->input('discount');
+            $order->tax = $request->input('tax');
+            $order->total = $request->input('total');
+            $order->save();
+
+            foreach ($cart->content() as $item) {
+                $order->addItems($item->id, $item->qty, $item->subtotal, $item->discount, $item->tax, $item->total);
+            }
+
+            if ($status->send_email) {
+                //
+            }
+        } catch (\Throwable$th) {
+            DB::rollBack();
+            throw $th;
+        }
+
+        DB::commit();
+        $cart->destroy();
+
+        return redirect()->route('cart.checkout', $order->id);
     }
 
-    public function checkout(Order $order)
+    public function checkout(Status $status, Order $order)
     {
-        return Inertia::render('Checkout/Payment');
+        return Inertia::render('Checkout/Payment', ['order' => $order]);
+    }
+
+    public function pay(Order $order, Request $request)
+    {
+        switch ($request) {
+            case 'bbva':
+                $charge = [
+                    'affiliation_bbva' => self::$affiliate,
+                    'amount' => $order->total,
+                    'description' => '',
+                    'currency' => 'MXN',
+                    'order_id' => $order->id,
+                    'use_3d_secure' => true,
+                    'redirect_url' => '',
+                    'customer' => [
+                        'name' => '',
+                        'last_name' => '',
+                        'email' => '',
+                        'phone_number' => '',
+                    ]
+                ];
+                break;
+
+            case 'paypal':
+                # code...
+                break;
+
+            default:
+                # code...
+                break;
+        }
     }
 }

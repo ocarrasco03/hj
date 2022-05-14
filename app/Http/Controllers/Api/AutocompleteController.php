@@ -54,7 +54,7 @@ class AutocompleteController extends Controller
         })
         ->when($searcheable, function ($query) use ($term) {
             return $query->where('zip_code', 'like', $term . '%');
-        })
+        })->limit(10)
         ->get()->pluck('zip_code');
     }
 
@@ -64,6 +64,6 @@ class AutocompleteController extends Controller
             return $query->whereHas('zipCode', function ($query) use ($zip_code) {
                 return $query->where('zip_code', $zip_code);
             });
-        })->get()->pluck('name');
+        })->limit(10)->get()->pluck('name');
     }
 }

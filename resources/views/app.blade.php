@@ -25,6 +25,7 @@
 
     <!-- Scripts -->
     @routes
+    <script defer src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}" data-sdk-integration-source="button-factory"></script>
     <script src="{{ mix('js/app.js') }}" defer></script>
 </head>
 

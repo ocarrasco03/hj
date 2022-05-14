@@ -124,7 +124,7 @@ export default {
                     <Link
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
                         href="#"
-                        v-if="order.status.prefix !== 'CANCELED' && order.status.prefix !== 'REFUND'"
+                        v-if="order.data.status.prefix !== 'CANCELED' && order.data.status.prefix !== 'REFUND'"
                     >
                         <span
                             class="hj hj-product-return text-gray-600 text-2xl mr-2"
@@ -134,7 +134,7 @@ export default {
                     <Link
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
                         href="#"
-                        v-if="order.status.prefix !== 'CANCELED' && order.status.prefix !== 'SHIPPED' && order.status.prefix !== 'DELIVERED'"
+                        v-if="order.data.status.prefix !== 'CANCELED' && order.data.status.prefix !== 'SHIPPED' && order.data.status.prefix !== 'DELIVERED'"
                     >
                         <span
                             class="la la-shipping-fast text-gray-600 text-2xl mr-2"
@@ -145,7 +145,7 @@ export default {
                     <Link
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
                         href="#"
-                        v-if="order.status.prefix !== 'CANCELED'"
+                        v-if="order.data.status.prefix !== 'CANCELED'"
                     >
                         <span
                             class="la la-comments text-gray-600 text-2xl mr-2"
@@ -200,29 +200,29 @@ export default {
             <hr />
             <div class="px-10 py-5 flex justify-between">
                 <div>
-                    <strong>{{ $t("Order") }} No.:</strong> {{ order.id }}
+                    <strong>{{ $t("Order") }} No.:</strong> {{ order.data.id }}
                 </div>
                 <div>
                     <strong>{{ $t("Created") }}:</strong>
-                    {{ formatedDate(order.created_at) }}
+                    {{ formatedDate(order.data.created_at) }}
                 </div>
             </div>
             <hr />
             <div class="px-10 py-5 flex justify-between">
                 <div>
                     <strong>{{ $t("Last updated") }}:</strong>
-                    {{ formatedDate(order.updated_at, { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" }) }}
+                    {{ order.data.updated_at }}
                 </div>
                 <div>
                     <strong class="mr-2">{{ $t("Status") }}:</strong>
                     <span
                         class="badge uppercase"
                         :class="{
-                            'badge-admin': order.status.level === 1,
-                            'badge-success': order.status.level === 2,
-                            'badge-danger': order.status.level === 3,
+                            'badge-admin': order.data.status.level === 1,
+                            'badge-success': order.data.status.level === 2,
+                            'badge-danger': order.data.status.level === 3,
                         }"
-                        >{{ order.status.name }}</span
+                        >{{ order.data.status.name }}</span
                     >
                 </div>
             </div>
@@ -231,7 +231,7 @@ export default {
                 <div>
                     <h4 class="mb-2 uppercase">{{ $t('Shipping Address') }}</h4>
                     <p class="leading-relaxed">
-                        {{ order.user.name }}<br />
+                        {{ order.data.user }}<br />
                         15 Hodges Mews, CA<br />
                         20205<br />
                         United States
@@ -263,23 +263,23 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index, key) in order.products" :key="key">
+                        <tr v-for="(item, index, key) in order.data.items" :key="key">
                             <td>
                                 <h5>{{ item.sku }}</h5>
                                 <p>{{ item.name }}</p>
                             </td>
                             <td class="text-center">
-                                {{ formatedNumber(item.pivot.total / item.pivot.quantity) }}
+                                {{ formatedNumber(item.price / item.quantity) }}
                             </td>
-                            <td class="text-center">{{ item.pivot.quantity }}</td>
+                            <td class="text-center">{{ item.quantity }}</td>
                             <td class="text-center">
-                                {{ formatedNumber(item.pivot.tax) }}
+                                {{ formatedNumber(item.tax) }}
                             </td>
                             <td class="text-center">
-                                {{ formatedNumber(item.pivot.discount) }}
+                                {{ formatedNumber(item.amount) }}
                             </td>
                             <td class="text-center font-bold">
-                                {{ formatedNumber(item.pivot.total) }}
+                                {{ formatedNumber(item.discount) }}
                             </td>
                         </tr>
                         <tr class="text-right font-bold">
@@ -293,7 +293,7 @@ export default {
                                             <td>
                                                 {{
                                                     formatedNumber(
-                                                        order.subtotal
+                                                        order.data.subtotal
                                                     )
                                                 }}
                                             </td>
@@ -303,7 +303,7 @@ export default {
                                             <td>
                                                 {{
                                                     formatedNumber(
-                                                        order.discount
+                                                        order.data.discount
                                                     )
                                                 }}
                                             </td>
@@ -311,14 +311,14 @@ export default {
                                         <tr class="py-1">
                                             <td>IVA:</td>
                                             <td>
-                                                {{ formatedNumber(order.tax) }}
+                                                {{ formatedNumber(order.data.tax) }}
                                             </td>
                                         </tr>
                                         <tr class="py-1">
                                             <td>Total:</td>
                                             <td>
                                                 {{
-                                                    formatedNumber(order.total)
+                                                    formatedNumber(order.data.total)
                                                 }}
                                             </td>
                                         </tr>

@@ -2024,3 +2024,53 @@ select {
         @apply bg-blue-500 text-white;
     }
 }
+
+/**
+* BBVA Button
+*/
+.bbva-button-row {
+	height: 55px;
+	vertical-align: top;
+	min-height: 40px;
+	max-height: 55px;
+}
+@media only screen and (min-width: 500px) {
+    .bbva-button-row {
+        margin-bottom: 17px;
+        height: 55px;
+        min-height: 40px;
+        max-height: 55px;
+    }
+}
+@media only screen and (min-width: 300px) {
+    .bbva-button-row {
+        margin-bottom: 14px;
+        height: 45px;
+        min-height: 30px;
+        max-height: 55px;
+    }
+}
+@media only screen and (min-width: 200px) {
+    .bbva-button-row {
+        margin-bottom: 11px;
+        height: 35px;
+        min-height: 30px;
+        max-height: 55px;
+    }
+}
+@media only screen and (min-width: 150px) {
+    .bbva-button-row {
+        margin-bottom: 8px;
+        height: 25px;
+        min-height: 25px;
+        max-height: 30px;
+    }
+}
+@media only screen and (min-width: 75px) {
+    .bbva-button-row {
+        margin-bottom: 8px;
+        height: 25px;
+        min-height: 25px;
+        max-height: 30px;
+    }
+}

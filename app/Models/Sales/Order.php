@@ -50,12 +50,25 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_products')
-            ->withPivot(['quantity', 'subtotal', 'discount', 'tax', 'total']);
+            ->withPivot([
+                'quantity',
+                'subtotal',
+                'discount',
+                'tax',
+                'total'
+            ]);
     }
 
     public function addItems($id, $qty = 0, $subtotal = 0, $total = 0, $tax = 0, $discount = 0)
     {
-        return $this->products()->attach($id, ['quantity' => $qty, 'subtotal' => $subtotal, 'discount' => $discount, 'tax' => $tax, 'total' => $total]);
+        return $this->products()
+            ->attach($id, [
+                'quantity' => $qty,
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'tax' => $tax,
+                'total' => $total
+            ]);
     }
 
     /**
