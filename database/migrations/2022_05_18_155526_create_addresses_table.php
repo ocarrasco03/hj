@@ -15,16 +15,19 @@ return new class extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->enum('type', ['shipping', 'billing']);
-            $table->string('line_1');
-            $table->string('line_2')->nullable();
+            $table->foreignId('country_id');
+            $table->foreignId('state_id');
             $table->string('city');
-            $table->string('state');
-            $table->string('country');
             $table->string('zip_code');
-            $table->text('references');
+            $table->string('neighborhood');
+            $table->string('street');
+            $table->string('ext_no');
+            $table->string('int_no')->nullable();
+            $table->text('notes')->nullable();
+            $table->morphs('addressable');
+            $table->enum('type', ['shipping', 'billing', 'both'])->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

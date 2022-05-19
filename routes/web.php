@@ -1,13 +1,18 @@
 <?php
 
+use Inertia\Inertia;
+use App\Mail\ContactForm;
+use App\Models\Sales\Order;
+use App\Mail\Cart\OrderCreated;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SearchController;
-use App\Mail\Cart\OrderCreated;
-use App\Mail\ContactForm;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Profile\AddressesController;
+use App\Http\Controllers\Profile\ChangePasswordController;
+use App\Http\Controllers\Profile\ProfileController;
+use App\Jobs\Orders\NotifyUserOrderPlaced;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +24,6 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
  */
-
-Route::get('email', function () {
-    // return new UserRegisteredMail();
-    return new OrderCreated();
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -66,12 +66,21 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::get('mi-perfil')->name('profile');
+    Route::prefix('mi-perfil')->group(function () {
+        Route::get('/', [ProfileController::class, '__invoke'])->name('profile');
+        Route::name('profile.')->group(function () {
+            Route::get('cambiar-contrasena', [ChangePasswordController::class, '__invoke'])->name('change.password');
+            Route::post('cambiar-contrasena', [ChangePasswordController::class, 'store'])->name('change.password');
 
-    Route::name('profile.')->prefix('mi-perfil')->group(function () {
-        Route::get('mis-pedidos')->name('orders');
-        Route::get('mis-pedidos/{id}')->name('order.show');
-        Route::delete('mis-pedidos/{id}')->name('order.cancel');
+            Route::put('actualizar', [ProfileController::class, 'store'])->name('update');
+            Route::prefix('mis-direcciones')->controller(AddressesController::class)->group(function () {
+                Route::get('/', '__invoke')->name('addresss');
+            });
+
+            Route::get('mis-pedidos')->name('orders');
+            Route::get('mis-pedidos/{id}')->name('order.show');
+            Route::delete('mis-pedidos/{id}')->name('order.cancel');
+        });
     });
 
     Route::controller(CartController::class)->prefix('mi-carrito')->group(function () {

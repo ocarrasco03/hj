@@ -97,20 +97,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- <tr
-                                    v-for="(item, key) in props.items"
+                                <tr
+                                    v-for="(item, key) in order.data.items"
                                     :key="key"
                                 >
                                     <td>
                                         <div>
                                             <span class="font-bold"
-                                                >{{ item.qty }}x</span
+                                                >{{ item.quantity }}x</span
                                             >
                                             <p>{{ item.name }}</p>
                                         </div>
                                     </td>
                                     <td class="text-right">
-                                        ${{ item.total }}
+                                        ${{ item.discount }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -118,7 +118,7 @@
                                         {{ $t("Subtotal") }}
                                     </td>
                                     <td class="text-red-500 text-right">
-                                        {{ $formatPrice(form.subtotal) }}
+                                        {{ $formatPrice(order.data.subtotal) }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -126,7 +126,7 @@
                                         {{ $t("Tax") }}
                                     </td>
                                     <td class="text-red-500 text-right">
-                                        {{ $formatPrice(form.tax) }}
+                                        {{ $formatPrice(order.data.tax) }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,7 +134,7 @@
                                         {{ $t("Shipping") }}
                                     </td>
                                     <td class="text-red-500 text-right">
-                                        {{ $formatPrice(0) }}
+                                        {{ $formatPrice(order.data.shipping) }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -142,9 +142,9 @@
                                         {{ $t("Total") }}
                                     </td>
                                     <td class="text-red-500 text-right">
-                                        {{ $formatPrice(form.total) }}
+                                        {{ $formatPrice(order.data.total) }}
                                     </td>
-                                </tr> -->
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -167,7 +167,7 @@
                         </Link>
                         <div
                             id="paypal-button-container"
-                            class="paypal-button-container"
+                            class="paypal-button-container ring-0 ring-transparent focus:ring-0 focus:ring-transparent"
                         ></div>
                         <Link
                             class="btn btn-danger mt-6 px-20 capitalize w-full md:w-auto"
@@ -192,23 +192,19 @@
                         S&aacute;bados de 09:00 am a 01:00 pm
                     </span>
                 </div>
-                <div
-                    class="w-full md:w-3/4 flex flex-col items-center justify-center"
-                >
-                    <div
-                        class="bg-green-500 rounded-bl-2xl flex-1 w-full p-4 text-center font-bold"
-                    >
+                <div class="w-full md:w-3/4">
+                    <div class="bg-green-500 rounded-bl-2xl w-full p-4 text-center font-bold">
                         <span
                             >Usted ha seleccionado como metodo de pago tarjeta
                             de debito VISA</span
                         >
                     </div>
-                    <div class="md:flex flex-1 md:space-x-5"></div>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
 <script setup>
 import { onMounted, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
@@ -219,6 +215,10 @@ import Cash from "@/Icons/Cash";
 import Bbva from "@/Icons/Bbva";
 import PayPal from "@/Icons/PayPal";
 import SecondaryButton from "@/Components/SecondaryButton";
+
+const props = defineProps({
+    order: Object,
+})
 
 const mountPayPalButtons = () => {
     paypal

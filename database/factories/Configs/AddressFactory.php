@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories\User;
+namespace Database\Factories\Configs;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User\Address>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Configs\Address>
  */
 class AddressFactory extends Factory
 {

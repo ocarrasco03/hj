@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Configs\Address;
 use App\Models\Sales\Order;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\Addressable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use SoftDeletes;
+    use Addressable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,10 +25,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'firstname',
+        'lastname',
         'email',
         'password',
-        'phone'
+        'phone',
+        'suscribed',
+        'acepted_terms_conditions',
     ];
 
     /**
@@ -44,6 +52,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'acepted_terms_conditions' => 'datetime',
+        'suscribed' => 'boolean',
     ];
 
     /**

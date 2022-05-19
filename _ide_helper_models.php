@@ -160,6 +160,46 @@ namespace App\Models\Cms{
 
 namespace App\Models\Configs{
 /**
+ * App\Models\Configs\Address
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $type
+ * @property string $line_1
+ * @property string|null $line_2
+ * @property string $city
+ * @property string $state
+ * @property string $country
+ * @property string $zip_code
+ * @property string $references
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $addressable
+ * @method static \Database\Factories\Configs\AddressFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Address onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereReferences($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipCode($value)
+ * @method static \Illuminate\Database\Query\Builder|Address withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Address withoutTrashed()
+ */
+	class Address extends \Eloquent {}
+}
+
+namespace App\Models\Configs{
+/**
  * App\Models\Configs\Category
  *
  * @property int $id
@@ -223,7 +263,7 @@ namespace App\Models\Configs{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User\Address[] $addresses
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Address[] $addresses
  * @property-read int|null $addresses_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\City[] $cities
  * @property-read int|null $cities_count
@@ -511,17 +551,20 @@ namespace App\Models{
  * App\Models\User
  *
  * @property int $id
- * @property string $name
+ * @property string $firstname
+ * @property string $lastname
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
  * @property string $phone
  * @property \Illuminate\Support\Carbon|null $acepted_terms_conditions
- * @property int $suscribed
+ * @property bool $suscribed
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Address[] $addresses
+ * @property-read int|null $addresses_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders
@@ -538,8 +581,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereFirstname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLastname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
@@ -549,43 +593,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Query\Builder|User withoutTrashed()
  */
 	class User extends \Eloquent {}
-}
-
-namespace App\Models\User{
-/**
- * App\Models\User\Address
- *
- * @property int $id
- * @property int $user_id
- * @property string $type
- * @property string $line_1
- * @property string|null $line_2
- * @property string $city
- * @property string $state
- * @property string $country
- * @property string $zip_code
- * @property string $references
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
- * @method static \Database\Factories\User\AddressFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Address query()
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountry($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine1($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine2($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereReferences($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipCode($value)
- */
-	class Address extends \Eloquent {}
 }
 
 namespace App\Models\Vehicles{

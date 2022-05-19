@@ -62,10 +62,7 @@ const autocomplete = (input, array, model) => {
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
         for (i = 0; i < array.length; i++) {
-            if (
-                array[i].substr(0, val.length).toUpperCase() ===
-                val.toUpperCase()
-            ) {
+            if (array[i].substr(0, val.length).toUpperCase() === val.toUpperCase()) {
                 b = document.createElement("div");
                 b.innerHTML = `<strong>${array[i].substr(
                     0,
@@ -180,7 +177,10 @@ const loadNeighborhoods = (event) => {
         .get(
             route("api.v2.autocomplete.neighborhood", {
                 zip_code: form.zip_code,
-            })
+            }),
+            {
+                params: { query: form.neighborhood },
+            }
         )
         .then((res) => {
             autocomplete(event.target, res.data, "neighborhood");

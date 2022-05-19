@@ -21,7 +21,7 @@ class HomeController extends Controller
     public function index()
     {
         return Inertia::render('Home', [
-            'products' => new MostSelledCollection(Product::where('stock', '>', 0)->get()->random(8))
+            'products' => new MostSelledCollection(Product::where('stock', '>', 0)->take(8)->get())
         ]);
     }
 

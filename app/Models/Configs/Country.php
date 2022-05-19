@@ -2,11 +2,11 @@
 
 namespace App\Models\Configs;
 
-use App\Models\User\Address;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Configs\Address;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Country extends Model
 {

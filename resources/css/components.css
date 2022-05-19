@@ -2010,9 +2010,10 @@ select {
 * Autocomplete
 */
 .autocomplete {
-    @apply relative inline-block border;
+    @apply flex inline-block border;
     &-items {
-        @apply absolute border border-gray-500 border-t-0 border-b-0 z-50;
+        @apply flex-auto absolute border border-gray-500 border-t-0 border-b-0 overflow-auto z-50;
+        z-index: 10000;
         div {
             @apply py-2 px-4 cursor-pointer bg-white border-b border-b-gray-500;
             &:hover {
@@ -2073,4 +2074,7 @@ select {
         min-height: 25px;
         max-height: 30px;
     }
+}
+iframe:focus-visible {
+    outline: none;
 }

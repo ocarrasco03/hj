@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
-use Illuminate\Auth\Events\Registered;
+use App\Models\User;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Inertia\Inertia;
+use Illuminate\Auth\Events\Registered;
+use App\Providers\RouteServiceProvider;
+use App\Http\Requests\Auth\RegisterRequest;
 
 class RegisteredUserController extends Controller
 {
@@ -28,25 +29,21 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\Auth\RegisterRequest  $request
      * @return \Illuminate\Http\RedirectResponse
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request)
+    public function store(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'terms' => 'required|boolean|in:1',
-        ]);
-
         $user = User::create([
-            'name' => $request->name,
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'acepted_terms_conditions' => Carbon::now(),
+            'acepted_terms_conditions' => $request->terms ? now() : null,
+            'suscribed' => $request->suscribed,
         ]);
 
         event(new Registered($user));

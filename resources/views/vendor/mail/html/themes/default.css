@@ -178,6 +178,10 @@ img {
     text-align: center;
 }
 
+.footer p small {
+    text-align: justify;
+}
+
 .footer a {
     color: #b0adc5;
     text-decoration: underline;

@@ -234,7 +234,9 @@ export default {
                     <Link
                         :href="route('admin.sales.orders.index')"
                         class="btn btn-admin mt-5"
+                        :class="{'pointer-events-none': orders.length < 1}"
                         v-text="$t('View all')"
+                        :disabled="orders.length == 0"
                     />
                 </div>
             </div>

@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from "@inertiajs/inertia-vue3";
-import HjApplicationLogo from "@/Components/ApplicationLogo.vue";
-import HjNavLink from '@/Components/NavLink.vue';
-import HjResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import Toast from '@/Components/Toast.vue';
+import HjApplicationLogo from "@/Components/ApplicationLogo";
+import HjNavLink from '@/Components/NavLink';
+import HjResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import Toast from '@/Components/Toast';
 
 const showingNavigationDropdown = ref(false);
 
@@ -30,9 +30,9 @@ const showingNavigationDropdown = ref(false);
                             <span class="text-base">Login</span>
                         </Link>
                         <template v-else>
-                            <Link v-if="$page.props.auth.user" :href="route('login')" class="flex items-center text-center flex-col px-3 text-primary hover:text-white transition">
+                            <Link v-if="$page.props.auth.user" :href="route('profile')" class="flex items-center text-center flex-col px-3 text-primary hover:text-white transition">
                                 <i class="fal fa-user-circle text-4xl"></i>
-                                <span class="text-base">{{ $page.props.auth.user.name }}</span>
+                                <span class="text-base">{{ $page.props.auth.user.firstname }}</span>
                             </Link>
                             <Link :href="route('cart')"
                             class="flex items-center text-center flex-col px-3 hover:text-white text-primary rounded-full">
@@ -127,23 +127,19 @@ const showingNavigationDropdown = ref(false);
                                 </a>
                                 <a href="https://www.instagram.com/hjautopartes/" target="_blank"
                                     class="social-link">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/company/hj-autopartes" target="_blank"
+                                    class="social-link">
                                     <i class="fab fa-linkedin-in"></i>
                                 </a>
-                                <!-- <a href="#" target="_blank"
-                                    class="social-link">
-                                    <i class="fab fa-twitter"></i>
-                                </a> -->
-                                <!-- <a href="#" target="_blank"
-                                    class="social-link">
-                                    <i class="fab fa-youtube"></i>
-                                </a> -->
                             </div>
                         </div>
 
                     </div>
                     <div class="text-xs space-y-5">
                         <span class="text-primary text-sm font-bold pb-4">Nosotros</span>
-                        <p class="text-justify">Somos una empresa 100% Mexicana líder en: Innovación, desarrollo, fabricación y comercialización de autopartes en el mercado global, con presencia en mercados INTERNACIONALES como Estados Unidos, Colombia, Guatemala, Costa Rica, El Salvador, Perú, Ecuador, Venezuela, Chile, Brasil, Bolivia, Canadá, Líbano, Israel, etc. Consolidando cada una de nuestras marcas como líderes indiscutibles en cada uno de sus segmentos, forjando valor a través de nuestra cadena productiva única en el mercado de autopartes; generando excelentes niveles de rentabilidad para nuestros clientes.</p>
+                        <p class="text-justify">Somos una empresa 100% Mexicana líder en: Distribución y comercialización de autopartes en el mercado mexicano, Consolidando cada una de nuestras marcas como líderes indiscutibles en cada uno de sus segmentos, forjando valor a través de nuestra cadena productiva única en el mercado de autopartes; generando excelentes niveles de rentabilidad para nuestros clientes.</p>
                     </div>
                     <div class="text-xs space-y-5">
                         <span class="text-primary text-sm font-bold pb-4">Acceso Rápido</span>

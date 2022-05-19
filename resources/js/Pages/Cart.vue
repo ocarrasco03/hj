@@ -139,7 +139,7 @@ const reduce = (item, index) => {
                                 <td class="px-4">
                                     Precio:
                                     <h4 class="font-bold">
-                                        $ {{ item.total }}
+                                        ${{ item.total }}
                                     </h4>
                                 </td>
                             </tr>

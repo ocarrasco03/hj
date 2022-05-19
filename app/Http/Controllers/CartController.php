@@ -3,16 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Cart\ShippingRequest;
+use App\Http\Resources\Cms\Sales\OrderResource;
+use App\Jobs\Orders\NotifyUserOrderPlaced;
+use App\Jobs\Orders\NotifyUserPaymentAccepted;
+use App\Jobs\Orders\NotifyUserPaymentFailed;
+use App\Models\Catalogs\Product;
 use App\Models\Configs\Country;
 use App\Models\Configs\Status;
 use App\Models\Sales\Order;
+use App\Models\User;
+use App\Notifications\Orders\OrderCreated;
+use App\Packages\BBVA\BBVA;
 use App\Packages\Shoppingcart\Cart;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Notification;
 
 class CartController extends Controller
 {
@@ -131,6 +141,12 @@ class CartController extends Controller
         ]], 200);
     }
 
+    /**
+     * Render view for shipping form
+     *
+     * @param Cart $cart
+     * @return \Illuminate\Http\Response
+     */
     public function shipping(Cart $cart)
     {
         if ($cart->countItems() === 0) {
@@ -171,7 +187,7 @@ class CartController extends Controller
     {
         DB::beginTransaction();
 
-        $status = Status::where('prefix', 'AWAITING_CHEQUE_PAYMENT')->where('module_name', Order::class)->first();
+        $status = $this->getOrderStatus('charge_pending');
 
         try {
             $order->user_id = auth()->user()->id;
@@ -186,12 +202,17 @@ class CartController extends Controller
                 $order->addItems($item->id, $item->qty, $item->subtotal, $item->discount, $item->tax, $item->total);
             }
 
+            $this->updateStocks($cart->content());
+
+            session()->forget('checkout');
+
             if ($status->send_email) {
-                //
+                auth()->user()->notify(new OrderCreated($order, auth()->user()));
             }
         } catch (\Throwable$th) {
             DB::rollBack();
-            throw $th;
+            // throw $th;
+            return redirect()->back()->withErrors($th->getMessage());
         }
 
         DB::commit();
@@ -200,9 +221,17 @@ class CartController extends Controller
         return redirect()->route('cart.checkout', $order->id);
     }
 
-    public function checkout(Status $status, Order $order)
+    public function checkout(Order $order)
     {
-        return Inertia::render('Checkout/Payment', ['order' => $order]);
+        $charge_pending = $this->getOrderStatus('charge_pending');
+        $in_progress = $this->getOrderStatus('in_progress');
+        $failed = $this->getOrderStatus('failed');
+
+        if ($order->status_id !== $failed->id && $order->status_id !== $charge_pending->id && $order->status_id !== $in_progress->id) {
+            return redirect()->route('profile.orders');
+        }
+
+        return Inertia::render('Checkout/Payment', ['order' => new OrderResource($order)]);
     }
 
     public function pay(Order $order, Request $request)
@@ -222,8 +251,10 @@ class CartController extends Controller
                         'last_name' => '',
                         'email' => '',
                         'phone_number' => '',
-                    ]
+                    ],
                 ];
+                $bbva = BBVA::charges($charge);
+                return redirect($bbva['payment_method']['url']);
                 break;
 
             case 'paypal':
@@ -233,6 +264,118 @@ class CartController extends Controller
             default:
                 # code...
                 break;
+        }
+    }
+
+    public function paymentResponse(Request $request, Order $order)
+    {
+        $bbva = BBVA::getCharge($request->id);
+        $status = $this->getOrderStatus($bbva['status']);
+
+        if ($bbva['status'] == 'completed') {
+            $order->update([
+                'status_id' => $status->id,
+            ]);
+
+            if ($status->send_email) {
+                new NotifyUserPaymentAccepted(User::find($order->user_id));
+            }
+        } else {
+            $order->update([
+                'status_id' => $status->id,
+            ]);
+
+            if ($status->send_email) {
+                new NotifyUserPaymentFailed(User::find($order->user_id));
+            }
+
+            return redirect()->route('cart.checkout', $order->id)
+                ->withErrors($bbva['error_message']);
+        }
+
+        return;
+    }
+
+    /**
+     * Get the requested status of the order.
+     *
+     * @param string $status
+     * @return \App\Models\Configs\Status
+     */
+    private function getOrderStatus($status)
+    {
+        switch ($status) {
+            case 'in_progress':
+                return Status::where('prefix', 'PREPARATION_IN_PROGRESS')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'completed':
+                return Status::where('prefix', 'PAYMENT_ACCEPTED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'charge_pending':
+                return Status::where('prefix', 'AWAITING_CHEQUE_PAYMENT')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'delivered':
+                return Status::where('prefix', 'DELIVERED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'shipped':
+                return Status::where('prefix', 'SHIPPED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'cancelled':
+                return Status::where('prefix', 'CANCELED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'failed':
+                return Status::where('prefix', 'PAYMENT_ERROR')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'refunded':
+                return Status::where('prefix', 'REFUND')
+                    ->where('module_name', Order::class)->first();
+                break;
+            default:
+                return Status::where('prefix', 'PAYMENT_ERROR')
+                    ->where('module_name', Order::class)->first();
+                break;
+        }
+    }
+
+    /**
+     * Update product stocks after create an order or
+     * cancel an order.
+     *
+     * @param array|object $items
+     * @param string $mode Default 'reduce'. Accepts 'reduce', 'increment'.
+     */
+    private function updateStocks($items, $mode = 'reduce')
+    {
+        foreach ($items as $item) {
+            $product = Product::find($item->id);
+
+            switch ($mode) {
+                case 'reduce':
+                    $product->stock = $product->stock - $item->qty;
+
+                    if ($product->stock < 0) {
+                        $product->stock = 0;
+                    }
+
+                    if ($product->isDirty()) {
+                        $product->save();
+                    }
+                    break;
+                case 'increment':
+                    $product->stock = $product->stock + $item->quantity;
+
+                    if ($product->isDirty()) {
+                        $product->save();
+                    }
+                    break;
+            }
         }
     }
 }

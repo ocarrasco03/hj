@@ -6,6 +6,7 @@ import { InertiaProgress } from "@inertiajs/progress";
 import { i18nVue } from "laravel-vue-i18n";
 import Layout from "@/Layouts/App.vue";
 import { initFacebookSdk } from "@/facebook";
+import Maska from "maska";
 
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText ||
@@ -27,6 +28,7 @@ initFacebookSdk().then(
                 .use(i18nVue, {
                     resolve: (lang) => import(`../../lang/${lang}.json`),
                 })
+                .use(Maska)
                 .mixin({
                     methods: {
                         route,
