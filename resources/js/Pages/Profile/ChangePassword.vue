@@ -1,36 +1,16 @@
 <template>
 <Head title="Cambiar Contraseña" />
 <div class="container py-7 lg:flex">
-    <nav class="lg:w-1/4">
-        <div class="rounded bg-secondary-500 text-yellow-500 py-3">
-            <Link :href="route('profile')" class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full">
-                <span class="la la-user text-2xl leading-none mr-2"></span>{{ $t('My Profile') }}
-            </Link>
-            <Link :href="route('profile.change.password')" class="flex items-center justify-start flex-1 bg-primary-500 text-secondary-500 hover:text-secondary-500 px-4 py-2 w-full">
-                <span class="la la-key text-2xl leading-none mr-2"></span>{{ $t('Change Password') }}
-            </Link>
-            <hr class="border-yellow-100 my-2">
-            <Link :href="route('profile.addresss')" class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full">
-                <span class="las la-map-marked-alt text-2xl leading-none mr-2"></span>{{ $t('Addresses') }}
-            </Link>
-            <Link class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full">
-                <span class="la la-dolly text-2xl leading-none mr-2"></span>{{ $t('Orders') }}
-            </Link>
-            <hr class="border-yellow-100 my-2">
-            <Link :href="route('logout')" method="post" as="button" class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full">
-                <span class="la la-power-off text-2xl leading-none mr-2"></span>{{ $t('Logout') }}
-            </Link>
-        </div>
-    </nav>
-    <div class="lg:w-3/4 lg:ml-5 lg:mt-0 mt-4">
+    <ProfileMenu class="lg:w-1/4" />
+    <div class="lg:w-3/4 lg:ml-4 lg:mt-0 mt-4">
         <BreezeValidationErrors class="mb-4" />
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
             {{ status }}
         </div>
-        <div class="card rounded-sm border border-secondary-500">
-            <div class="bg-secondary-500 px-5 py-3 text-yellow-500 border border-secondary-500">
-                {{ $t('Change Password') }}
-            </div>
+        <div class="card rounded-sm border">
+            <div class="bg-secondary-500 text-primary-500 px-5 py-4">
+                    <h5>{{ $t("Change Password") }}</h5>
+                </div>
             <form @submit.prevent="submit" class="p-5">
                 <div>
                     <label for="password">{{ $t('Password') }}</label>
@@ -51,7 +31,8 @@
 
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
-import BreezeValidationErrors from '@/Components/ValidationErrors.vue';
+import BreezeValidationErrors from '@/Components/ValidationErrors';
+import ProfileMenu from "@/Pages/Profile/ProfileMenu";
 
 const form = useForm({
     password: '',

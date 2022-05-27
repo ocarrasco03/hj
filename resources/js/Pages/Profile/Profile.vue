@@ -1,59 +1,12 @@
 <template>
     <Head title="Mi Perfil" />
     <div class="container py-7 lg:flex">
-        <nav class="lg:w-1/4">
-            <div class="rounded bg-secondary-500 text-yellow-500 py-3">
-                <Link
-                    :href="route('profile')"
-                    class="flex items-center justify-start flex-1 text-secondary-500 bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
-                >
-                    <span class="la la-user text-2xl leading-none mr-2"></span
-                    >{{ $t("My Profile") }}
-                </Link>
-                <Link
-                    :href="route('profile.change.password')"
-                    class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
-                >
-                    <span class="la la-key text-2xl leading-none mr-2"></span
-                    >{{ $t("Change Password") }}
-                </Link>
-                <hr class="border-yellow-100 my-2" />
-                <Link
-                    :href="route('profile.addresss')"
-                    class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
-                >
-                    <span
-                        class="las la-map-marked-alt text-2xl leading-none mr-2"
-                    ></span
-                    >{{ $t("Addresses") }}
-                </Link>
-                <Link
-                    class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
-                >
-                    <span class="la la-dolly text-2xl leading-none mr-2"></span
-                    >{{ $t("Orders") }}
-                </Link>
-                <hr class="border-yellow-100 my-2" />
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="flex items-center justify-start flex-1 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
-                >
-                    <span
-                        class="la la-power-off text-2xl leading-none mr-2"
-                    ></span
-                    >{{ $t("Logout") }}
-                </Link>
-            </div>
-        </nav>
+        <ProfileMenu class="lg:w-1/4" />
         <div class="lg:w-3/4 lg:ml-4 lg:mt-0 mt-4">
             <ValidationErrors class="mb-4" />
-            <div class="card rounded-sm border border-secondary-500">
-                <div
-                    class="bg-secondary-500 px-5 py-3 text-yellow-500 border border-secondary-500"
-                >
-                    {{ $t("Mis Datos") }}
+            <div class="card rounded-sm border">
+                <div class="bg-secondary-500 text-primary-500 px-5 py-4">
+                    <h5>{{ $t("My Profile") }}</h5>
                 </div>
                 <div class="p-5">
                     <div class="lg:flex justify-between">
@@ -110,10 +63,6 @@
                                     {{ user.data.addresses.billing.state }},
                                     {{ user.data.addresses.billing.country }}
                                 </address>
-                                <Link
-                                    class="text-secondary-500 hover:underline cursor-pointer mt-1 text-xs hover:text-secondary-500"
-                                    v-text="$t('Change')"
-                                />
                             </div>
                             <div class="lg:ml-4 lg:mt-0 mt-4">
                                 <h5>{{ $t("Shipping Address") }}</h5>
@@ -137,10 +86,6 @@
                                     {{ user.data.addresses.shipping.state }},
                                     {{ user.data.addresses.shipping.country }}
                                 </address>
-                                <Link
-                                    class="text-secondary-500 hover:underline cursor-pointer mt-1 text-xs hover:text-secondary-500"
-                                    v-text="$t('Change')"
-                                />
                             </div>
                         </div>
                     </div>
@@ -286,6 +231,7 @@ import { ref } from "vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import ValidationErrors from "@/Components/ValidationErrors";
 import ApplicationLogo from "@/Components/ApplicationLogo";
+import ProfileMenu from "@/Pages/Profile/ProfileMenu";
 
 const props = defineProps({
     orders: Object,

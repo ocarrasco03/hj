@@ -168,6 +168,7 @@ module.exports = {
             pink: "#F1F2F7",
             admin: {
                 DEFAULT: "#145388",
+                50: "#f8fafb",
                 100: "#F3F6F9",
                 200: "#C4D4E1",
                 300: "#A1BACF",

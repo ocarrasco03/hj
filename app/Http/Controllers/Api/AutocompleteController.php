@@ -27,7 +27,7 @@ class AutocompleteController extends Controller
                 return $query->whereHas('state', function ($query) use ($state) {
                     return $query->where('name', $state);
                 });
-            })->limit(10)
+            })
             ->get()->pluck('name');
     }
 
@@ -54,21 +54,16 @@ class AutocompleteController extends Controller
             })
             ->when($searcheable, function ($query) use ($term) {
                 return $query->where('zip_code', 'like', $term . '%');
-            })->limit(10)
+            })
             ->get()->pluck('zip_code');
     }
 
-    public function neighborhood(Neighborhood $neighborhood, Request $request, $zip_code = null)
+    public function neighborhood(Neighborhood $neighborhood, $zip_code = null)
     {
-        $searcheable = $request->has('query') && strlen($request->input('query')) > 0;
-        $term = $searcheable ? $request->input('query') : '';
-
-        return $neighborhood->when(!is_null($zip_code), function ($query) use ($zip_code) {
+        return $neighborhood->orderBy('name')->when(!is_null($zip_code), function ($query) use ($zip_code) {
             return $query->whereHas('zipCode', function ($query) use ($zip_code) {
                 return $query->where('zip_code', $zip_code);
             });
-        })->when($searcheable, function ($query) use ($term) {
-            return $query->where('name', 'like', '%' . $term . '%');
-        })->limit(10)->get()->pluck('name');
+        })->get()->pluck('name');
     }
 }

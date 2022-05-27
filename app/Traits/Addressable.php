@@ -41,7 +41,7 @@ trait Addressable
         })->where('name', $state)->first();
 
         if (!$countryModel || !$stateModel) {
-            throw new Exception('Invalid Country: '. $country .' or State: ' . $state);
+            throw new Exception('Invalid Country: ' . $country . ' or State: ' . $state);
         }
 
         $address = new Address();
@@ -60,16 +60,88 @@ trait Addressable
     }
 
     /**
-     * Set the new address type
+     * Set a new shipping address to the model
      *
-     * @param Address $address
-     * @param string $type Accepts 'shipping', 'billing', 'both'.
+     * @param int|string $id
      */
-    public function setAddressType(Address $address, $type)
+    public function setShippingAddress($id)
     {
-        $address->update([
-            'type' => $type
-        ]);
+        $this->addresses->map(function ($address) use ($id) {
+            $type = 'shipping';
+            if ($address->id == $id) {
+                if ($address->type !== 'both') {
+                    if ($address->type == 'billing') {
+                        $type = 'both';
+                    }
+                }
+                $address->update([
+                    'type' => $type,
+                ]);
+            } else if ($address->type !== 'billing') {
+                $this->removeShippingAddress($address->id);
+            }
+        });
+    }
+
+    /**
+     * Set a new billing address to the model
+     *
+     * @param int|string $id
+     */
+    public function setBillingAddress($id)
+    {
+        $this->addresses->map(function ($address) use ($id) {
+            $type = 'billing';
+            if ($address->id == $id) {
+                if ($address->type !== 'both') {
+                    if ($address->type == 'shipping') {
+                        $type = 'both';
+                    }
+                }
+                $address->update([
+                    'type' => $type,
+                ]);
+            } else if ($address->type !== 'shipping') {
+                $this->removeBillingAddress($address->id);
+            }
+
+        });
+    }
+
+    /**
+     * Remove a billing address from the model
+     *
+     * @param int|string $id
+     * @return void
+     */
+    public function removeBillingAddress($id)
+    {
+        $this->addresses->map(function ($address) use ($id) {
+            if ($address->id == $id) {
+                if (!is_null($address->type)) {
+                    $address->update([
+                        'type' => $address->type == 'both' ? 'shipping' : null,
+                    ]);
+                }
+            }
+        });
+    }
+
+    /**
+     * Remove a shipping address from the model
+     *
+     * @param int|string $id
+     */
+    public function removeShippingAddress($id)
+    {
+        $this->addresses->map(function ($address) use ($id) {
+            if ($address->id == $id) {
+                if (!is_null($address->type)) {
+                    $address->update([
+                        'type' => $address->type == 'both' ? 'billing' : null,
+                    ]);
+                }
+            }
+        });
     }
 }
-

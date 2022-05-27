@@ -11,10 +11,12 @@ use App\Http\Controllers\Cms\Catalogs\ProductController;
 use App\Http\Controllers\Cms\Customers\CustomersController;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\Sales\OrdersController;
+use App\Http\Controllers\Cms\Settings\General\SliderController;
 use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Settings\UsersController;
 use App\Http\Controllers\Cms\Support\PromptController;
+use App\Http\Controllers\Cms\Support\TicketsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -137,6 +139,10 @@ Route::middleware('auth:admin')->group(function () {
     Route::prefix('soporte')->name('support.')->group(function () {
         Route::post('/terminal', [PromptController::class, 'exeCommand'])->name('console.exec');
         Route::get('/terminal', [PromptController::class, 'index'])->name('console');
+        Route::prefix('tickets')->name('ticket.')->controller(TicketsController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{ticket}', 'show')->name('show');
+        });
     });
 
     /*
@@ -154,7 +160,26 @@ Route::middleware('auth:admin')->group(function () {
         |--------------------------------------------------------------------------
         |
          */
-
+        Route::prefix('general')->name('general.')->group(function () {
+            Route::prefix('tienda')->name('store.')->group(function () {
+                # code...
+            });
+            Route::prefix('seo')->name('seo.')->group(function () {
+                # code...
+            });
+            Route::prefix('etiquetas')->name('tags.')->group(function () {
+                # code...
+            });
+            Route::prefix('busqueda')->name('search.')->group(function () {
+                # code...
+            });
+            Route::prefix('slider')->name('slider.')->controller(SliderController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/agregar-imagen/{slider}', 'store')->name('store');
+                Route::put('/actualizar/{slider}', 'update')->name('update');
+                Route::delete('/eliminar/{slider}/{uuid}', 'destroy')->name('delete');
+            });
+        });
         /*
         |--------------------------------------------------------------------------
         | Advanced Settings Routes

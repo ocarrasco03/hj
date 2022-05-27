@@ -761,9 +761,9 @@ onMounted(() => {
             <div class="menu-detail" data-menu="support">
                 <div class="menu-detail-wrapper">
                     <Link
-                        href="#"
+                        :href="route('admin.support.ticket.index')"
                         :class="{
-                            active: route().current('admin.settings.info'),
+                            active: route().current('admin.support.ticket.index'),
                         }"
                         @click="hideMenuDetail"
                         v-if="$can('support.read')"
@@ -856,9 +856,9 @@ onMounted(() => {
                         Busqueda
                     </Link>
                     <Link
-                        :href="route('admin.settings.info')"
+                        :href="route('admin.settings.general.slider.index')"
                         :class="{
-                            active: route().current('admin.settings.info'),
+                            active: route().current('admin.settings.general.slider.index'),
                         }"
                         @click="hideMenuDetail"
                         v-if="$can('slider.read')"

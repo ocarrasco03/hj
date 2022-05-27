@@ -40,6 +40,8 @@
         "swiper": "^8.0.7",
         "tippy.js": "^6.3.7",
         "toastr": "^2.1.4",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "vue3-simple-typeahead": "^1.0.5",
+        "vuedraggable": "^4.1.0"
     }
 }

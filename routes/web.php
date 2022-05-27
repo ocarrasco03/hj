@@ -74,7 +74,11 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
             Route::put('actualizar', [ProfileController::class, 'store'])->name('update');
             Route::prefix('mis-direcciones')->controller(AddressesController::class)->group(function () {
-                Route::get('/', '__invoke')->name('addresss');
+                Route::get('/', '__invoke')->name('address');
+                Route::name('address.')->group(function () {
+                    Route::post('/agregar', 'store')->name('store');
+                    Route::get('/asignar/{id}/{type?}','setAddress')->name('set');
+                });
             });
 
             Route::get('mis-pedidos')->name('orders');

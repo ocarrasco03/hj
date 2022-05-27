@@ -67,6 +67,10 @@ Table of Contents
     }
 }
 
+.simple-typeahead-input {
+    @apply appearance-none bg-white border border-gray-300 rounded w-full py-2 px-4 text-gray-700;
+}
+
 .custom-select {
     @apply relative;
     select {
@@ -741,7 +745,11 @@ Table of Contents
   Workspace
   */
 .workspace {
-    @apply relative flex flex-auto flex-col mt-20 px-5 pt-5;
+    @apply relative flex flex-auto flex-col mt-20 px-5 pt-5 w-full;
+
+    @screen sm {
+        width: calc(100vw - 130px);
+    }
 
     @screen md {
         @apply px-10 pt-10;
@@ -1902,6 +1910,9 @@ select {
 .swiper-button-next,
 .swiper-button-prev {
     @apply text-secondary;
+    &:hover {
+        @apply transition ease-linear duration-100;
+    }
 }
 .swiper-pagination-bullet {
     @apply h-3 w-3;

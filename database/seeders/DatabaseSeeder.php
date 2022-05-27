@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory()->create(['firstname' => 'Oscar Humberto', 'lastname' => 'Carrasco Parrales', 'email' => 'ocarrasco@hjautopartes.com.mx']);
         \App\Models\User::factory(10)->create();
         // \App\Models\Sales\Order::factory(100)->create();
+        \App\Models\Configs\Slider::factory()->create(['name'=> 'main-slide']);
     }
 }

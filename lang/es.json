@@ -119,6 +119,14 @@
     "First names": "Nombres",
     "Last names": "Apellidos",
     "Change": "Cambiar",
-    "Shipping Address": "Direccón de Envío",
-    "Billing Address": "Dirección de Facturación"
+    "Shipping Address": "Dirección de Envío",
+    "Billing Address": "Dirección de Facturación",
+    "Street": "Calle",
+    "Outdoor Number": "Número Exterior",
+    "Inside Number": "Número Interior",
+    "Billing": "Facturación",
+    "Addresses": "Direcciones",
+    "Add new address": "Añadir nueva dirección",
+    "Notes": "Notas",
+    "Drop files here to upload": "Arrastra los archivos aquí para subirlos"
 }

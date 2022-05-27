@@ -38,8 +38,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'addresses' => [
-                'shipping' => !is_null($shipping) ? AddressResource::collection($shipping): null,
-                'billing' => !is_null($shipping) ? AddressResource::collection($billing) : null,
+                'shipping' => !is_null($shipping) ? new AddressResource($shipping): null,
+                'billing' => !is_null($billing) ? new AddressResource($billing) : null,
             ],
             'orders' => OrderResource::collection($this->orders)
         ];

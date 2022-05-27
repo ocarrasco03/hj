@@ -17,6 +17,7 @@ import SearchPanel from "@/Components/SearchPanel.vue";
 
 defineProps({
     products: Object,
+    slider: Object,
 });
 
 const form = useForm({
@@ -56,7 +57,7 @@ const shortText = (text, length) => {
     <div class="container hidden sm:block">
         <SearchPanel class="ml-0" />
     </div>
-    <Slider />
+    <Slider :images="slider.data.media" />
     <HjSectionTitle :primary="true">
         <h4>Productos Sugeridos</h4>
     </HjSectionTitle>
