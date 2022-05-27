@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Cms\Settings\General;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadImage;
-use App\Http\Resources\Cms\Settigns\SliderCollection;
+use App\Http\Requests\UploadMultipleImages;
 use App\Http\Resources\Cms\Settigns\SliderResource;
 use App\Models\Configs\Slider;
 use Illuminate\Http\Request;
@@ -21,17 +20,18 @@ class SliderController extends Controller
     public function index()
     {
         return Inertia::render('Cms/Settings/General/Slider/Index', [
-            'sliders' => new SliderResource(Slider::where('id',1)->first())
+            'sliders' => new SliderResource(Slider::where('id', 1)->first()),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UploadMultipleImages  $request
+     * @param \App\Models\Configs\Slider $slider
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Slider $slider)
+    public function store(UploadMultipleImages $request, Slider $slider)
     {
         try {
             if (is_array($request->image)) {
@@ -56,28 +56,6 @@ class SliderController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -86,9 +64,8 @@ class SliderController extends Controller
      */
     public function update(Request $request, Slider $slider)
     {
-
         $request->validate([
-            'slides' => ['required', 'array']
+            'slides' => ['required', 'array'],
         ]);
 
         $i = 1;
