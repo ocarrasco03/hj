@@ -60,7 +60,7 @@ return [
         |
         */
         'properties'             => [
-            'creator'        => '',
+            'creator'        => 'HJ Autopartes',
             'lastModifiedBy' => '',
             'title'          => '',
             'description'    => '',
@@ -68,7 +68,7 @@ return [
             'keywords'       => '',
             'category'       => '',
             'manager'        => '',
-            'company'        => '',
+            'company'        => 'HJ Acco Autopartes SA de CV',
         ],
     ],
 
