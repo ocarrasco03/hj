@@ -76,6 +76,15 @@ initFacebookSdk().then(
                                 sizes[i]
                             );
                         },
+                        $formatedDate: (
+                            date,
+                            options = {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }
+                        ) =>
+                            new Date(date).toLocaleDateString("es-MX", options),
                     },
                 })
                 .mount(el);

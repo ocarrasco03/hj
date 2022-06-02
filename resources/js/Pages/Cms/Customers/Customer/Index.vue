@@ -1,7 +1,9 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
-import Pagination from "@/Components/Cms/Pagination.vue";
+import Pagination from "@/Components/Cms/Pagination";
+import Dropdown from "@/Components/Dropdown";
+import DropdownLink from "@/Components/DropdownLink";
 import Swal from "sweetalert2";
 import axios from "axios";
 import nprogress from "nprogress";
@@ -12,7 +14,7 @@ const props = defineProps({
 
 const selectedRows = ref([]);
 
-const confirmDelete = (event) => {
+const confirmDelete = (id, index, event) => {
     Swal.fire({
         title: "&iquest;Estás seguro de querer eliminar el usuario?",
         icon: "warning",
@@ -26,15 +28,15 @@ const confirmDelete = (event) => {
             nprogress.start();
             axios
                 .delete(
-                    route("admin.settings.advanced.users.delete", {
-                        user: event.target.dataset.id,
+                    route("admin.customers.customer.delete", {
+                        customer: id,
                     })
                 )
                 .then((res) => {
                     if (res.data.success) {
-                        props.users.data[
-                            event.target.dataset.index
-                        ].deleted_at = new Date(Date.now()).toISOString();
+                        props.users.data[index].deleted_at = new Date(
+                            Date.now()
+                        ).toISOString();
                         Swal.fire("Eliminado!", res.data.message, "success");
                     } else {
                         Swal.fire({
@@ -117,17 +119,17 @@ export default {
             </form>
             <div class="flex mt-5 lg:mt-0">
                 <!-- Add New -->
-                <Link
+                <!-- <Link
                     :href="route('admin.settings.advanced.users.create')"
                     class="btn btn-admin uppercase ml-2"
                     >Agregar</Link
-                >
+                > -->
             </div>
         </div>
     </section>
 
-    <div class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
-        <div class="card w-full py-4">
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
+        <div class="card w-full">
             <table
                 class="table table-auto w-full table-hoverable border-collapse"
                 v-cloak
@@ -140,7 +142,7 @@ export default {
                                     type="checkbox"
                                     :checked="selectedRows.length > 0"
                                     :partial="
-                                        selectedRows.length < users.per_page &&
+                                        selectedRows.length < users.meta.per_page &&
                                         selectedRows.length > 0
                                             ? true
                                             : null
@@ -150,11 +152,14 @@ export default {
                                 <span></span>
                             </label>
                         </th>
-                        <th class="text-left">Usuario</th>
+                        <th class="text-left">Cliente</th>
                         <th class="text-left hidden md:table-cell">Email</th>
-                        <th class="w-px hidden md:table-cell">Status</th>
+                        <th class="text-left hidden md:table-cell">{{ $t('Phone') }}</th>
+                        <th class="text-left hidden md:table-cell">{{ $t('Average Purchases') }}</th>
+                        <th class="w-px hidden lg:table-cell">{{ $t('Suscribed') }}</th>
                         <th class="w-px hidden lg:table-cell">Verificado</th>
-                        <th>Actions</th>
+                        <th class="w-px hidden md:table-cell">Status</th>
+                        <th class="w-px"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -178,6 +183,32 @@ export default {
                         </td>
                         <td>{{ user.name }}</td>
                         <td class="hidden md:table-cell">{{ user.email }}</td>
+                        <td class="hidden md:table-cell">{{ user.phone }}</td>
+                        <td class="hidden md:table-cell">{{ $formatPrice(user.ave_purchases) }}</td>
+                        <td class="text-center hidden lg:table-cell">
+                            <span
+                                v-if="user.suscribed"
+                                class="text-success-700 text-2xl las la-user-check"
+                            >
+                            </span>
+                            <span
+                                v-else
+                                class="text-danger-500 text-2xl las la-times-circle"
+                            >
+                            </span>
+                        </td>
+                        <td class="text-center hidden lg:table-cell">
+                            <span
+                                v-if="user.email_verified_at"
+                                class="text-success-700 text-2xl las la-user-check"
+                            >
+                            </span>
+                            <span
+                                v-else
+                                class="text-danger-500 text-2xl las la-times-circle"
+                            >
+                            </span>
+                        </td>
                         <td class="text-center hidden md:table-cell">
                             <span
                                 v-if="!user.deleted_at"
@@ -190,75 +221,75 @@ export default {
                                 >Desactivado</span
                             >
                         </td>
-                        <td class="text-center hidden lg:table-cell">
-                            <span
-                                v-if="user.email_verified_at"
-                                class="text-success-700 text-2xl las la-user-check"
-                            >
-                            </span>
-                            <span
-                                v-else
-                                class="text-danger-500 text-2xl  las la-times-circle"
-                            >
-                            </span>
-                        </td>
                         <td class="items-center text-center">
-                            <Link
-                                :href="
-                                    route(
-                                        'admin.settings.advanced.users.show',
-                                        { id: user.id }
-                                    )
-                                "
-                                v-if="!user.deleted_at"
-                                class="btn btn-outlined btn-admin btn-icon"
-                                as="button"
-                                method="get"
-                                :disabled="!$can('usuarios.update')"
-                            >
-                                <span class="la la-pen"></span>
-                            </Link>
-                            <button
-                                v-if="!user.deleted_at"
-                                class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
-                                @click="confirmDelete"
-                                :disabled="!$can('usuarios.delete')"
-                            >
-                                <span
-                                    class="la la-trash-alt"
-                                    :data-id="user.id"
-                                    :data-index="index"
-                                ></span>
-                            </button>
-                            <Link
-                                v-if="user.deleted_at"
-                                :href="
-                                    route(
-                                        'admin.settings.advanced.users.restore',
-                                        { user: user.id }
-                                    )
-                                "
-                                class="btn btn-outlined btn-admin ml-2 btn-icon rounded-full"
-                                preserve-scroll
-                                method="put"
-                                as="button"
-                            >
-                                <span class="la la-redo-alt"></span>
-                            </Link>
+                            <Dropdown>
+                                <template #trigger>
+                                    <span
+                                        class="btn btn-icon rounded-full text-secondary-500 hover:text-secondary-500 hover:bg-gray-100 la la-ellipsis-v"
+                                    ></span>
+                                </template>
+                                <template #content>
+                                    <div class="divide-y">
+                                        <DropdownLink :href="
+                                                route(
+                                                    'admin.customers.customer.show',
+                                                    { customer: user.id }
+                                                )" class="hover:text-admin-500">
+                                            <span
+                                                class="la la-eye leading-none mr-2"
+                                            ></span
+                                            >{{ $t("Show") }}
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-if="
+                                                !user.deleted_at &&
+                                                $can('usuarios.delete')
+                                            "
+                                            @click="
+                                                confirmDelete(user.id, index)
+                                            "
+                                            class="hover:text-danger-500"
+                                        >
+                                            <span
+                                                class="la la-trash-alt leading-none mr-2"
+                                                :data-id="user.id"
+                                                :data-index="index"
+                                            ></span
+                                            >{{ $t("Delete") }}
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-if="
+                                                user.deleted_at &&
+                                                $can('usuarios.delete')
+                                            "
+                                            :href="
+                                                route(
+                                                    'admin.customers.customer.restore',
+                                                    { customer: user.id }
+                                                )
+                                            "
+                                            method="put"
+                                            as="button"
+                                            preserve-scroll
+                                            class="hover:text-admin-500"
+                                        >
+                                            <span class="la la-redo-alt leading-none mr-2"></span>{{ $t("Restore") }}
+                                        </DropdownLink>
+                                    </div>
+                                </template>
+                            </Dropdown>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div
-        class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
-    >
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <Pagination
-            :links="users.links"
-            :total="users.total"
-            :from="users.from"
-            :to="users.to"
+            :links="users.meta.links"
+            :total="users.meta.total"
+            :from="users.meta.from"
+            :to="users.meta.to"
             v-if="users.data.length > 0"
         />
     </div>

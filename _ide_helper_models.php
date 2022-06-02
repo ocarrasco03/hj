@@ -163,34 +163,44 @@ namespace App\Models\Configs{
  * App\Models\Configs\Address
  *
  * @property int $id
- * @property int $user_id
- * @property string $type
- * @property string $line_1
- * @property string|null $line_2
+ * @property int $country_id
+ * @property int $state_id
  * @property string $city
- * @property string $state
- * @property string $country
  * @property string $zip_code
- * @property string $references
+ * @property string $neighborhood
+ * @property string $street
+ * @property string $ext_no
+ * @property string|null $int_no
+ * @property string|null $notes
+ * @property string $addressable_type
+ * @property int $addressable_id
+ * @property string|null $type
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $addressable
+ * @property-read \App\Models\Configs\Country|null $country
+ * @property-read \App\Models\Configs\State|null $state
  * @method static \Database\Factories\Configs\AddressFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
  * @method static \Illuminate\Database\Query\Builder|Address onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Address query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereAddressableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereAddressableType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCountryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereExtNo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine1($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereLine2($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereReferences($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereIntNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereNeighborhood($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereStateId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereStreet($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipCode($value)
  * @method static \Illuminate\Database\Query\Builder|Address withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Address withoutTrashed()
@@ -339,17 +349,21 @@ namespace App\Models\Configs{
  * App\Models\Configs\Slider
  *
  * @property int $id
+ * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
+ * @property-read int|null $media_count
  * @method static \Database\Factories\Configs\SliderFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Slider newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Slider newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Slider query()
  * @method static \Illuminate\Database\Eloquent\Builder|Slider whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Slider whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Slider whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Slider whereUpdatedAt($value)
  */
-	class Slider extends \Eloquent {}
+	class Slider extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Configs{
@@ -546,6 +560,36 @@ namespace App\Models\Sales{
 	class Order extends \Eloquent {}
 }
 
+namespace App\Models\Support{
+/**
+ * App\Models\Support\Ticket
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int|null $admin_id
+ * @property string $title
+ * @property string $message
+ * @property mixed|null $payload
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @method static \Database\Factories\Support\TicketFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereAdminId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUserId($value)
+ */
+	class Ticket extends \Eloquent {}
+}
+
 namespace App\Models{
 /**
  * App\Models\User
@@ -565,6 +609,9 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Configs\Address[] $addresses
  * @property-read int|null $addresses_count
+ * @property-read mixed $average_purchases
+ * @property-read mixed $sum_purchases
+ * @property-read mixed $total_purchases
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sales\Order[] $orders

@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import draggable from "vuedraggable";
 import Slider from "@/Components/Slider";
+import ValidationErrors from "@/Components/ValidationErrors";
 
 const props = defineProps({
     sliders: Object,
@@ -176,6 +177,7 @@ export default {
         </form>
 
         <form @submit.prevent="submit" :disabled="form.processing">
+            <ValidationErrors class="mt-5" />
             <div
                 id="uploadFileZone"
                 class="dropzone my-5 cursor-pointer"

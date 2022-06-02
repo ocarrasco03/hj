@@ -183,7 +183,7 @@ export default {
                     <hr class="my-2" />
                     <Link
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
-                        :href="route('admin.sales.orders.index')"
+                        @click="back"
                     >
                         <span
                             class="las la-undo text-gray-600 text-2xl mr-2"

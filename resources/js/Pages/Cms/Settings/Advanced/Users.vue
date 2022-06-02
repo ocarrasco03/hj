@@ -70,7 +70,7 @@ const getRoleNames = (roles) => {
 
     if (roles.length > 0) {
         roles.forEach(element => {
-            name = name === '' ? element.name : name;
+            name = name === '' ? element : name;
         });
     }
 
@@ -142,7 +142,7 @@ export default {
     <div
         class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
     >
-        <div class="card w-full py-4">
+        <div class="card w-full">
             <table
                 class="table table-auto w-full table-hoverable border-collapse"
                 v-cloak
@@ -155,7 +155,7 @@ export default {
                                     type="checkbox"
                                     :checked="selectedRows.length > 0"
                                     :partial="
-                                        selectedRows.length < users.per_page &&
+                                        selectedRows.length < users.meta.per_page &&
                                         selectedRows.length > 0
                                             ? true
                                             : null
@@ -165,7 +165,7 @@ export default {
                                 <span></span>
                             </label>
                         </th>
-                        <th class="text-left">Usuario</th>
+                        <th colspan="2" class="text-left">Usuario</th>
                         <th class="text-left hidden md:table-cell">
                             Nombre de Usuario
                         </th>
@@ -193,7 +193,14 @@ export default {
                                 <span></span>
                             </label>
                         </td>
-                        <td>{{ user.name }}</td>
+                        <td class="w-px">
+                            <span class="avatar w-10 h-10">
+                                <img :src="user.avatar" alt="" v-if="user.avatar" />
+                            </span>
+                        </td>
+                        <td>
+                            {{ user.name }}
+                        </td>
                         <td class="hidden md:table-cell">
                             {{ user.username }}
                         </td>
@@ -255,13 +262,13 @@ export default {
         </div>
     </div>
     <div
-        class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
+        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
     >
         <Pagination
-            :links="users.links"
-            :total="users.total"
-            :from="users.from"
-            :to="users.to"
+            :links="users.meta.links"
+            :total="users.meta.total"
+            :from="users.meta.from"
+            :to="users.meta.to"
             v-if="users.data.length > 0"
         />
     </div>

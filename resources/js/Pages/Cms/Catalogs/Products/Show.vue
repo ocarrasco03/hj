@@ -86,7 +86,7 @@ const form = useForm({
     category: setCategory(),
     subcategory: setCategory("children"),
     condition: props.product.condition,
-    stock: props.product.stock
+    stock: props.product.stock,
 });
 
 const submit = () => {
@@ -214,12 +214,13 @@ export default {
             </div>
         </div>
     </section>
+
     <div class="lg:flex lg:-mx-4">
         <!-- Content -->
         <div class="lg:w-1/2 xl:w-3/4 lg:px-4">
             <div class="card p-5">
                 <form>
-                    <div class="mb-5 xl:w-1/2">
+                    <div class="mb-5">
                         <label class="label block mb-2" for="sku">SKU</label>
                         <input
                             id="sku"
@@ -228,7 +229,7 @@ export default {
                             v-model="form.sku"
                         />
                     </div>
-                    <div class="mb-5 xl:w-1/2">
+                    <div class="mb-5">
                         <label class="label block mb-2" for="name">{{
                             $t("Name")
                         }}</label>
@@ -239,7 +240,7 @@ export default {
                             v-model="form.name"
                         />
                     </div>
-                    <div class="mb-5 xl:w-1/2">
+                    <div class="mb-5">
                         <label class="label block mb-2" for="brand">{{
                             $t("Brand")
                         }}</label>
@@ -281,7 +282,7 @@ export default {
                             ></textarea>
                         </div>
                     </div>
-                    <div class="flex flex-col xl:flex-row xl:space-x-5">
+                    <div class="flex flex-col xl:flex-row xl:space-x-5 mt-5 xl:mt-0">
                         <div class="mb-5 xl:w-1/2">
                             <label class="label block mb-2" for="related">{{
                                 $t("Related Products")
@@ -442,7 +443,9 @@ export default {
                                 </button>
                             </div>
 
-                            <table class="table table-admin mt-5 w-full max-h-5 ">
+                            <table
+                                class="table table-admin mt-5 w-full max-h-5"
+                            >
                                 <thead>
                                     <tr>
                                         <th class="text-left">
@@ -470,7 +473,13 @@ export default {
                                         <td>{{ catalog.year.year }}</td>
                                         <td>{{ catalog.make.name }}</td>
                                         <td>{{ catalog.model.name }}</td>
-                                        <td>{{ catalog.engine !== null ? engine : 'N/A' }}</td>
+                                        <td>
+                                            {{
+                                                catalog.engine !== null
+                                                    ? engine
+                                                    : "N/A"
+                                            }}
+                                        </td>
                                         <td>
                                             <button
                                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
@@ -569,12 +578,16 @@ export default {
                     </div>
                     <div class="flex items-center mt-5">
                         <div class="w-1/4">
-                            <label class="label block">{{
-                                $t("Stock")
-                            }}</label>
+                            <label class="label block">{{ $t("Stock") }}</label>
                         </div>
                         <div class="w-3/4 ml-2">
-                            <input type="number" class="form-control" v-model.number="form.stock" :class="{ 'is-invalid': errors.stock }" min="0" />
+                            <input
+                                type="number"
+                                class="form-control"
+                                v-model.number="form.stock"
+                                :class="{ 'is-invalid': errors.stock }"
+                                min="0"
+                            />
                         </div>
                     </div>
                     <!-- <div class="flex items-center mt-5">
@@ -610,58 +623,43 @@ export default {
             <!-- Categories -->
             <div class="card mt-5 p-5">
                 <h3>{{ $t("Categories") }}</h3>
-                <div class="flex items-center mt-5">
-                    <div class="w-1/4">
-                        <label class="label block">{{ $t("Category") }}</label>
-                    </div>
-                    <div class="w-3/4 ml-2">
-                        <div class="custom-select">
-                            <select
-                                class="form-control"
-                                v-model="form.category"
-                                @change="loadSubcategories"
+                <div class="flex flex-col mt-5">
+                    <label class="label block mb-1">{{ $t("Category") }}</label>
+                    <div class="custom-select">
+                        <select
+                            class="form-control"
+                            v-model="form.category"
+                            @change="loadSubcategories"
+                        >
+                            <template
+                                v-for="(category, key) in categories"
+                                :key="key"
                             >
-                                <template
-                                    v-for="(category, key) in categories"
-                                    :key="key"
-                                >
-                                    <option :value="category.name">
-                                        {{ category.name }}
-                                    </option>
-                                </template>
-                            </select>
-                            <div
-                                class="custom-select-icon la la-caret-down"
-                            ></div>
-                        </div>
+                                <option :value="category.name">
+                                    {{ category.name }}
+                                </option>
+                            </template>
+                        </select>
+                        <div class="custom-select-icon la la-caret-down"></div>
                     </div>
                 </div>
-                <div class="flex items-center mt-5" v-if="index !== null">
-                    <div class="w-1/4">
-                        <label class="label block">{{
-                            $t("Subcategory")
-                        }}</label>
-                    </div>
-                    <div class="w-3/4 ml-2">
-                        <div class="custom-select">
-                            <select
-                                class="form-control"
-                                v-model="form.subcategory"
+                <div class="flex flex-col mt-2" v-if="index !== null">
+                    <label class="label block mb-1">{{
+                        $t("Subcategory")
+                    }}</label>
+                    <div class="custom-select">
+                        <select class="form-control" v-model="form.subcategory">
+                            <template
+                                v-for="(category, key) in categories[index]
+                                    .children"
+                                :key="key"
                             >
-                                <template
-                                    v-for="(category, key) in categories[index]
-                                        .children"
-                                    :key="key"
-                                >
-                                    <option :value="category.name">
-                                        {{ category.name }}
-                                    </option>
-                                </template>
-                            </select>
-                            <div
-                                class="custom-select-icon la la-caret-down"
-                            ></div>
-                        </div>
+                                <option :value="category.name">
+                                    {{ category.name }}
+                                </option>
+                            </template>
+                        </select>
+                        <div class="custom-select-icon la la-caret-down"></div>
                     </div>
                 </div>
             </div>

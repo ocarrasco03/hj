@@ -97,10 +97,14 @@ Route::middleware('auth:admin')->group(function () {
     Route::prefix('catalogos')->name('catalogs.')->group(function () {
         Route::controller(ProductController::class)->prefix('productos')->name('products.')->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/nuevo-producto', 'create')->name('create');
+            Route::post('/nuevo-producto', 'store')->name('store');
             Route::get('/{product}', 'show')->name('show');
             Route::put('/{product}', 'update')->name('update');
+            Route::delete('/{product}', 'destroy')->name('delete');
             Route::post('/upload/{product}', 'upload')->name('upload.file');
             Route::delete('/remove/{product}/{id}', 'remove')->name('remove.file');
+            Route::get('/exportar');
         });
         Route::prefix('paquetes')->name('bundles.')->group(function () {
             //
@@ -119,10 +123,11 @@ Route::middleware('auth:admin')->group(function () {
     Route::prefix('clientes')->name('customers.')->group(function () {
         Route::name('customer.')->controller(CustomersController::class)->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::get('/{customer}', 'show')->name('show');
+            Route::delete('/{customer}', 'destroy')->name('delete');
+            Route::put('/{customer}', 'restore')->name('restore');
         });
-        Route::prefix('direcciones')->name('addresses.')->group(function () {
-            //
-        });
+
         Route::prefix('servicio-al-cliente')->name('customer.service.')->group(function () {
             //
         });
@@ -192,9 +197,9 @@ Route::middleware('auth:admin')->group(function () {
                 Route::get('/nuevo', 'create')->name('create');
                 Route::post('/nuevo', 'store')->name('store');
                 Route::get('/{id}', 'show')->name('show');
-                Route::put('/{id}', 'update')->name('update');
+                Route::post('/{user}', 'update')->name('update');
                 Route::delete('/{user}', 'destroy')->name('delete');
-                Route::put('/{user}', 'restore')->name('restore');
+                Route::put('/restaurar/{user}', 'restore')->name('restore');
                 Route::post('/', 'resetPassword')->name('password.email');
             });
             Route::prefix('roles-y-permisos')->controller(RolesPermissionsController::class)->name('roles.permissions.')->group(function () {

@@ -21,8 +21,25 @@ const form = useForm({
     password_confirmation: "",
     role: null,
     permissions: [],
+    avatar: null
 });
 
+const fileValidation = () => {
+    const fsize = form.avatar.size;
+    const file = Math.round(fsize / 1024);
+    // The size of the file.
+    if (file >= 2048) {
+        errors.value = {
+            avatar: trans("File too big, please select a file less than :size", {size: '2MB'})
+        }
+        form.avatar = null
+        return false;
+    }
+
+    return true;
+};
+
+const url = ref(null);
 const errors = ref({});
 
 const rules = {
@@ -123,6 +140,15 @@ const loadPermissions = () => {
         }
     });
 };
+
+const customFileInput = (event) => {
+    const filename = event.target.value.split("\\").pop();
+    const file = event.target.files[0];
+    if (fileValidation()) {
+        event.target.parentNode.querySelector(".file-name").innerHTML = filename;
+        url.value = URL.createObjectURL(file);
+    }
+};
 </script>
 
 <script context="module">
@@ -188,6 +214,43 @@ export default {
         >
             <div class="lg:w-1/2">
                 <div class="card mt-5 p-5">
+                    <div class="mb-5 flex align-middle">
+                        <div class="grow-0 shrink-0">
+                            <div class="avatar w-16 h-16 mr-2">
+                                <img :src="url" alt="" v-if="url" />
+                            </div>
+                        </div>
+                        <div class="mt-auto flex-auto">
+                            <small
+                            v-if="errors.avatar"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.avatar }}</small>
+                            <label
+                                class="input-group text-base font-normal"
+                                for="customFile"
+                            >
+                                <div
+                                    class="file-name input-addon input-addon-prepend input-group-item w-full overflow-x-hidden"
+                                >
+                                    {{ $t("No file chosen") }}
+                                </div>
+                                <input
+                                    id="customFile"
+                                    type="file"
+                                    class="hidden"
+                                    @change="customFileInput"
+                                    @input="
+                                        form.avatar = $event.target.files[0]
+                                    "
+                                />
+                                <div
+                                    class="input-group-item btn btn-admin uppercase"
+                                >
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                     <div class="mb-5">
                         <label class="label block mb-2" for="name"
                             >Nombre</label

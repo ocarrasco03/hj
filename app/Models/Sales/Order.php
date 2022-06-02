@@ -103,4 +103,32 @@ class Order extends Model
             });
     }
 
+    public function scopeWithoutCanceled($query)
+    {
+        return $query->whereHas('status', function ($query) {
+            return $query->canceled();
+        });
+    }
+
+    public function scopeOnlyCanceled($query)
+    {
+        return $query->whereHas('status', function ($query) {
+            return $query->whereIn('prefix', ['CANCELED']);
+        });
+    }
+
+    public function scopeWithoutRefunded($query)
+    {
+        return $query->whereHas('status', function ($query) {
+            return $query->refunded();
+        });
+    }
+
+    public function scopeOnlyRefunded($query)
+    {
+        return $query->whereHas('status', function ($query) {
+            return $query->whereIn('prefix', ['REFUND']);
+        });
+    }
+
 }

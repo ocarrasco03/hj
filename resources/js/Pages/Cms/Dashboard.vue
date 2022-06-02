@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
-import LineChartAnnotation from "@/Components/Cms/LineWithAnnotationChart.vue";
-import LineChart from "@/Components/Cms/LineChart.vue";
-import PolarWithShadowChart from "@/Components/Cms/PolarWithShadowChart.vue";
+import LineChartAnnotation from "@/Components/Cms/LineWithAnnotationChart";
+import LineChart from "@/Components/Cms/LineChart";
+import PolarWithShadowChart from "@/Components/Cms/PolarWithShadowChart";
 import { v4 as uuidv4 } from "uuid";
 
 const props = defineProps({
@@ -199,7 +199,7 @@ export default {
                         <tr class="text-admin-500">
                             <th class="text-left uppercase">Orden #</th>
                             <th class="w-px uppercase">{{ $t("Total") }}</th>
-                            <th class="w-px uppercase">{{ $t("Status") }}</th>
+                            <th class="uppercase">{{ $t("Status") }}</th>
                         </tr>
                     </thead>
                     <tbody>

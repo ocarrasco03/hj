@@ -33,7 +33,7 @@ export default {
         </ul>
     </section>
 
-    <div class="container pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <div class="lg:w-1/2">
             <div class="card container py-4">
                 <h4 class="pb-2">Informaci&oacute;n de configuraci&oacute;n</h4>

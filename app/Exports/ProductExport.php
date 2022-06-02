@@ -5,8 +5,9 @@ namespace App\Exports;
 use Maatwebsite\Excel\Excel;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithProperties;
 
-class ProductExport implements FromCollection
+class ProductExport implements FromCollection, WithProperties
 {
     use Exportable;
     /**
@@ -26,5 +27,17 @@ class ProductExport implements FromCollection
     public function collection()
     {
         //
+    }
+
+    public function properties(): array
+    {
+        return [
+            'creator' => 'HJ Acco Autopartes S.A. de C.V.',
+            'lastModifiedBy' => 'HJ Acco Autopartes S.A. de C.V.',
+            'title' => 'Exportación de Productos',
+            'description' => 'Exportación de todos los productos',
+            'category' => 'Productos',
+            'company' => 'HJ Autopartes',
+        ];
     }
 }

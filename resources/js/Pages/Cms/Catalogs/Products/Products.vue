@@ -130,7 +130,7 @@ export default {
             <div class="flex mt-5 lg:mt-0">
                 <!-- Add New -->
                 <Link
-                    :href="route('admin.settings.advanced.users.create')"
+                    :href="route('admin.catalogs.products.create')"
                     class="btn btn-admin uppercase ml-2"
                     >Agregar</Link
                 >

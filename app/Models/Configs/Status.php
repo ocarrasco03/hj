@@ -29,8 +29,21 @@ class Status extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function scopeCanceled($query)
+    public function scopeCanceled($query, $only = false)
     {
-        return $query->where('prefix', 'CANCELED');
+        if ($only) {
+            return $query->where('prefix', 'CANCELED');
+        }
+
+        return $query->where('prefix', '!=', 'CANCELED');
+    }
+
+    public function scopeRefunded($query, $only = false)
+    {
+        if ($only) {
+            return $query->where('prefix', 'REFUND');
+        }
+
+        return $query->where('prefix', '!=', 'REFUND');
     }
 }

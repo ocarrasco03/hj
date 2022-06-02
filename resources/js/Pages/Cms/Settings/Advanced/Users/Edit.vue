@@ -15,73 +15,38 @@ const props = defineProps({
 });
 
 const form = useForm({
-    name: props.user.name,
-    username: props.user.username,
-    email: props.user.email,
-    role: props.user.role,
-    permissions: props.user.permissions,
+    name: props.user.data.name,
+    username: props.user.data.username,
+    email: props.user.data.email,
+    role: props.user.data.roles.length > 0 ? props.user.data.roles[0] : null,
+    permissions: props.user.data.permissions,
+    avatar: props.user.data.avatar !== "" ? props.user.data.avatar : null,
 });
 
-const errors = ref({});
-
-const rules = {
-    name: ["required"],
-    username: ["required"],
-    email: ["required", "email"],
-    role: ["required"],
-};
-
-const validate = (form) => {
-    let flag = true;
-
-    const error = {};
-
-    for (let key in rules) {
-        for (let rule in rules[key]) {
-            switch (rules[key][rule]) {
-                case "required":
-                    if (
-                        form[key] === "" ||
-                        typeof form[key] === undefined ||
-                        typeof form[key] === null ||
-                        form[key] === null
-                    ) {
-                        error[key] = trans("validation.required", {
-                            attribute: key,
-                        });
-                        flag = false;
-                    }
-                    break;
-
-                case "email":
-                    if (!pattern.test(form[key])) {
-                        error[key] = trans("validation.email", {
-                            attribute: key,
-                        });
-                        flag = false;
-                    }
-                    break;
-
-                case "string":
-                    if (typeof form[key] !== "string") {
-                        error[key] = trans("validation.string", {
-                            attribute: key,
-                        });
-                        flag = false;
-                    }
-                    break;
-            }
+const fileValidation = () => {
+    const fsize = form.avatar.size;
+    const file = Math.round(fsize / 1024);
+    // The size of the file.
+    if (file >= 2048) {
+        errors.value = {
+            avatar: trans("File too big, please select a file less than :size", {size: '2MB'})
         }
+        form.avatar = props.user.data.avatar !== "" ? props.user.data.avatar : null
+        return false;
     }
 
-    if (!flag) errors.value = error;
-
-    return flag;
+    return true;
 };
 
+const url = ref(props.user.data.avatar);
+const errors = ref({});
+
 const submit = () => {
-    if (validate(form)) {
-        form.put(route("admin.settings.advanced.users.update", {id: props.user.id}), {
+    form.post(
+        route("admin.settings.advanced.users.update", {
+            user: props.user.data.id,
+        }),
+        {
             onError: (error) => {
                 if (typeof error === "object") {
                     errors.value = error;
@@ -89,8 +54,8 @@ const submit = () => {
                     console.error(error);
                 }
             },
-        });
-    }
+        }
+    );
 };
 
 const cleanSpace = (event) =>
@@ -120,6 +85,15 @@ const loadPermissions = () => {
             });
         }
     });
+};
+
+const customFileInput = (event) => {
+    const filename = event.target.value.split("\\").pop();
+    const file = event.target.files[0];
+    if (fileValidation()) {
+        event.target.parentNode.querySelector(".file-name").innerHTML = filename;
+        url.value = URL.createObjectURL(file);
+    }
 };
 </script>
 
@@ -160,7 +134,7 @@ export default {
                     />
                 </li>
                 <li class="divider la la-arrow-right"></li>
-                <li>Nuevo</li>
+                <li>{{ user.data.name }}</li>
             </ul>
         </div>
         <div class="lg:flex items-center ml-auto mt-5 lg:mt-0">
@@ -186,6 +160,43 @@ export default {
         >
             <div class="lg:w-1/2">
                 <div class="card mt-5 p-5">
+                    <div class="mb-5 flex align-middle">
+                        <div class="grow-0 shrink-0">
+                            <div class="avatar w-16 h-16 mr-2">
+                                <img :src="url" alt="" v-if="url" />
+                            </div>
+                        </div>
+                        <div class="mt-auto flex-auto">
+                            <small
+                            v-if="errors.avatar"
+                            class="block mt-2 invalid-feedback"
+                            >{{ errors.avatar }}</small>
+                            <label
+                                class="input-group text-base font-normal"
+                                for="customFile"
+                            >
+                                <div
+                                    class="file-name input-addon input-addon-prepend input-group-item w-full overflow-x-hidden"
+                                >
+                                    {{ $t("No file chosen") }}
+                                </div>
+                                <input
+                                    id="customFile"
+                                    type="file"
+                                    class="hidden"
+                                    @change="customFileInput"
+                                    @input="
+                                        form.avatar = $event.target.files[0]
+                                    "
+                                />
+                                <div
+                                    class="input-group-item btn btn-admin uppercase"
+                                >
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                     <div class="mb-5">
                         <label class="label block mb-2" for="name"
                             >Nombre</label
@@ -255,7 +266,18 @@ export default {
                         >
                     </div>
                     <div class="mb-5">
-                        <Link class="btn btn-admin" :href="route('admin.settings.advanced.users.password.email', {email: user.email})" as="button" method="post" v-text="'Enviar link para cambiar contraseña'" />
+                        <Link
+                            class="btn btn-admin"
+                            :href="
+                                route(
+                                    'admin.settings.advanced.users.password.email',
+                                    { email: user.data.email }
+                                )
+                            "
+                            as="button"
+                            method="post"
+                            v-text="'Enviar link para cambiar contraseña'"
+                        />
                     </div>
                 </div>
             </div>
@@ -404,7 +426,11 @@ export default {
                         </table>
                     </div>
                     <div class="mb-5 lg:flex lg:justify-end">
-                        <button type="submit" class="btn btn-admin text-right" :disabled="!form.isDirty">
+                        <button
+                            type="submit"
+                            class="btn btn-admin text-right"
+                            :disabled="!form.isDirty"
+                        >
                             Guardar
                         </button>
                     </div>

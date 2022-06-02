@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Cms\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Cms\Settings\Advanced\UserRequest;
+use App\Http\Requests\Cms\Settings\Advanced\UserUpdateRequest;
+use App\Http\Resources\Cms\Settings\Advanced\UserCollection;
+use App\Http\Resources\Cms\Settings\Advanced\UserResource;
 use App\Models\Cms\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password as RulePassword;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
@@ -25,12 +28,11 @@ class UsersController extends Controller
     {
         if ($request->has('query') && strlen($request['query']) > 0) {
             $users = $users->search($request->input('query'))->withTrashed()->paginate(15);
-            $users->load('roles');
         } else {
             $users = $users->withTrashed()->with('roles')->paginate(15);
         }
 
-        return Inertia::render('Cms/Settings/Advanced/Users', ['users' => $users]);
+        return Inertia::render('Cms/Settings/Advanced/Users', ['users' => new UserCollection($users)]);
     }
 
     /**
@@ -65,16 +67,8 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'unique:admins,username', 'string', 'max:255'],
-            'email' => ['required', 'unique:admins,email', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', 'min:8', RulePassword::defaults()],
-            'role' => ['required', 'string'],
-        ]);
-
         DB::beginTransaction();
 
         try {
@@ -91,8 +85,13 @@ class UsersController extends Controller
                 $user->syncPermissions($request->input('permissions'));
             }
 
+            if ($request->hasFile('avatar')) {
+                $user->addMedia($request->file('avatar'))
+                    ->toMediaCollection('avatar');
+            }
+
             DB::commit();
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             // throw $th;
             DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());
@@ -126,55 +125,53 @@ class UsersController extends Controller
             }
         }
 
-        $user = $id->toArray();
-        $user['role'] = count($id->getRoleNames()) > 0 ? $id->getRoleNames()[0] : null;
-        $user['permissions'] = $id->getAllPermissions()->pluck('name');
-
-        return Inertia::render('Cms/Settings/Advanced/Users/Edit', ['roles' => $roles, 'modules' => $modules, 'user' => $user]);
+        return Inertia::render('Cms/Settings/Advanced/Users/Edit', ['roles' => $roles, 'modules' => $modules, 'user' => new UserResource($id)]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Cms\Admin  $id
+     * @param  \App\Http\Requests\Cms\Settings\Advanced\UserRequest  $request
+     * @param  \App\Models\Cms\Admin  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Admin $id)
+    public function update(UserUpdateRequest $request, Admin $user)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'role' => ['required', 'string'],
-        ]);
-
         DB::beginTransaction();
         try {
             foreach ($request->input() as $key => $value) {
-                if ($id->$key !== $value && $key !== 'role' && $key !== 'permissions') {
+                if ($user->$key !== $value && $key !== 'role' && $key !== 'permissions') {
                     if ($key === 'username' || $key === 'email') {
                         $request->validate([
                             'username' => ['unique:admins,username'],
                             'email' => ['unique:admins,email'],
                         ]);
                     }
-                    $id->$key = $value;
+                    $user->$key = $value;
                 }
             }
 
-            if ($id->isDirty()) {
-                $id->save();
+            if ($request->hasFile('avatar')) {
+                if ($user->getMedia('avatar')->count() > 0) {
+                    $media = $user->getMedia('avatar');
+                    $user->clearMediaCollection('avatar');
+                }
+                $user->addMedia($request->file('avatar'))
+                    ->toMediaCollection('avatar');
             }
 
-            if (!$id->hasRole($request->input('role'))) {
-                $id->syncRoles($request->input('role'));
+            if ($user->isDirty()) {
+                $user->save();
+            }
+
+            if (!$user->hasRole($request->input('role'))) {
+                $user->syncRoles($request->input('role'));
             }
 
             if ($request->input('role') !== 'Super Administrador') {
-                $id->syncPermissions($request->input('permissions'));
+                $user->syncPermissions($request->input('permissions'));
             }
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             //throw $th;
             DB::rollBack();
             return redirect()->back()->withErrors($th->getMessage());
@@ -194,7 +191,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->delete();
-        } catch (\Throwable $th) {
+        } catch (\Throwable$th) {
             DB::rollBack();
             return response()->json(['error' => true, 'message' => $th->getMessage()]);
         }

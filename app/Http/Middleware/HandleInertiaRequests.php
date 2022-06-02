@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
+                'avatar' => !is_null($request->user()) ? $request->user()->getFirstMediaUrl('avatar') : null,
             ],
             'permissions' => fn() => auth()->guard('admin')->check() ? auth()->guard('admin')->user()->getAllPermissions()->pluck('name') : [],
             'isSuperAdmin' => fn() => auth()->guard('admin')->check() ? auth()->guard('admin')->user()->hasRole('Super Administrador') : false,

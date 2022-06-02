@@ -291,7 +291,9 @@ onMounted(() => {
                     width="64"
                 >
                     <template #trigger>
-                        <span class="avatar">JD</span>
+                        <span class="avatar">
+                            <img :src="$page.props.auth.avatar" alt="" v-if="$page.props.auth.avatar" />
+                        </span>
                     </template>
                     <template #menu>
                         <div class="p-5">
@@ -396,18 +398,23 @@ onMounted(() => {
                     <span class="title">Catalogos</span>
                 </Link>
                 <Link
+                    :href="route('admin.customers.customer.index')"
                     class="link"
-                    :class="{ active: route().current('admin.customers.*') }"
-                    data-target="[data-menu=customers]"
-                    @click="showMenuDetail"
-                    v-if="
-                        $can('customer.read') ||
-                        $can('address.read') ||
-                        $can('customer-service.read')
-                    "
+                    :class="{
+                        active: route().current('admin.customers.customer.*'),
+                    }"
+                    v-if="$can('customer.read')"
                 >
                     <span class="icon la la-users"></span>
                     <span class="title">Clientes</span>
+                </Link>
+                <Link
+                    class="link"
+                    :class="{ active: route().current('admin.customers.customer.service.*') }"
+                    v-if="$can('customer-service.read')"
+                >
+                    <span class="icon la la-sitemap"></span>
+                    <span class="title">Servicio al Cliente</span>
                 </Link>
                 <Link
                     class="link"
@@ -573,51 +580,6 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- Customers -->
-            <div class="menu-detail" data-menu="customers">
-                <div class="menu-detail-wrapper">
-                    <Link
-                        :href="route('admin.customers.customer.index')"
-                        :class="{
-                            active: route().current(
-                                'admin.customers.customer.*'
-                            ),
-                        }"
-                        @click="hideMenuDetail"
-                        v-if="$can('customer.read')"
-                    >
-                        <span class="la la-archive"></span>
-                        Clientes
-                    </Link>
-                    <Link
-                        href="#"
-                        :class="{
-                            active: route().current(
-                                'admin.customers.addresses.*'
-                            ),
-                        }"
-                        @click="hideMenuDetail"
-                        v-if="$can('address.read')"
-                    >
-                        <span class="la la-cubes"></span>
-                        Direcciones
-                    </Link>
-                    <Link
-                        href="#"
-                        :class="{
-                            active: route().current(
-                                'admin.customers.customer.service.*'
-                            ),
-                        }"
-                        @click="hideMenuDetail"
-                        v-if="$can('customer-service.read')"
-                    >
-                        <span class="la la-sitemap"></span>
-                        Servicio al Cliente
-                    </Link>
-                </div>
-            </div>
-
             <!-- Analytics -->
             <div class="menu-detail" data-menu="analytics">
                 <div class="menu-detail-wrapper">
@@ -763,7 +725,9 @@ onMounted(() => {
                     <Link
                         :href="route('admin.support.ticket.index')"
                         :class="{
-                            active: route().current('admin.support.ticket.index'),
+                            active: route().current(
+                                'admin.support.ticket.index'
+                            ),
                         }"
                         @click="hideMenuDetail"
                         v-if="$can('support.read')"
@@ -858,7 +822,9 @@ onMounted(() => {
                     <Link
                         :href="route('admin.settings.general.slider.index')"
                         :class="{
-                            active: route().current('admin.settings.general.slider.index'),
+                            active: route().current(
+                                'admin.settings.general.slider.index'
+                            ),
                         }"
                         @click="hideMenuDetail"
                         v-if="$can('slider.read')"
@@ -946,11 +912,20 @@ onMounted(() => {
             <slot></slot>
             <footer class="mt-auto">
                 <div class="footer-admin">
-                    <span class="uppercase">© {{ new Date().getFullYear() }} HJ ACCO AUTOPARTES SA DE CV</span>
+                    <span class="uppercase"
+                        >© {{ new Date().getFullYear() }} HJ ACCO AUTOPARTES SA
+                        DE CV</span
+                    >
                     <nav class="ml-auto">
-                        <Link class="text-admin hover:text-admin-700" v-text="$t('Support')" />
+                        <Link
+                            class="text-admin hover:text-admin-700"
+                            v-text="$t('Support')"
+                        />
                         <span class="divider">|</span>
-                        <Link class="text-admin hover:text-admin-700" v-text="$t('Docs')" />
+                        <Link
+                            class="text-admin hover:text-admin-700"
+                            v-text="$t('Docs')"
+                        />
                     </nav>
                 </div>
             </footer>

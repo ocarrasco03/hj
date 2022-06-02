@@ -144,12 +144,20 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Catalogs\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $product->delete();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => true, 'message' => $th->getMessage()]);
+        }
+        DB::commit();
+        return response()->json(['success' => true, 'message' => 'El producto ' . $product->sku . 'ha sido eliminado exitosamente']);
     }
 
     public function upload(UploadImage $request, Product $product)
