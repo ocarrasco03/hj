@@ -47,6 +47,7 @@ Route::name('api.')->group(function () {
             Route::get('city/{country?}/{state?}', 'cities')->name('city');
             Route::get('zip-codes/{country}/{state}/{city?}', 'zipCodes')->name('zip.code');
             Route::get('neighborhood/{zip_code?}', 'neighborhood')->name('neighborhood');
+            Route::get('products/sku', 'products')->name('products');
         });
     });
 

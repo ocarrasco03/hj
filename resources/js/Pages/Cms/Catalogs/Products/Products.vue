@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import Pagination from "@/Components/Cms/Pagination.vue";
 import Swal from "sweetalert2";
@@ -77,6 +77,7 @@ const formatedDate = (date) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(date).toLocaleDateString("es-MX", options);
 };
+
 </script>
 
 <script context="module">
@@ -134,19 +135,21 @@ export default {
                     class="btn btn-admin uppercase ml-2"
                     >Agregar</Link
                 >
-                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                <button
+                    class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large"
+                >
                     <span class="las la-cloud-upload-alt"></span>
                 </button>
-                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                <button
+                    class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large"
+                >
                     <span class="las la-cloud-download-alt"></span>
                 </button>
             </div>
         </div>
     </section>
 
-    <div
-        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
-    >
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <div class="card w-full py-4">
             <table
                 class="table table-auto table-admin w-full table-hoverable border-collapse"
@@ -319,9 +322,7 @@ export default {
             </table>
         </div>
     </div>
-    <div
-        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
-    >
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <Pagination
             :links="products.links"
             :total="products.total"
