@@ -6,6 +6,7 @@ use App\Models\Catalogs\Product;
 use App\Models\Vehicles\Catalog;
 use App\Models\Vehicles\Manufacturer;
 use App\Models\Vehicles\Model;
+use App\Models\Vehicles\Vehicle;
 use App\Models\Vehicles\Year;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -46,7 +47,8 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
                     $years[] = $year->id;
                     if ($product) {
                         $notes = ($row['notes'] !== '-' && !empty($row['notes'])) ? $row['notes'] : null;
-                        $this->attachToCatalog($product->id, $year->id, $make->id, $model->id, null, $notes, $attachments);
+                        $this->createVehicle($year->id, $make->id, $model->id, null);
+                        $product->attachVehicle($year, $make, $model, null, $notes, $attachments);
                     }
                 }
                 $model->storeYear($years);
@@ -94,18 +96,12 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
         return $year;
     }
 
-    public function attachToCatalog($product, $year, $make, $model, $engine = null, $notes = null, array $attributes = [])
+    public function createVehicle($year, $make, $model, $engine = null)
     {
-        $catalog = new Catalog();
-        $catalog->product_id = $product;
-        $catalog->year_id = $year;
-        $catalog->make_id = $make;
-        $catalog->model_id = $model;
-        $catalog->engine_id = $engine;
-        $catalog->notes = $notes;
-        // $catalog->attributes = !empty($attributes) ? [$attributes] : null;
-        $catalog->attributes = !empty($attributes) ? json_encode($attributes) : null;
-        $catalog->save();
+        $vehicle = new Vehicle();
+        dd($vehicle->where('year_id', $year)->where('make_id', $make)->where('model_id', $model)->where('engine_id', $engine));
+
+        return $vehicle;
     }
 
     /**

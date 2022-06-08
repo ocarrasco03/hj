@@ -90,12 +90,14 @@ const form = useForm({
     condition: props.product.data.condition,
     stock: props.product.data.stock,
     related: [],
-    catalogs: [],
+    catalogs: props.product.data.catalogs,
 });
 
 const submit = () => {
     form.put(
-        route("admin.catalogs.products.update", { product: props.product.data.id }),
+        route("admin.catalogs.products.update", {
+            product: props.product.data.id,
+        }),
         {
             preserveScroll: true,
             preserveState: true,
@@ -207,18 +209,20 @@ const productBlurEventHandler = (event) => {
     console.log(event);
 };
 const productSelectItemEventHandler = (item) => {
-    console.log(item)
+    console.log(item);
 };
 const pushCatalog = () => {
-    form.catalogs.push(
-        {
-            year: vehicle.year,
-            make: vehicle.make,
-            model: vehicle.model,
-            engine: null,
-        }
-    )
-}
+    form.catalogs.push({
+        year: vehicle.year,
+        make: vehicle.make,
+        model: vehicle.model,
+        engine: null,
+    });
+};
+const sliceCatalog = (index) => {
+    console.log(index);
+    form.catalogs.splice(index, 1);
+};
 </script>
 
 <script context="module">
@@ -235,7 +239,7 @@ export default {
     <!-- Breadcrumb -->
     <section class="breadcrumb lg:flex items-start">
         <div>
-            <h1>{{ `${$t("Product")} ${product.sku}` }}</h1>
+            <h1>{{ `${$t("Product")} ${product.data.sku}` }}</h1>
             <ul>
                 <li>
                     <Link :href="route('admin.dashboard')">
@@ -247,7 +251,7 @@ export default {
                 <li class="divider la la-arrow-right"></li>
                 <li><Link @click="back" v-text="$t('Products')" /></li>
                 <li class="divider la la-arrow-right"></li>
-                <li>{{ `${$t("Product")} ${product.sku}` }}</li>
+                <li>{{ `${$t("Product")} ${product.data.sku}` }}</li>
             </ul>
         </div>
         <div class="lg:flex items-center ml-auto mt-5 lg:mt-0">
@@ -370,15 +374,14 @@ export default {
                                 </thead>
                                 <tbody>
                                     <tr
-                                        v-for="(
-                                            related, key
-                                        ) in form.related"
+                                        v-for="(related, key) in form.related"
                                         :key="key"
                                     >
                                         <td>{{ related.sku }}</td>
                                         <td>{{ related.brand.name }}</td>
                                         <td>
-                                            <button class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
+                                            <button
+                                                class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
                                             >
                                                 <span
                                                     class="la la-trash-alt"
@@ -524,7 +527,7 @@ export default {
                                 <tbody class="overflow-y-auto h-5">
                                     <tr
                                         v-for="(
-                                            catalog, key
+                                            catalog, index, key
                                         ) in form.catalogs"
                                         :key="key"
                                     >
@@ -541,6 +544,9 @@ export default {
                                         <td>
                                             <button
                                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
+                                                @click.prevent="
+                                                    sliceCatalog(index)
+                                                "
                                             >
                                                 <span
                                                     class="la la-trash-alt"
@@ -561,105 +567,79 @@ export default {
             <div class="relative card p-5">
                 <h3>Costos</h3>
                 <div class="mt-5">
-                    <div class="flex items-center">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Cost") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="cost"
-                                id="cost"
-                                v-model="form.cost"
+                    <div>
+                        <label class="label block">{{ $t("Cost") }}</label>
+                        <input
+                            type="text"
+                            name="cost"
+                            id="cost"
+                            v-model="form.cost"
+                            class="form-control"
+                            @keyup="calculatePrice"
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{
+                            $t("Price W/O Tax")
+                        }}</label>
+                        <input
+                            type="text"
+                            name="price_wo_tax"
+                            id="price_wo_tax"
+                            v-model="form.price_wo_tax"
+                            class="form-control"
+                            disabled
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Price") }}</label>
+                        <input
+                            type="text"
+                            name="price"
+                            id="price"
+                            v-model="form.price"
+                            class="form-control"
+                            @keyup="calculatePriceWoTax"
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Condition") }}</label>
+                        <div class="custom-select">
+                            <select
                                 class="form-control"
-                                @keyup="calculatePrice"
-                            />
+                                v-model="form.condition"
+                            >
+                                <option value="new">{{ $t("New") }}</option>
+                                <option value="used">
+                                    {{ $t("Used") }}
+                                </option>
+                                <option value="refurbished">
+                                    {{ $t("Refurbished") }}
+                                </option>
+                            </select>
+                            <div
+                                class="custom-select-icon la la-caret-down"
+                            ></div>
                         </div>
                     </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{
-                                $t("Price W/O Tax")
-                            }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="price_wo_tax"
-                                id="price_wo_tax"
-                                v-model="form.price_wo_tax"
-                                class="form-control"
-                                disabled
-                            />
-                        </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Stock") }}</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            v-model.number="form.stock"
+                            :class="{ 'is-invalid': errors.stock }"
+                            min="0"
+                        />
                     </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Price") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="price"
-                                id="price"
-                                v-model="form.price"
-                                class="form-control"
-                                @keyup="calculatePriceWoTax"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{
-                                $t("Condition")
-                            }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <div class="custom-select">
-                                <select
-                                    class="form-control"
-                                    v-model="form.condition"
-                                >
-                                    <option value="new">{{ $t("New") }}</option>
-                                    <option value="used">
-                                        {{ $t("Used") }}
-                                    </option>
-                                    <option value="refurbished">
-                                        {{ $t("Refurbished") }}
-                                    </option>
-                                </select>
-                                <div
-                                    class="custom-select-icon la la-caret-down"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Stock") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="number"
-                                class="form-control"
-                                v-model.number="form.stock"
-                                :class="{ 'is-invalid': errors.stock }"
-                                min="0"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t('Status') }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <label class="label switch">
-                                <input type="checkbox" />
-                                <span></span>
-                                <span>Immediately</span>
-                            </label>
-                        </div>
-                    </div>
+                    <!-- <div class="mt-5">
+                        <label class="label block">{{ $t("Status") }}</label>
+                        <label class="label switch">
+                            <input type="checkbox" />
+                            <span></span>
+                            <span>Immediately</span>
+                        </label>
+                    </div> -->
                 </div>
                 <div class="mt-5" v-if="form.isDirty">
                     <button

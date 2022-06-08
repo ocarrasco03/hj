@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Cms\Catalogs;
 
+use App\Exports\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadImage;
+use App\Http\Resources\Cms\Catalogs\ProductDetailResource;
 use App\Models\Catalogs\Brand;
 use App\Models\Catalogs\Product;
 use App\Models\Configs\Category;
@@ -12,6 +14,7 @@ use App\Models\Vehicles\Year;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
@@ -78,10 +81,10 @@ class ProductController extends Controller
         $brands = Brand::all()->pluck('name');
         $categories = Category::allParents();
         $categories->load('children');
-        $product->load('related', 'catalogs');
+        // $product->load('related', 'catalogs');
 
         return Inertia::render('Cms/Catalogs/Products/Show', [
-            'product' => $product,
+            'product' => new ProductDetailResource($product),
             'brands' => $brands,
             'categories' => $categories,
             'years' => Year::orderByDesc('year')->get()->pluck('year'),
@@ -128,6 +131,8 @@ class ProductController extends Controller
             $product->condition = $request->input('condition');
 
             $product->syncCategories([$request->input('category'),$request->input('subcategory')]);
+
+            $product->syncApplication($request->input('catalogs'));
 
             if ($product->isDirty()) {
                 $product->save();
@@ -189,5 +194,11 @@ class ProductController extends Controller
         }
 
         return redirect()->back()->with(['toast' => ['type' => 'success', 'message' => 'Imagen eliminada exitosamente!']]);
+    }
+
+    public function export()
+    {
+        ini_set('max_execution_time', 0);
+        return (new ProductExport)->queue('products.xlsx')->onQueue('exports');;
     }
 }

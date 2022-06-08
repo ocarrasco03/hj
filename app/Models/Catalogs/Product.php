@@ -2,23 +2,25 @@
 
 namespace App\Models\Catalogs;
 
-use App\Models\Configs\Category;
-use App\Models\Configs\Status;
-use App\Models\Sales\Order;
-use App\Models\Vehicles\Catalog;
-use App\Packages\Shoppingcart\Contracts\Buyable;
-use App\Traits\Categorizable;
 use App\Traits\Taggeable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sales\Order;
+use App\Traits\Categorizable;
 use Laravel\Scout\Searchable;
+use App\Models\Configs\Status;
+use Spatie\Image\Manipulations;
+use App\Models\Configs\Category;
+use App\Models\Vehicles\Catalog;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Facades\DB;
 use willvincent\Rateable\Rateable;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Packages\Shoppingcart\Contracts\Buyable;
+use App\Traits\HasApplication;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted;
 
 class Product extends Model implements Buyable, HasMedia
 {
@@ -29,6 +31,7 @@ class Product extends Model implements Buyable, HasMedia
     use Taggeable;
     use Searchable;
     use InteractsWithMedia;
+    use HasApplication;
 
     /**
      * The relationships that should always be loaded.
@@ -116,12 +119,15 @@ class Product extends Model implements Buyable, HasMedia
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->width(160)
+        $this->addMediaConversion('preview')
+            ->width(300)
             ->sharpen(10)
-            ->nonQueued()
-            ->performOnCollections('images', 'products');
+            ->performOnCollections('products')
+            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->nonQueued();
+
     }
+
 
     /**
      * Get the indexable data array for the model.
@@ -281,27 +287,4 @@ class Product extends Model implements Buyable, HasMedia
 
         $media->delete();
     }
-
-    /**
-     * Undocumented function
-     *
-     * @return void
-     */
-    public function catalogs()
-    {
-        return $this->hasMany(Catalog::class);
-    }
-
-    // public function getThumbAttribute()
-    // {
-    //     return $this->getFirstMediaUrl('products', 'thumb');
-    // }
-
-    // public function getMediaAttribute()
-    // {
-    //     foreach ($this->media() as $media) {
-    //         return $media->getMediaUrl();
-    //     }
-    // }
-
 }

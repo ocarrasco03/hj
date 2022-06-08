@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Catalogs\Product;
 use App\Models\Configs\City;
 use App\Models\Configs\Neighborhood;
 use App\Models\Configs\ZipCode;
@@ -65,5 +66,14 @@ class AutocompleteController extends Controller
                 return $query->where('zip_code', $zip_code);
             });
         })->get()->pluck('name');
+    }
+
+    public function products(Product $products, Request $request)
+    {
+        return $products->orderBy('sku')
+            ->when($request->has('term'), function ($query) use ($request) {
+                return $query->where('sku', 'like', $request->input('term') . '%');
+            })
+            ->get()->pluck('sku');
     }
 }
