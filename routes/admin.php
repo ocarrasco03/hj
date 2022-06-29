@@ -19,6 +19,7 @@ use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Cms\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Cms\Support\LogViewerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,9 +105,9 @@ Route::middleware('auth:admin')->group(function () {
             Route::get('/{product}', 'show')->name('show');
             Route::put('/{product}', 'update')->name('update');
             Route::delete('/{product}', 'destroy')->name('delete');
+            Route::put('/restore/{product}', 'restore')->name('restore');
             Route::post('/upload/{product}', 'upload')->name('upload.file');
             Route::delete('/remove/{product}/{id}', 'remove')->name('remove.file');
-
         });
         // Route::get('/export', [ProductController::class,'export'])->name('products.export');
         Route::prefix('paquetes')->name('bundles.')->group(function () {
@@ -151,6 +152,8 @@ Route::middleware('auth:admin')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/{ticket}', 'show')->name('show');
         });
+        Route::get('logs', [LogViewerController::class, 'index'])->name('logs');
+        Route::get('logs/crypt', [LogViewerController::class, 'crypt'])->name('logs.crypt');
     });
 
     /*

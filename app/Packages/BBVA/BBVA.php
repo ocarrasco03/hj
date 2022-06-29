@@ -59,8 +59,8 @@ class BBVA
             self::setId(config('bbva.merchant_id'));
         }
 
-        if (config('bbva.api_key') != '') {
-            self::setApiKey(config('bbva.api_key'));
+        if (config('bbva.private_key') != '') {
+            self::setApiKey(config('bbva.private_key'));
         }
 
         $this->setProductionMode(config('bbva.production'));
@@ -167,7 +167,7 @@ class BBVA
     {
         $key = self::$apiKey;
         if (!$key) {
-            $key = config('bbva.api_key');
+            $key = config('bbva.private_key');
         }
         return $key;
     }

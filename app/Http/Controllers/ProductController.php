@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Main\Home\ProductResource;
-use App\Models\Catalogs\Product;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Str;
+use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Catalogs\Product;
+use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\TwitterCard;
+use App\Http\Resources\Main\Home\ProductResource;
 
 class ProductController extends Controller
 {
@@ -19,28 +23,7 @@ class ProductController extends Controller
     {
         //
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
+    
     /**
      * Display the specified resource.
      *
@@ -49,49 +32,28 @@ class ProductController extends Controller
      */
     public function show($slug)
     {
-        $product = Product::where('slug', $slug)->firstOrFail();
-        $product->load('ratings', 'related');
+        $product = new ProductResource(Product::where('slug', $slug)->firstOrFail());
+        $descriptionMeta = $product->sku . ' ' . strtolower($product->name) . ' ' . $product->brand->name . '. Compara Precios y Compra ' . strtolower($product->name) . 'Online en HJAutopartes.com.mx. Distribuidor Autorizado' . $product->brand->name . '. Con envios a toda la republica mexicana.';
+        $media = $product->getMedia();
 
+        SEOMeta::setDescription($descriptionMeta);
+        SEOMeta::setCanonical(route('product.show', ['slug' => $slug]));
 
-        $rate = $product->averageRating;
+        OpenGraph::setDescription($descriptionMeta);
+        OpenGraph::setTitle($product->sku . ' ' . $product->name);
+        OpenGraph::setUrl(route('product.show', ['slug' => $slug]));
+        // OpenGraph::addProperty('type', 'articles');
+
+        JsonLd::setTitle($product->sku . ' ' . $product->name);
+        JsonLd::setDescription($descriptionMeta);
+        JsonLd::addImage($product->getFirstMediaUrl());
+
+        foreach ($media as $image) {
+            OpenGraph::addImage($image->getFullUrl());
+        }
 
         return Inertia::render('Catalogs/Product', [
-            // 'product' => $product, 'rate' => $rate
-            'product' => new ProductResource(Product::where('slug', $slug)->firstOrFail())
+            'product' => $product
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

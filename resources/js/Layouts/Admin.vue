@@ -1,10 +1,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { Link, useForm } from "@inertiajs/inertia-vue3";
-import Toast from "@/Components/Toast.vue";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import Dropdown from "@/Components/Cms/CustomDropdown.vue";
-import DropdownLink from "@/Components/Cms/DropdownLink.vue";
+import Toast from "@/Components/Toast";
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import Dropdown from "@/Components/Cms/CustomDropdown";
+import DropdownLink from "@/Components/Cms/DropdownLink";
 
 const showingNavigationDropdown = ref(false);
 const showSideBar = ref(true);
@@ -366,7 +366,7 @@ onMounted(() => {
                     <span class="la la-laptop icon"></span>
                     <span class="title">Dashboard</span>
                 </Link>
-                <Link
+                <a
                     class="link"
                     :class="{ active: route().current('admin.sales.*') }"
                     data-target="[data-menu=sales]"
@@ -380,8 +380,8 @@ onMounted(() => {
                 >
                     <span class="icon la la-store-alt"></span>
                     <span class="title">Ventas</span>
-                </Link>
-                <Link
+                </a>
+                <a
                     class="link"
                     :class="{ active: route().current('admin.catalogs.*') }"
                     data-target="[data-menu=catalogs]"
@@ -396,7 +396,7 @@ onMounted(() => {
                 >
                     <span class="icon la la-book-open"></span>
                     <span class="title">Catalogos</span>
-                </Link>
+                </a>
                 <Link
                     :href="route('admin.customers.customer.index')"
                     class="link"
@@ -416,7 +416,7 @@ onMounted(() => {
                     <span class="icon la la-sitemap"></span>
                     <span class="title">Servicio al Cliente</span>
                 </Link>
-                <Link
+                <a
                     class="link"
                     :class="{ active: route().current('admin.analytics.*') }"
                     data-target="[data-menu=analytics]"
@@ -425,8 +425,8 @@ onMounted(() => {
                 >
                     <span class="icon la la-chart-area"></span>
                     <span class="title">Estad&iacute;sticas</span>
-                </Link>
-                <Link
+                </a>
+                <a
                     class="link"
                     :class="{ active: route().current('admin.modules.*') }"
                     data-target="[data-menu=modules]"
@@ -435,8 +435,8 @@ onMounted(() => {
                 >
                     <span class="icon la la-cubes"></span>
                     <span class="title">Modulos</span>
-                </Link>
-                <Link
+                </a>
+                <a
                     class="link"
                     :class="{ active: route().current('admin.support.*') }"
                     data-target="[data-menu=support]"
@@ -449,8 +449,8 @@ onMounted(() => {
                 >
                     <span class="icon la la-headset"></span>
                     <span class="title">Soporte</span>
-                </Link>
-                <Link
+                </a>
+                <a
                     class="link"
                     :class="{ active: route().current('admin.settings.*') }"
                     data-target="[data-menu=settings]"
@@ -471,7 +471,7 @@ onMounted(() => {
                 >
                     <span class="icon la la-gears"></span>
                     <span class="title">Configuración</span>
-                </Link>
+                </a>
             </div>
 
             <!-- Sales -->
@@ -736,9 +736,20 @@ onMounted(() => {
                         Tickets
                     </Link>
                     <Link
-                        href="#"
+                        :href="route('admin.support.logs')"
                         :class="{
-                            active: route().current('admin.settings.info'),
+                            active: route().current('admin.settings.logs'),
+                        }"
+                        @click="hideMenuDetail"
+                        v-if="$can('log.read')"
+                    >
+                        <span class="la la-history"></span>
+                        Activity Log
+                    </Link>
+                    <Link
+                        :href="route('admin.support.logs')"
+                        :class="{
+                            active: route().current('admin.settings.logs'),
                         }"
                         @click="hideMenuDetail"
                         v-if="$can('log.read')"

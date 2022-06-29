@@ -70,10 +70,11 @@ class AutocompleteController extends Controller
 
     public function products(Product $products, Request $request)
     {
-        return $products->orderBy('sku')
+        return $products->select('sku', 'brand_id')->orderBy('sku')
             ->when($request->has('term'), function ($query) use ($request) {
                 return $query->where('sku', 'like', $request->input('term') . '%');
             })
-            ->get()->pluck('sku');
+            ->with('brand')
+            ->get();
     }
 }

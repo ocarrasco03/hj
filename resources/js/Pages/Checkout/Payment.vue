@@ -162,7 +162,7 @@
                         </p>
                     </div>
                     <div class="mt-5 flex flex-col">
-                        <Link class="flex-1 mb-3 btn btn-primary bbva-button-row rounded py-4 sm:py-5 md:py-6 lg:py-7">
+                        <Link class="flex-1 mb-3 btn btn-primary bbva-button-row rounded py-4 sm:py-5 md:py-6 lg:py-7" :href="route('checkout.pay.bbva', {order: order.data.id})">
                             <Bbva class="h-4 md:h-5 lg:h-6 text-white" />
                         </Link>
                         <div

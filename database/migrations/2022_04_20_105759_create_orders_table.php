@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignId('user_id');
             $table->foreignId('status_id');
+            $table->foreignId('address_id');
             $table->float('subtotal', 10, 2);
             $table->float('discount', 10, 2)->default(0);
             $table->float('tax', 10, 2);
@@ -26,6 +27,7 @@ return new class extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('status_id')->references('id')->on('statuses');
+            $table->foreign('address_id')->references('id')->on('addresses');
         });
 
         Schema::create('order_products', function (Blueprint $table) {

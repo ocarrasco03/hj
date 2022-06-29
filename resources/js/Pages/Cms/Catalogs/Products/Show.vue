@@ -15,7 +15,7 @@ const edit = ref(false);
 const index = ref(null);
 const url = ref(null);
 const errors = ref({});
-const relatedProds = ref(["One", "Two", "Tree"]);
+const relatedProds = ref([]);
 const modules = [Pagination, Navigation];
 
 const models = ref([]);
@@ -89,7 +89,7 @@ const form = useForm({
     subcategory: setCategory("children"),
     condition: props.product.data.condition,
     stock: props.product.data.stock,
-    related: [],
+    related: props.product.data.related,
     catalogs: props.product.data.catalogs,
 });
 
@@ -194,7 +194,11 @@ const fetchProducts = async (event) => {
                 cancelToken: cancelToken.token,
             })
             .then((res) => {
-                relatedProds.value = res.data;
+                let tmp = [];
+                res.data.forEach((element) => {
+                    tmp.push(`${element.sku} | ${element.brand.name}`);
+                });
+                relatedProds.value = tmp;
             });
     } catch (error) {
         console.log(error);
@@ -204,13 +208,27 @@ const fetchProducts = async (event) => {
 const productEventHandler = (event) => {
     console.log(event);
 };
-
 const productBlurEventHandler = (event) => {
     console.log(event);
 };
 const productSelectItemEventHandler = (item) => {
-    console.log(item);
+    let sku, brand;
+    let arr = item.split("|");
+
+    for (let index = 0; index < arr.length; index++) {
+        index === 0 ? (sku = arr[index]) : (brand = arr[index]);
+    }
+
+    if (
+        !form.related.find((e) => e.sku === item)
+    ) {
+        form.related.push({
+            sku: sku.trim(),
+            brand: brand.trim(),
+        });
+    }
 };
+
 const pushCatalog = () => {
     form.catalogs.push({
         year: vehicle.year,
@@ -220,7 +238,6 @@ const pushCatalog = () => {
     });
 };
 const sliceCatalog = (index) => {
-    console.log(index);
     form.catalogs.splice(index, 1);
 };
 </script>
@@ -349,10 +366,6 @@ export default {
                                 :items="relatedProds"
                                 @keyup="fetchProducts"
                                 @selectItem="productSelectItemEventHandler"
-                                @onInput="productEventHandler"
-                                @onBlur="productBlurEventHandler"
-                                @onFocus="productEventHandler"
-                                @input="productEventHandler"
                             />
                             <!-- <label
                                 class="form-control-addon-within rounded-full border-admin-secondary"
@@ -374,14 +387,22 @@ export default {
                                 </thead>
                                 <tbody>
                                     <tr
-                                        v-for="(related, key) in form.related"
+                                        v-for="(
+                                            related, index, key
+                                        ) in form.related"
                                         :key="key"
                                     >
                                         <td>{{ related.sku }}</td>
-                                        <td>{{ related.brand.name }}</td>
+                                        <td>{{ related.brand }}</td>
                                         <td>
                                             <button
                                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
+                                                @click.prevent="
+                                                    form.related.splice(
+                                                        index,
+                                                        1
+                                                    )
+                                                "
                                             >
                                                 <span
                                                     class="la la-trash-alt"

@@ -41,9 +41,8 @@ trait HasApplication
 
     /**
      * Sync all attached vehicles to a product
-     * 
      *
-     * @param [type] $application
+     * @param array $application
      * @return void
      */
     public function syncApplication($application)

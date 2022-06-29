@@ -35,7 +35,6 @@ class ZipCodesImport implements ToCollection, WithProgressBar, WithChunkReading,
             $zipCode = $this->getZipCode($row['d_codigo'], $country->id, $state->id, $city->id);
 
             $this->setNeighborhood($row['d_asenta'], $row['d_tipo_asenta'], $zipCode->id);
-
         }
     }
 

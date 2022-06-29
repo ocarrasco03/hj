@@ -16,7 +16,7 @@ body {
 }
 
 div#app {
-    @apply text-sm;
+    @apply text-sm w-full;
 }
 
 h1,

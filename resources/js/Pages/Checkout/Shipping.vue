@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import axios from "axios";
 import { trans } from "laravel-vue-i18n";
+import SimpleTypeahead from "vue3-simple-typeahead";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 
 const props = defineProps({
@@ -15,23 +16,18 @@ const props = defineProps({
         default: 0,
     },
     total: Number,
+    user: Object,
+    addresses: Object,
 });
 
 const states = ref([]);
+const cities = ref([]);
+const zipCodes = ref([]);
+const neighborhoods = ref([]);
+const addAddress = ref(false);
 
 const form = useForm({
-    name: usePage().props.value.auth.user.name,
-    email: usePage().props.value.auth.user.email,
-    phone: usePage().props.value.auth.user.phone,
-    zip_code: null,
-    neighborhood: null,
-    company: null,
-    country: "",
-    state: "",
-    city: null,
-    address: "",
-    notes: "",
-    items: props.items,
+    address: props.user.data.addresses.shipping !== null ? props.user.data.addresses.shipping.id : null,
     shipping: 0,
     discount: 0,
     subtotal: props.subtotal,
@@ -39,13 +35,36 @@ const form = useForm({
     total: props.total,
 });
 
+const addressForm = useForm({
+    street: "",
+    ext_no: "",
+    int_no: null,
+    country: "",
+    state: "",
+    city: null,
+    zip_code: null,
+    neighborhood: null,
+    notes: null,
+});
+
 const submit = () => {
-    form.post(route('cart.process.order'), {
+    form.post(route("cart.process.order"), {
         preserveScroll: true,
         preserveState: true,
         onError: (err) => console.log(err),
     });
 };
+
+const saveAddress = () => {
+    addressForm.post(route("profile.address.store"), {
+        preserveScroll: true,
+        onFinish: () => {
+            addressForm.reset();
+            addAddress.value = false;
+        },
+        onError: (err) => console.log(err),
+    });
+}
 
 const autocomplete = (input, array, model) => {
     let currentFocus;
@@ -62,7 +81,10 @@ const autocomplete = (input, array, model) => {
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
         for (i = 0; i < array.length; i++) {
-            if (array[i].substr(0, val.length).toUpperCase() === val.toUpperCase()) {
+            if (
+                array[i].substr(0, val.length).toUpperCase() ===
+                val.toUpperCase()
+            ) {
                 b = document.createElement("div");
                 b.innerHTML = `<strong>${array[i].substr(
                     0,
@@ -133,68 +155,93 @@ const autocomplete = (input, array, model) => {
     });
 };
 
-const loadCities = (event) => {
+const loadCities = () => {
     axios
         .get(
             route("api.v2.autocomplete.city", {
-                country: form.country,
-                state: form.state,
-            }),
-            {
-                params: { query: form.city },
-            }
+                country: addressForm.country,
+                state: addressForm.state,
+            })
         )
         .then((res) => {
-            autocomplete(event.target, res.data, "city");
+            cities.value = res.data;
         })
         .catch((err) => {
             console.error(err);
         });
 };
 
-const loadZipCodes = (event) => {
+const loadZipCodes = (city) => {
     axios
         .get(
             route("api.v2.autocomplete.zip.code", {
-                country: form.country,
-                state: form.state,
-                city: form.city,
-            }),
-            {
-                params: { query: form.zip_code },
-            }
+                country: addressForm.country,
+                state: addressForm.state,
+                city: city,
+            })
         )
         .then((res) => {
-            autocomplete(event.target, res.data, "zip_code");
+            zipCodes.value = res.data;
         })
         .catch((err) => {
             console.error(err);
         });
 };
 
-const loadNeighborhoods = (event) => {
+const loadNeighborhoods = (zip_code) => {
     axios
         .get(
             route("api.v2.autocomplete.neighborhood", {
-                zip_code: form.zip_code,
-            }),
-            {
-                params: { query: form.neighborhood },
-            }
+                zip_code: zip_code,
+            })
         )
         .then((res) => {
-            autocomplete(event.target, res.data, "neighborhood");
+            neighborhoods.value = res.data;
         })
         .catch((err) => {
             console.error(err);
         });
+};
+
+const cityEventHandler = (event) => {
+    addressForm.city = event.input;
+};
+
+const cityBlurEventHandler = (event) => {
+    addressForm.city = event.input;
+    loadZipCodes(event.input);
+};
+
+const citySelectItemEventHandler = (item) => {
+    addressForm.city = item;
+};
+
+const zipCodeEventHandler = (event) => {
+    addressForm.zip_code = event.input;
+};
+
+const zipCodeBlurEventHandler = (event) => {
+    loadNeighborhoods(event.input);
+    addressForm.zip_code = event.input;
+};
+
+const zipCodeSelectItemEventHandler = (item) => {
+    addressForm.zip_code = item;
+};
+
+const neighborhoodEventHandler = (event) => {
+    addressForm.neighborhood = event.input;
+};
+
+const neighborhoodSelectItemEventHandler = (item) => {
+    addressForm.neighborhood = item;
 };
 
 const loadStates = () => {
     const prepend = document.getElementById("model-prepend");
     prepend.innerHTML = trans("Loading");
     axios
-        .get(route("api.v2.states", { country: form.country }))
+        .get(route("api.v2.states", { country: addressForm.country }))
         .then((res) => {
             states.value = res.data.data;
             prepend.innerHTML = trans("Select a state");
@@ -210,46 +257,39 @@ const loadStates = () => {
     <Head :title="$t('Shipping')" />
     <div class="container py-5">
         <div class="border border-gray-500 shadow-md rounded">
-            <form @submit.prevent="submit" method="post">
-                <div class="bg-black text-primary-500 px-5 py-4">
-                    <h4>{{ $t("Shipping address") }}</h4>
-                </div>
-                <div class="pb-10 pt-6 px-10 lg:flex">
-                    <div class="lg:w-1/2 lg:pr-4">
-                        <div>
-                            <label for="name" class="label"
-                                >{{ $t("Full Name") }}
-                                <small class="text-sm text-red-500"
-                                    >*</small
-                                ></label
-                            >
-                            <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                v-model="form.name"
-                                required
-                                class="form-control"
-                            />
-                        </div>
-                        <div class="mt-5">
-                            <label for="company" class="label">{{
-                                $t("Company")
-                            }}</label>
-                            <input
-                                type="text"
-                                name="company"
-                                id="company"
-                                class="form-control"
-                                v-model="form.company"
-                            />
-                        </div>
+            <div class="bg-black text-primary-500 px-5 py-4">
+                <h4>{{ $t("Shipping address") }}</h4>
+            </div>
+            <div class="pb-10 pt-6 px-10 lg:flex">
+                <div class="lg:w-1/2 lg:pr-4">
+                    <select
+                        name="shipping"
+                        id="shipping"
+                        class="form-control rounded-b-none"
+                        v-model="form.address"
+                    >
+                        <option
+                            :value="address.id"
+                            v-for="(address, key) in addresses.data"
+                            :key="key"
+                        >
+                            {{
+                                `${address.street} ${address.exterior_no} ${address.neighborhood} ${address.city} ${address.state}`
+                            }}
+                        </option>
+                    </select>
+                    <button
+                        @click="addAddress = !addAddress"
+                        class="form-control border-t-0 rounded-t-none hover:bg-secondary-500 hover:text-primary-500"
+                    >
+                        {{ $t("Add new address") }}
+                    </button>
+                    <hr class="divide mt-5" />
+                    <form @submit.prevent="saveAddress" v-if="addAddress">
                         <div class="mt-5">
                             <label for="address_line_1" class="label"
-                                >{{ $t("Street & House No.") }}
-                                <small class="text-sm text-red-500"
-                                    >*</small
-                                ></label
+                                >{{ $t("Street") }}
+                                <small class="text-sm text-red-500">*</small></label
                             >
                             <input
                                 type="text"
@@ -257,8 +297,39 @@ const loadStates = () => {
                                 id="address_line_1"
                                 required
                                 class="form-control"
-                                v-model="form.address"
+                                v-model="addressForm.street"
                             />
+                        </div>
+                        <div class="mt-5 flex space-x-2">
+                            <div class="w-1/2">
+                                <label for="ext_no" class="label"
+                                    >{{ $t("Outdoor Number") }}
+                                    <small class="text-sm text-red-500"
+                                        >*</small
+                                    ></label
+                                >
+                                <input
+                                    type="text"
+                                    name="ext_no"
+                                    id="ext_no"
+                                    required
+                                    class="form-control"
+                                    v-model="addressForm.ext_no"
+                                />
+                            </div>
+                            <div class="w-1/2">
+                                <label for="int_no" class="label"
+                                    >{{ $t("Inside Number") }}
+                                    <small>(opcional)</small></label
+                                >
+                                <input
+                                    type="text"
+                                    name="int_no"
+                                    id="int_no"
+                                    class="form-control"
+                                    v-model="addressForm.int_no"
+                                />
+                            </div>
                         </div>
                         <div class="mt-5">
                             <label for="country" class="label"
@@ -272,7 +343,7 @@ const loadStates = () => {
                                 id="country"
                                 class="form-control"
                                 required
-                                v-model="form.country"
+                                v-model="addressForm.country"
                                 @change="loadStates"
                             >
                                 <option value="" selected disabled>
@@ -298,8 +369,9 @@ const loadStates = () => {
                                 id="state"
                                 class="form-control"
                                 required
-                                v-model="form.state"
+                                v-model="addressForm.state"
                                 :disabled="states.length < 1"
+                                @change="loadCities"
                             >
                                 <option
                                     value=""
@@ -324,15 +396,19 @@ const loadStates = () => {
                                     >*</small
                                 ></label
                             >
-                            <input
-                                type="text"
-                                name="city"
-                                id="city"
-                                class="form-control"
-                                v-model="form.city"
-                                autocomplete="off"
-                                @keyup="loadCities"
-                            />
+                            <vue3-simple-typeahead
+                                id="cities"
+                                :placeholder="$t('City')"
+                                :items="cities"
+                                :minInputLength="1"
+                                @selectItem="citySelectItemEventHandler"
+                                @onInput="cityEventHandler"
+                                @onBlur="cityBlurEventHandler"
+                                @onFocus="cityEventHandler"
+                                @input="cityEventHandler"
+                                v-model="addressForm.city"
+                            >
+                            </vue3-simple-typeahead>
                         </div>
                         <div class="mt-5">
                             <label for="zip_code" class="label"
@@ -341,15 +417,19 @@ const loadStates = () => {
                                     >*</small
                                 ></label
                             >
-                            <input
-                                type="text"
-                                name="zip_code"
+                            <vue3-simple-typeahead
                                 id="zip_code"
-                                class="form-control"
-                                autocomplete="off"
-                                v-model="form.zip_code"
-                                @keyup="loadZipCodes"
-                            />
+                                :placeholder="$t('Zip Code')"
+                                :items="zipCodes"
+                                :minInputLength="1"
+                                @selectItem="zipCodeSelectItemEventHandler"
+                                @onInput="zipCodeEventHandler"
+                                @onBlur="zipCodeBlurEventHandler"
+                                @onFocus="zipCodeEventHandler"
+                                @input="zipCodeEventHandler"
+                                v-model="addressForm.zip_code"
+                            >
+                            </vue3-simple-typeahead>
                         </div>
                         <div class="mt-5">
                             <label for="neighborhood" class="label"
@@ -358,46 +438,19 @@ const loadStates = () => {
                                     >*</small
                                 ></label
                             >
-                            <input
-                                type="text"
-                                name="neighborhood"
+                            <vue3-simple-typeahead
                                 id="neighborhood"
-                                class="form-control"
-                                autocomplete="off"
-                                required
-                                v-model="form.neighborhood"
-                                @keyup="loadNeighborhoods"
-                            />
-                        </div>
-                        <div class="mt-5">
-                            <label for="phone" class="label"
-                                >{{ $t("Phone") }}
-                                <small class="text-sm text-red-500"
-                                    >*</small
-                                ></label
+                                :placeholder="$t('Neighborhood')"
+                                :items="neighborhoods"
+                                :minInputLength="1"
+                                @selectItem="neighborhoodSelectItemEventHandler"
+                                @onInput="neighborhoodEventHandler"
+                                @onBlur="neighborhoodEventHandler"
+                                @onFocus="neighborhoodEventHandler"
+                                @input="neighborhoodEventHandler"
+                                v-model="addressForm.neighborhood"
                             >
-                            <input
-                                type="tel"
-                                name="phone"
-                                id="phone"
-                                class="form-control"
-                                v-model="form.phone"
-                            />
-                        </div>
-                        <div class="mt-5">
-                            <label for="email" class="label"
-                                >{{ $t("E-Mail Address") }}
-                                <small class="text-sm text-red-500"
-                                    >*</small
-                                ></label
-                            >
-                            <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                class="form-control"
-                                v-model="form.email"
-                            />
+                            </vue3-simple-typeahead>
                         </div>
                         <hr class="divider mt-5" />
                         <h4 class="font-medium text-lg mt-5">
@@ -412,11 +465,22 @@ const loadStates = () => {
                                 id="notes"
                                 rows="10"
                                 class="form-control resize-none"
-                                v-model="form.notes"
+                                v-model="addressForm.notes"
                             ></textarea>
                         </div>
-                    </div>
-                    <div class="lg:w-1/2 w_ticket lg:h-full">
+                        <div class="mt-5 flex">
+                            <SecondaryButton class="flex-1">
+                                {{ $t("Save") }}
+                            </SecondaryButton>
+                        </div>
+                    </form>
+                </div>
+                <form
+                    @submit.prevent="submit"
+                    method="post"
+                    class="lg:w-1/2 w_ticket lg:h-full"
+                >
+                    <div>
                         <div class="heading">
                             <h4>{{ $t("Your Order") }}</h4>
                         </div>
@@ -502,13 +566,13 @@ const loadStates = () => {
                             </p>
                         </div>
                         <div class="mt-5 flex">
-                            <SecondaryButton class="flex-1">
+                            <SecondaryButton class="flex-1 disabled:opacity-70 disabled:cursor-not-allowed" :disabled="form.address === null">
                                 {{ $t("Select payment method") }}
                             </SecondaryButton>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </template>

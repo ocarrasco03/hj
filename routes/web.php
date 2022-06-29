@@ -6,6 +6,7 @@ use App\Models\Sales\Order;
 use App\Mail\Cart\OrderCreated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProductController;
@@ -96,6 +97,12 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             Route::get('/envio','shipping')->name('shipping');
             Route::post('/pedido','processOrder')->name('process.order');
             Route::get('/pedido/{order}/pagar','checkout')->name('checkout');
+        });
+        Route::name('checkout.')->prefix('checkout')->controller(CheckoutController::class)->group(function () {
+            Route::get('/pedido/{order}/pagar/bbva', 'executeBbvaPayment')->name('pay.bbva');
+            Route::get('/pedido/{order}/charge', 'charge')->name('charge');
+            Route::get('/pedido/{order}/cancelar', 'cancel')->name('cancel');
+            Route::get('/pedido/{order}/devolución', 'refound')->name('refound');
         });
     });
 });

@@ -31,7 +31,7 @@ class ProductController extends Controller
 
         $products = $products->when($searcheable, function ($query) use ($search) {
             return $query->crawler($search);
-        })->paginate(15);
+        })->withTrashed()->paginate(15);
 
         if ($searcheable) {
             $products->appends(['query' => $request->input('query')]);
@@ -116,7 +116,10 @@ class ProductController extends Controller
             'condition' => ['required', 'string'],
             'category' => ['string'],
             'subcategory' => ['string'],
+            'catalogs' => ['array'],
+            'related' => ['array'],
         ]);
+        
         DB::beginTransaction();
         try {
             $product->sku = $request->input('sku');
@@ -133,6 +136,8 @@ class ProductController extends Controller
             $product->syncCategories([$request->input('category'),$request->input('subcategory')]);
 
             $product->syncApplication($request->input('catalogs'));
+
+            $product->syncRelated($request->input('related'));
 
             if ($product->isDirty()) {
                 $product->save();
@@ -162,7 +167,21 @@ class ProductController extends Controller
             return response()->json(['error' => true, 'message' => $th->getMessage()]);
         }
         DB::commit();
-        return response()->json(['success' => true, 'message' => 'El producto ' . $product->sku . 'ha sido eliminado exitosamente']);
+        return response()->json(['success' => true, 'message' => 'El producto ' . $product->sku . ' ha sido eliminado exitosamente']);
+    }
+
+    public function restore($product)
+    {
+        DB::beginTransaction();
+        try {
+            $product = Product::withTrashed()->find($product);
+            $product->restore();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+        DB::commit();
+        return redirect()->back();
     }
 
     public function upload(UploadImage $request, Product $product)

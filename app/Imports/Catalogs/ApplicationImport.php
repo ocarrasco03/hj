@@ -99,7 +99,13 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
     public function createVehicle($year, $make, $model, $engine = null)
     {
         $vehicle = new Vehicle();
-        dd($vehicle->where('year_id', $year)->where('make_id', $make)->where('model_id', $model)->where('engine_id', $engine));
+        if(is_null($vehicle->where('year_id', $year)->where('make_id', $make)->where('model_id', $model)->where('engine_id', $engine)->first())) {
+            $vehicle->year_id = $year;
+            $vehicle->make_id = $make;
+            $vehicle->model_id = $model;
+            $vehicle->engine_id = $engine;
+            $vehicle->save();
+        }
 
         return $vehicle;
     }

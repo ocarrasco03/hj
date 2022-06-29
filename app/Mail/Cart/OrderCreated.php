@@ -31,6 +31,7 @@ class OrderCreated extends Mailable
     public function build()
     {
         return $this->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
+            ->cc(env('SALES_EMAIL'))
             ->subject('Your order has placed')
             ->markdown('emails.cart.order-created');
     }

@@ -10,7 +10,7 @@ import SectionTitle from "@/Components/SectionTitle.vue";
 import ProductItem from "@/Components/ProductItem.vue";
 import axios from "axios";
 import nprogress from "nprogress";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 const props = defineProps({
     product: Object,
@@ -40,7 +40,9 @@ const fbShare = () => {
                 slug: props.product.data.slug,
             }),
         },
-        function (response) {}
+        function (response) {
+            console.log(response)
+        }
     );
 };
 
@@ -54,11 +56,11 @@ const addToCart = () =>
 
 let previousImage = props.product.data.image;
 
-window.onload = () => {
+onMounted(() => {
     if (props.product.data.media.length > 0) {
         previousImage = document.getElementById("main-image").src;
     }
-};
+})
 
 const formatedDate = (date) => {
     const day = new Date().getDay();
@@ -98,28 +100,15 @@ const eventChange = (event) => {
             break;
     }
 };
+
 </script>
 
 <template>
-    <!-- <Head :title="product.name" /> -->
-    <Head :title="product.data.name">
-        <meta
-            property="og:url"
-            :content="route('product.show', { slug: product.data.slug })"
-        />
-        <meta property="og:type" content="website" />
-        <meta
-            property="og:title"
-            content="When Great Minds Don’t Think Alike"
-        />
-        <meta
-            property="og:description"
-            content="How much does culture influence creative thinking?"
-        />
-        <meta property="og:image" :content="props.product.data.image" />
+    <Head :title="product.data.sku + ' ' + product.data.name + ' ' +product.data.brand">
+        <meta name="description" :content="`${product.data.sku} ${product.data.name.toLowerCase()} ${product.data.brand}. Compara Precios y Compra ${product.data.name} Online en HJAutopartes.com.mx. Distribuidor Autorizado ${product.data.brand}`" />
     </Head>
-    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="flex flex-col md:flex-row space-x-3">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="flex flex-col md:flex-row space-x-3 md:justify-around">
             <div class="preview shrink-0">
                 <img
                     v-if="product.data.image"
@@ -155,7 +144,7 @@ const eventChange = (event) => {
                     </template>
                 </div>
             </div>
-            <div class="detail mx-auto flex flex-col px-2 max-w-sm">
+            <div class="detail mx-auto flex flex-col px-2 w-full md:max-w-sm mt-4 md:mt-0">
                 <h2>{{ product.data.name }}</h2>
                 <h4 class="text-gray-500">SKU: {{ product.data.sku }}</h4>
                 <div id="rate" class="flex flex-row space-x-1 mt-3">
@@ -167,7 +156,7 @@ const eventChange = (event) => {
                         <i v-else class="fal fa-star text-secondary-500"></i>
                     </template>
                 </div>
-                <h2 class="mt-3">$ {{ product.data.price }}</h2>
+                <h2 class="mt-3">{{ $formatPrice(product.data.price) }}</h2>
                 <div class="mt-3">
                     <ul class="list-inside">
                         <li>Marca: {{ product.data.brand }}</li>
@@ -340,10 +329,10 @@ const eventChange = (event) => {
             </Tabs>
         </div>
     </div>
-    <SectionTitle :primary="true">
-        <h4>Productos Similares</h4>
+    <SectionTitle :primary="true" v-if="product.data.related.length > 0">
+        <h4>Productos Relacionados</h4>
     </SectionTitle>
-    <div class="container divide-y-2">
+    <div class="container divide-y-2" v-if="product.data.related.length > 0">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 sm:gap-x-2 sm:gap-y-8 place-items-stretch">
             <template v-for="(related, key) in product.data.related" :key="key">
                 <ProductItem
@@ -353,10 +342,9 @@ const eventChange = (event) => {
                     :sku="related.sku"
                     :slug="related.slug"
                     :price="related.price"
-                    :image="related.media.length > 0 ? related.media[0].original_url : undefined"
+                    :image="related.image ? related.image : undefined"
                 />
             </template>
         </div>
-        <div></div>
     </div>
 </template>
