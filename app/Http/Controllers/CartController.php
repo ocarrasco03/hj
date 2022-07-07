@@ -234,6 +234,12 @@ class CartController extends Controller
         return redirect()->route('cart.checkout', $order->id);
     }
 
+    /**
+     * Payment process view
+     *
+     * @param Order $order
+     * @return \Illuminate\Http\Response
+     */
     public function checkout(Order $order)
     {
         $charge_pending = $this->getOrderStatus('charge_pending');
@@ -244,69 +250,9 @@ class CartController extends Controller
             return redirect()->route('profile.orders');
         }
 
+        Inertia::share('paypal', env('PAYPAL_CLIENT_ID'));
+
         return Inertia::render('Checkout/Payment', ['order' => new OrderResource($order)]);
-    }
-
-    public function pay(Order $order, Request $request)
-    {
-        switch ($request) {
-            case 'bbva':
-                $charge = [
-                    'affiliation_bbva' => self::$affiliate,
-                    'amount' => $order->total,
-                    'description' => '',
-                    'currency' => 'MXN',
-                    'order_id' => $order->id,
-                    'use_3d_secure' => true,
-                    'redirect_url' => '',
-                    'customer' => [
-                        'name' => '',
-                        'last_name' => '',
-                        'email' => '',
-                        'phone_number' => '',
-                    ],
-                ];
-                $bbva = BBVA::charges($charge);
-                return redirect($bbva['payment_method']['url']);
-                break;
-
-            case 'paypal':
-                # code...
-                break;
-
-            default:
-                # code...
-                break;
-        }
-    }
-
-    public function paymentResponse(Request $request, Order $order)
-    {
-        $bbva = BBVA::getCharge($request->id);
-        $status = $this->getOrderStatus($bbva['status']);
-
-        if ($bbva['status'] == 'completed') {
-            $order->update([
-                'status_id' => $status->id,
-            ]);
-
-            if ($status->send_email) {
-                new NotifyUserPaymentAccepted(User::find($order->user_id));
-            }
-        } else {
-            $order->update([
-                'status_id' => $status->id,
-            ]);
-
-            if ($status->send_email) {
-                new NotifyUserPaymentFailed(User::find($order->user_id));
-            }
-
-            return redirect()->route('cart.checkout', $order->id)
-                ->withErrors($bbva['error_message']);
-        }
-
-        return;
     }
 
     /**

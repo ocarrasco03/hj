@@ -44,8 +44,8 @@
 
     <!-- Scripts -->
     @routes
-    <script defer src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}"
-        data-sdk-integration-source="button-factory"></script>
+    {{-- <script defer src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}&currency=MXN"
+        data-sdk-integration-source="button-factory"></script> --}}
     <script src="{{ mix('js/app.js') }}" defer></script>
 
     <!-- Meta Tag -->
@@ -61,7 +61,7 @@
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKMTG4S" height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
-    
+
     @inertia
 
     @env('local')

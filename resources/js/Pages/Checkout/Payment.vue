@@ -5,75 +5,46 @@
             <div class="bg-black text-yellow-500 px-5 py-4">
                 <h4>{{ $t("Payment Methods") }}</h4>
             </div>
+            <div class="px-10">
+                <ValidationErrors class="mt-4" />
+            </div>
             <div class="pb-10 pt-6 px-10 lg:flex">
                 <div class="lg:w-1/2 lg:pr-4">
+                    <div class="font-bold text-lg">
+                        {{ $page.props.auth.user.firstname }}
+                        {{ $page.props.auth.user.lastname }}
+                    </div>
                     <div>
-                        <label for="name" class="label"
-                            >{{ $t("Full Name") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
+                        {{ $page.props.auth.user.phone }}
                     </div>
-                    <div class="mt-5">
-                        <label for="company" class="label">{{
-                            $t("Company")
-                        }}</label>
+                    <div>
+                        {{ $page.props.auth.user.email }}
                     </div>
-                    <div class="mt-5">
-                        <label for="address_line_1" class="label"
-                            >{{ $t("Street & House No.") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="country" class="label"
-                            >{{ $t("Country") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="state" class="label"
-                            >{{ $t("State") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="city" class="label"
-                            >{{ $t("City") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="zip_code" class="label"
-                            >{{ $t("Zip Code") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="neighborhood" class="label"
-                            >{{ $t("Neighborhood") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="phone" class="label"
-                            >{{ $t("Phone") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
-                    <div class="mt-5">
-                        <label for="email" class="label"
-                            >{{ $t("E-Mail Address") }}
-                            <small class="text-sm text-red-500">*</small></label
-                        >
-                    </div>
+                    <address class="font-normal font-sans">
+                        {{ order.data.addresses.shipping.street }}
+                        {{ order.data.addresses.shipping.exterior_no }}
+                        {{
+                            order.data.addresses.shipping.interior_no
+                                ? `int ${order.data.addresses.shipping.interior_no}`
+                                : ""
+                        }}<br />
+                        {{ order.data.addresses.shipping.neighborhood }}, CP.
+                        {{ order.data.addresses.shipping.zip_code }}<br />
+                        {{ order.data.addresses.shipping.city }},
+                        {{ order.data.addresses.shipping.state }},
+                        {{ order.data.addresses.shipping.country }}
+                    </address>
                     <hr class="divider mt-5" />
                     <h4 class="font-medium text-lg mt-5">
                         {{ $t("Aditional Information") }}
                     </h4>
-                    <div>
+                    <div class="mt-3">
                         <label for="notes" class="label">{{
                             $t("Order Notes")
                         }}</label>
+                        <p class="mt-1">
+                            {{ order.data.addresses.shipping.indications }}
+                        </p>
                     </div>
                 </div>
                 <div class="lg:w-1/2 w_ticket lg:h-full">
@@ -162,7 +133,14 @@
                         </p>
                     </div>
                     <div class="mt-5 flex flex-col">
-                        <Link class="flex-1 mb-3 btn btn-primary bbva-button-row rounded py-4 sm:py-5 md:py-6 lg:py-7" :href="route('checkout.pay.bbva', {order: order.data.id})">
+                        <Link
+                            class="flex-1 mb-3 btn btn-primary bbva-button-row rounded py-4 sm:py-5 md:py-6 lg:py-7"
+                            :href="
+                                route('checkout.pay.bbva', {
+                                    order: order.data.id,
+                                })
+                            "
+                        >
                             <Bbva class="h-4 md:h-5 lg:h-6 text-white" />
                         </Link>
                         <div
@@ -170,6 +148,7 @@
                             class="paypal-button-container ring-0 ring-transparent focus:ring-0 focus:ring-transparent"
                         ></div>
                         <Link
+                            @click="back"
                             class="btn btn-danger mt-6 px-20 capitalize w-full md:w-auto"
                             v-text="trans('cancel')"
                         />
@@ -193,7 +172,9 @@
                     </span>
                 </div>
                 <div class="w-full md:w-3/4">
-                    <div class="bg-green-500 rounded-bl-2xl w-full p-4 text-center font-bold">
+                    <div
+                        class="bg-green-500 rounded-bl-2xl w-full p-4 text-center font-bold"
+                    >
                         <span
                             >Usted ha seleccionado como metodo de pago tarjeta
                             de debito VISA</span
@@ -207,34 +188,114 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import { trans } from "laravel-vue-i18n";
 import DebitCard from "@/Icons/DebitCard";
 import CreditCard from "@/Icons/CreditCard";
+import ValidationErrors from "@/Components/ValidationErrors";
 import Cash from "@/Icons/Cash";
 import Bbva from "@/Icons/Bbva";
 import PayPal from "@/Icons/PayPal";
 import SecondaryButton from "@/Components/SecondaryButton";
+import { loadScript } from "@paypal/paypal-js";
+import axios from "axios";
 
 const props = defineProps({
     order: Object,
-})
-
-const mountPayPalButtons = () => {
-    paypal
-        .Buttons({
-            style: {
-                shape: "rect",
-                color: "gold",
-                layout: "vertical",
-                label: "paypal",
-                size: "medium",
-            },
-        })
-        .render("#paypal-button-container");
-};
+});
 
 onMounted(() => {
-    mountPayPalButtons();
+    loadScript({
+        "client-id": usePage().props.value.paypal,
+        currency: "MXN",
+    })
+        .then((paypal) => {
+            // start to use the PayPal JS SDK script
+            paypal
+                .Buttons({
+                    createOrder: (data, actions) => {
+                        let address =
+                            props.order.data.addresses.shipping.street +
+                            " " +
+                            props.order.data.addresses.shipping.exterior_no;
+
+                        if (props.order.data.addresses.shipping.interior_no) {
+                            address += ` int ${props.order.data.addresses.shipping.interior_no}`;
+                        }
+                        return actions.order.create({
+                            purchase_units: [
+                                {
+                                    description: `Compra en HJ ACCO Autopartes SA de CV con folio ${props.order.data.id}`,
+                                    invoice_id: props.order.data.id,
+                                    amount: {
+                                        currency_code: "MXN",
+                                        value: props.order.data.total,
+                                        breakdown: {
+                                            item_total: {
+                                                currency_code: "MXN",
+                                                value: props.order.data.subtotal,
+                                            },
+                                            shipping: {
+                                                currency_code: "MXN",
+                                                value: props.order.data.shipping,
+                                            },
+                                            tax_total: {
+                                                currency_code: "MXN",
+                                                value: props.order.data.tax,
+                                            },
+                                            discount: {
+                                                currency_code: "MXN",
+                                                value: props.order.data.discount,
+                                            },
+                                        },
+                                    },
+                                    shipping: {
+                                        address: {
+                                            address_line_1: address,
+                                            address_line_2:
+                                                props.order.data.addresses
+                                                    .shipping.neighborhood,
+                                            admin_area_2:
+                                                props.order.data.addresses
+                                                    .shipping.city,
+                                            admin_area_1:
+                                                props.order.data.addresses
+                                                    .shipping.state,
+                                            postal_code:
+                                                props.order.data.addresses
+                                                    .shipping.zip_code,
+                                            country_code:
+                                                props.order.data.addresses
+                                                    .shipping.country ===
+                                                "México"
+                                                    ? "MX"
+                                                    : "US",
+                                        },
+                                    },
+                                },
+                            ],
+                        });
+                    },
+                    onApprove: (data, actions) => {
+                        return actions.order.capture().then((details) => {
+                            console.log(details);
+                            axios;
+                        });
+                    },
+                    onError: (data, actions) => {
+                        console.log(data, actions);
+                    },
+                    style: {
+                        shape: "rect",
+                        color: "gold",
+                        layout: "vertical",
+                        label: "paypal",
+                    },
+                })
+                .render("#paypal-button-container");
+        })
+        .catch((err) => {
+            console.error("failed to load the PayPal JS SDK script", err);
+        });
 });
 </script>

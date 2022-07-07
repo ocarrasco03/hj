@@ -12,6 +12,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Profile\AddressesController;
 use App\Http\Controllers\Profile\ChangePasswordController;
+use App\Http\Controllers\Profile\OrdersController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Jobs\Orders\NotifyUserOrderPlaced;
 
@@ -82,7 +83,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
                 });
             });
 
-            Route::get('mis-pedidos')->name('orders');
+            Route::get('mis-pedidos', [OrdersController::class, 'index'])->name('orders');
             Route::get('mis-pedidos/{id}')->name('order.show');
             Route::delete('mis-pedidos/{id}')->name('order.cancel');
         });

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Sales\Order;
 use App\Packages\BBVA\BBVA;
 use Illuminate\Http\Request;
 use App\Models\Configs\Status;
+use App\Models\Catalogs\Product;
+use App\Jobs\Orders\NotifyUserPaymentFailed;
+use App\Jobs\Orders\NotifyUserPaymentAccepted;
 
 class CheckoutController extends Controller
 {
@@ -24,7 +28,7 @@ class CheckoutController extends Controller
         $this->affiliate = config('bbva.affiliate');
     }
 
-    public function executeBbvaPayment(Order $order)
+    public function executeBbvaPayment(Order $order, Request $request)
     {
         $charge = [
             'affiliation_bbva' => $this->affiliate,
@@ -55,9 +59,9 @@ class CheckoutController extends Controller
                 return Inertia::location($bbva['payment_method']['url']);
             }
 
-        } catch (\Throwable$th) {
+        } catch (\Throwable $th) {
             //throw $th;
-            return redirect()->back()->with(['toast' => ['type' => 'danger', 'message' => $th->getMessage()]]);
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => $th->getMessage()]]);
         }
 
         return $bbva->charges->create($charge);
@@ -71,14 +75,11 @@ class CheckoutController extends Controller
             case self::COMPLETED:
                 $status = $status->where('prefix', 'PAYMENT_ACCEPTED')->first();
                 break;
-            case self::REFUNDED:
-                $status = $status->where('prefix', 'REFUND')->first();
-                break;
-            case self::CANCELLED:
-                $status = $status->where('prefix', 'CANCELED')->first();
-                break;
             case self::IN_PROGRESS:
                 $status = $status->where('prefix', 'PREPARATION_IN_PROGRESS')->first();
+                break;
+            case self::FAILED:
+                $status = $status->where('prefix', 'PAYMENT_ERROR')->first();
                 break;
             default:
                 $status = $status->where('prefix', 'PAYMENT_ERROR')->first();
@@ -87,11 +88,15 @@ class CheckoutController extends Controller
 
         if ($bbva['status'] == 'completed') {
             $order->update([
-                // 'payment' => 'bbva',
                 'status_id' => $status->id,
             ]);
+
         } else {
-            return redirect()->back()->with(['toast' => ['type' => 'danger', 'message' => $bbva['error_message']]]);
+            $order->update([
+                'status_id' => $status->id,
+            ]);
+
+            return redirect()->route('cart.checkout', ['order' => $order->id])->with(['toast' => ['type' => 'error', 'message' => $bbva['error_message']]])->withErrors($bbva['error_message']);
         }
 
         return redirect()->route('home');
@@ -110,5 +115,88 @@ class CheckoutController extends Controller
         }
 
         return redirect()->back()->with(['toast' => ['type' => 'danger', 'message' => 'Lo sentimos no se pudo cancelar la orden']]);
+    }
+
+    /**
+     * Get the requested status of the order.
+     *
+     * @param string $status
+     * @return \App\Models\Configs\Status
+     */
+    private function getOrderStatus($status)
+    {
+        switch ($status) {
+            case 'in_progress':
+                return Status::where('prefix', 'PREPARATION_IN_PROGRESS')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'completed':
+                return Status::where('prefix', 'PAYMENT_ACCEPTED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'charge_pending':
+                return Status::where('prefix', 'AWAITING_CHEQUE_PAYMENT')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'delivered':
+                return Status::where('prefix', 'DELIVERED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'shipped':
+                return Status::where('prefix', 'SHIPPED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'cancelled':
+                return Status::where('prefix', 'CANCELED')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'failed':
+                return Status::where('prefix', 'PAYMENT_ERROR')
+                    ->where('module_name', Order::class)->first();
+                break;
+            case 'refunded':
+                return Status::where('prefix', 'REFUND')
+                    ->where('module_name', Order::class)->first();
+                break;
+            default:
+                return Status::where('prefix', 'PAYMENT_ERROR')
+                    ->where('module_name', Order::class)->first();
+                break;
+        }
+    }
+
+    /**
+     * Update product stocks after create an order or
+     * cancel an order.
+     *
+     * @param array|object $items
+     * @param string $mode Default 'reduce'. Accepts 'reduce', 'increment'.
+     */
+    private function updateStocks($items, $mode = 'reduce')
+    {
+        foreach ($items as $item) {
+            $product = Product::find($item->id);
+
+            switch ($mode) {
+                case 'reduce':
+                    $product->stock = $product->stock - $item->qty;
+
+                    if ($product->stock < 0) {
+                        $product->stock = 0;
+                    }
+
+                    if ($product->isDirty()) {
+                        $product->save();
+                    }
+                    break;
+                case 'increment':
+                    $product->stock = $product->stock + $item->quantity;
+
+                    if ($product->isDirty()) {
+                        $product->save();
+                    }
+                    break;
+            }
+        }
     }
 }

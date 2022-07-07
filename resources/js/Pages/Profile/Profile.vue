@@ -225,7 +225,7 @@
                                                     <DropdownLink class="hover:text-secondary-500">
                                                         {{ $t('Show') }}
                                                     </DropdownLink>
-                                                    <DropdownLink class="hover:text-secondary-500" v-if="order.status.prefix === 'PAYMENT_ERROR' || order.status.prefix === 'AWAITING_CHEQUE_PAYMENT'">
+                                                    <DropdownLink :href="route('cart.checkout', {order: order.id})" class="hover:text-secondary-500" v-if="order.status.prefix === 'PAYMENT_ERROR' || order.status.prefix === 'AWAITING_CHEQUE_PAYMENT'">
                                                         {{ $t('Pay') }}
                                                     </DropdownLink>
                                                     <DropdownLink class="hover:text-secondary-500" v-if="order.status.prefix === 'PAYMENT_ACCEPTED' || order.status.prefix === 'PREPARATION_IN_PROGRESS' || order.status.prefix === 'SHIPPED' || order.status.prefix === 'DELIVERED'">
