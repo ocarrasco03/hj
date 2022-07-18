@@ -28,7 +28,9 @@
                 >{{ $t("Addresses") }}
             </Link>
             <Link
+                :href="route('profile.orders')"
                 class="flex items-center justify-start flex-1 text-secondary-500 hover:bg-primary-500 hover:text-secondary-500 px-4 py-2 w-full"
+                :class="{'bg-primary-500 text-secondary-500': route().current('profile.orders')}"
             >
                 <span class="la la-dolly text-2xl leading-none mr-2"></span
                 >{{ $t("Orders") }}

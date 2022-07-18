@@ -31,7 +31,7 @@ class ProductResource extends JsonResource
             'image' => $this->getFirstMediaUrl('products'),
             'media' => $this->getMedia('products'),
             'related' => MostSelledResource::collection($this->related),
-            'application' => ApplicationResource::collection($this->catalogs)
+            'application' => ApplicationResource::collection($this->vehicles)
         ];
     }
 }

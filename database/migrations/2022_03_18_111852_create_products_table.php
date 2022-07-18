@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('brand_id');
             $table->foreignId('status_id')->default(1);
-            $table->string('sku');
+            $table->string('sku')->index();
             $table->string('name');
             $table->longText('description')->nullable();
             $table->string('slug')->unique();

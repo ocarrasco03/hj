@@ -4,6 +4,7 @@ import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
 import { Pagination, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { trans } from "laravel-vue-i18n";
+import SimpleTypeahead from "vue3-simple-typeahead";
 import Swal from "sweetalert2";
 import axios from "axios";
 import "swiper/css";
@@ -14,6 +15,7 @@ const edit = ref(false);
 const index = ref(null);
 const url = ref(null);
 const errors = ref({});
+const relatedProds = ref([]);
 const modules = [Pagination, Navigation];
 
 const models = ref([]);
@@ -25,7 +27,7 @@ const getModels = () => {
         prepend.innerHTML = trans("Loading");
         axios
             .get(
-                route("api.vehicles.models.application", {
+                route("api.v2.vehicles.models", {
                     make: vehicle.make,
                     year: vehicle.year,
                 })
@@ -58,7 +60,7 @@ const props = defineProps({
 
 const setCategory = (type = "parent") => {
     let name;
-    props.product.categories.map((element) => {
+    props.product.data.categories.map((element) => {
         if (element.parent_id === null) {
             name = element.name;
             index.value = props.categories.findIndex(
@@ -75,23 +77,27 @@ const setCategory = (type = "parent") => {
 };
 
 const form = useForm({
-    sku: props.product.sku,
-    name: props.product.name,
-    description: props.product.description,
-    notes: props.product.notes,
-    brand: props.product.brand.name,
-    cost: props.product.cost,
-    price_wo_tax: props.product.price_wo_tax,
-    price: props.product.price,
+    sku: props.product.data.sku,
+    name: props.product.data.name,
+    description: props.product.data.description,
+    notes: props.product.data.notes,
+    brand: props.product.data.brand,
+    cost: props.product.data.cost,
+    price_wo_tax: props.product.data.price_wo_tax,
+    price: props.product.data.price,
     category: setCategory(),
     subcategory: setCategory("children"),
-    condition: props.product.condition,
-    stock: props.product.stock,
+    condition: props.product.data.condition,
+    stock: props.product.data.stock,
+    related: props.product.data.related,
+    catalogs: props.product.data.catalogs,
 });
 
 const submit = () => {
     form.put(
-        route("admin.catalogs.products.update", { product: props.product.id }),
+        route("admin.catalogs.products.update", {
+            product: props.product.data.id,
+        }),
         {
             preserveScroll: true,
             preserveState: true,
@@ -113,7 +119,7 @@ const upload = useForm({
 const uploadImage = () => {
     upload.post(
         route("admin.catalogs.products.upload.file", {
-            product: props.product.id,
+            product: props.product.data.id,
         }),
         {
             preserveScroll: true,
@@ -170,6 +176,70 @@ const customFileInput = (event) => {
     event.target.parentNode.querySelector(".file-name").innerHTML = filename;
     url.value = URL.createObjectURL(file);
 };
+
+let cancelToken;
+
+const fetchProducts = async (event) => {
+    const searchTerm = event.target.value;
+    if (typeof cancelToken != typeof undefined) {
+        cancelToken.cancel("Operation canceled due to new request.");
+    }
+
+    cancelToken = axios.CancelToken.source();
+
+    try {
+        axios
+            .get(route("api.v2.autocomplete.products"), {
+                params: { term: event.target.value },
+                cancelToken: cancelToken.token,
+            })
+            .then((res) => {
+                let tmp = [];
+                res.data.forEach((element) => {
+                    tmp.push(`${element.sku} | ${element.brand.name}`);
+                });
+                relatedProds.value = tmp;
+            });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const productEventHandler = (event) => {
+    console.log(event);
+};
+const productBlurEventHandler = (event) => {
+    console.log(event);
+};
+const productSelectItemEventHandler = (item) => {
+    let sku, brand;
+    let arr = item.split("|");
+
+    for (let index = 0; index < arr.length; index++) {
+        index === 0 ? (sku = arr[index]) : (brand = arr[index]);
+    }
+
+    if (
+        !form.related.find((e) => e.sku === item)
+    ) {
+        form.related.push({
+            sku: sku.trim(),
+            brand: brand.trim(),
+        });
+    }
+};
+
+const pushCatalog = () => {
+    form.catalogs.push({
+        year: vehicle.year,
+        make: vehicle.make,
+        model: vehicle.model,
+        engine: null,
+    });
+};
+const sliceCatalog = (index) => {
+    form.catalogs.splice(index, 1);
+};
 </script>
 
 <script context="module">
@@ -181,12 +251,12 @@ export default {
 </script>
 
 <template>
-    <Head :title="`${$t('Product')} ${product.sku}`" />
+    <Head :title="`${$t('Product')} ${product.data.sku}`" />
 
     <!-- Breadcrumb -->
     <section class="breadcrumb lg:flex items-start">
         <div>
-            <h1>{{ `${$t("Product")} ${product.sku}` }}</h1>
+            <h1>{{ `${$t("Product")} ${product.data.sku}` }}</h1>
             <ul>
                 <li>
                     <Link :href="route('admin.dashboard')">
@@ -198,7 +268,7 @@ export default {
                 <li class="divider la la-arrow-right"></li>
                 <li><Link @click="back" v-text="$t('Products')" /></li>
                 <li class="divider la la-arrow-right"></li>
-                <li>{{ `${$t("Product")} ${product.sku}` }}</li>
+                <li>{{ `${$t("Product")} ${product.data.sku}` }}</li>
             </ul>
         </div>
         <div class="lg:flex items-center ml-auto mt-5 lg:mt-0">
@@ -282,24 +352,29 @@ export default {
                             ></textarea>
                         </div>
                     </div>
-                    <div class="flex flex-col xl:flex-row xl:space-x-5 mt-5 xl:mt-0">
+                    <div
+                        class="flex flex-col xl:flex-row xl:space-x-5 mt-5 xl:mt-0"
+                    >
                         <div class="mb-5 xl:w-1/2">
                             <label class="label block mb-2" for="related">{{
                                 $t("Related Products")
                             }}</label>
-                            <label
+                            <vue3-simple-typeahead
+                                id="sku"
+                                :placeholder="$t('SKU')"
+                                :minInputLength="1"
+                                :items="relatedProds"
+                                @keyup="fetchProducts"
+                                @selectItem="productSelectItemEventHandler"
+                            />
+                            <!-- <label
                                 class="form-control-addon-within rounded-full border-admin-secondary"
                             >
-                                <input
-                                    type="text"
-                                    class="form-control border-none"
-                                    :placeholder="$t('SKU')"
-                                />
                                 <button
                                     type="button"
                                     class="btn btn-link text-secondary dark:text-gray-700 hover:text-admin dark:hover:text-admin text-xl leading-none la la-plus mr-4"
                                 ></button>
-                            </label>
+                            </label> -->
                             <table class="table table-admin mt-5 w-full">
                                 <thead>
                                     <tr>
@@ -313,15 +388,21 @@ export default {
                                 <tbody>
                                     <tr
                                         v-for="(
-                                            related, key
-                                        ) in product.related"
+                                            related, index, key
+                                        ) in form.related"
                                         :key="key"
                                     >
                                         <td>{{ related.sku }}</td>
-                                        <td>{{ related.brand.name }}</td>
+                                        <td>{{ related.brand }}</td>
                                         <td>
                                             <button
                                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
+                                                @click.prevent="
+                                                    form.related.splice(
+                                                        index,
+                                                        1
+                                                    )
+                                                "
                                             >
                                                 <span
                                                     class="la la-trash-alt"
@@ -398,11 +479,11 @@ export default {
                                             {{ $t("Model") }}
                                         </option>
                                         <template
-                                            v-for="(model, key) in models"
+                                            v-for="(model, key) in models.data"
                                             :key="key"
                                         >
-                                            <option :value="model">
-                                                {{ model }}
+                                            <option :value="model.model">
+                                                {{ model.model }}
                                             </option>
                                         </template>
                                     </select>
@@ -437,6 +518,7 @@ export default {
                                     ></div>
                                 </div>
                                 <button
+                                    @click.prevent="pushCatalog"
                                     class="btn btn-outlined btn-admin ml-2 btn-icon rounded-full"
                                 >
                                     <span class="la la-plus"></span>
@@ -466,23 +548,26 @@ export default {
                                 <tbody class="overflow-y-auto h-5">
                                     <tr
                                         v-for="(
-                                            catalog, key
-                                        ) in product.catalogs"
+                                            catalog, index, key
+                                        ) in form.catalogs"
                                         :key="key"
                                     >
-                                        <td>{{ catalog.year.year }}</td>
-                                        <td>{{ catalog.make.name }}</td>
-                                        <td>{{ catalog.model.name }}</td>
+                                        <td>{{ catalog.year }}</td>
+                                        <td>{{ catalog.make }}</td>
+                                        <td>{{ catalog.model }}</td>
                                         <td>
                                             {{
                                                 catalog.engine !== null
-                                                    ? engine
+                                                    ? catalog.engine
                                                     : "N/A"
                                             }}
                                         </td>
                                         <td>
                                             <button
                                                 class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
+                                                @click.prevent="
+                                                    sliceCatalog(index)
+                                                "
                                             >
                                                 <span
                                                     class="la la-trash-alt"
@@ -503,104 +588,78 @@ export default {
             <div class="relative card p-5">
                 <h3>Costos</h3>
                 <div class="mt-5">
-                    <div class="flex items-center">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Cost") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="cost"
-                                id="cost"
-                                v-model="form.cost"
+                    <div>
+                        <label class="label block">{{ $t("Cost") }}</label>
+                        <input
+                            type="text"
+                            name="cost"
+                            id="cost"
+                            v-model="form.cost"
+                            class="form-control"
+                            @keyup="calculatePrice"
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{
+                            $t("Price W/O Tax")
+                        }}</label>
+                        <input
+                            type="text"
+                            name="price_wo_tax"
+                            id="price_wo_tax"
+                            v-model="form.price_wo_tax"
+                            class="form-control"
+                            disabled
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Price") }}</label>
+                        <input
+                            type="text"
+                            name="price"
+                            id="price"
+                            v-model="form.price"
+                            class="form-control"
+                            @keyup="calculatePriceWoTax"
+                        />
+                    </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Condition") }}</label>
+                        <div class="custom-select">
+                            <select
                                 class="form-control"
-                                @keyup="calculatePrice"
-                            />
+                                v-model="form.condition"
+                            >
+                                <option value="new">{{ $t("New") }}</option>
+                                <option value="used">
+                                    {{ $t("Used") }}
+                                </option>
+                                <option value="refurbished">
+                                    {{ $t("Refurbished") }}
+                                </option>
+                            </select>
+                            <div
+                                class="custom-select-icon la la-caret-down"
+                            ></div>
                         </div>
                     </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{
-                                $t("Price W/O Tax")
-                            }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="price_wo_tax"
-                                id="price_wo_tax"
-                                v-model="form.price_wo_tax"
-                                class="form-control"
-                                disabled
-                            />
-                        </div>
+                    <div class="mt-5">
+                        <label class="label block">{{ $t("Stock") }}</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            v-model.number="form.stock"
+                            :class="{ 'is-invalid': errors.stock }"
+                            min="0"
+                        />
                     </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Price") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="text"
-                                name="price"
-                                id="price"
-                                v-model="form.price"
-                                class="form-control"
-                                @keyup="calculatePriceWoTax"
-                            />
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{
-                                $t("Condition")
-                            }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <div class="custom-select">
-                                <select
-                                    class="form-control"
-                                    v-model="form.condition"
-                                >
-                                    <option value="new">{{ $t("New") }}</option>
-                                    <option value="used">
-                                        {{ $t("Used") }}
-                                    </option>
-                                    <option value="refurbished">
-                                        {{ $t("Refurbished") }}
-                                    </option>
-                                </select>
-                                <div
-                                    class="custom-select-icon la la-caret-down"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t("Stock") }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <input
-                                type="number"
-                                class="form-control"
-                                v-model.number="form.stock"
-                                :class="{ 'is-invalid': errors.stock }"
-                                min="0"
-                            />
-                        </div>
-                    </div>
-                    <!-- <div class="flex items-center mt-5">
-                        <div class="w-1/4">
-                            <label class="label block">{{ $t('Status') }}</label>
-                        </div>
-                        <div class="w-3/4 ml-2">
-                            <label class="label switch">
-                                <input type="checkbox" />
-                                <span></span>
-                                <span>Immediately</span>
-                            </label>
-                        </div>
+                    <!-- <div class="mt-5">
+                        <label class="label block">{{ $t("Status") }}</label>
+                        <label class="label switch">
+                            <input type="checkbox" />
+                            <span></span>
+                            <span>Immediately</span>
+                        </label>
                     </div> -->
                 </div>
                 <div class="mt-5" v-if="form.isDirty">
@@ -702,12 +761,12 @@ export default {
                         :modules="modules"
                     >
                         <SwiperSlide
-                            v-for="(image, key) in product.media"
+                            v-for="(image, key) in product.data.media"
                             :key="key"
                             class="wrapper-img"
                         >
                             <img
-                                :src="image.original_url"
+                                :src="image.preview_url"
                                 :alt="image.file_name"
                                 srcset=""
                                 class="h-8 carousel-item"
@@ -724,7 +783,7 @@ export default {
                                         route(
                                             'admin.catalogs.products.remove.file',
                                             {
-                                                product: props.product.id,
+                                                product: props.product.data.id,
                                                 id: image.uuid,
                                             }
                                         )

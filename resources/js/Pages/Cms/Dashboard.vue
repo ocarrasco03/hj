@@ -203,7 +203,7 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(order, key) in orders" :key="key">
+                        <tr v-for="(order, key) in orders.data" :key="key">
                             <td>{{ order.id }}</td>
                             <td class="text-center">
                                 {{ $formatPrice(order.total) }}
@@ -213,13 +213,13 @@ export default {
                                     v-if="!order.deleted_at"
                                     class="badge badge-outlined uppercase"
                                     :class="{
-                                        'badge-admin': order.status.level === 1,
+                                        'badge-admin': order.level === 1,
                                         'badge-success':
-                                            order.status.level === 2,
+                                            order.level === 2,
                                         'badge-danger':
-                                            order.status.level === 3,
+                                            order.level === 3,
                                     }"
-                                    >{{ order.status.name }}</span
+                                    >{{ order.status }}</span
                                 >
                                 <span
                                     v-else

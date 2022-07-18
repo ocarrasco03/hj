@@ -8,12 +8,14 @@ use App\Models\Sales\Order;
 use App\Models\Vehicles\Catalog;
 use App\Packages\Shoppingcart\Contracts\Buyable;
 use App\Traits\Categorizable;
+use App\Traits\HasApplication;
 use App\Traits\Taggeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Laravel\Scout\Searchable;
+use Spatie\Image\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\MediaCannotBeDeleted;
@@ -29,6 +31,7 @@ class Product extends Model implements Buyable, HasMedia
     use Taggeable;
     use Searchable;
     use InteractsWithMedia;
+    use HasApplication;
 
     /**
      * The relationships that should always be loaded.
@@ -116,11 +119,13 @@ class Product extends Model implements Buyable, HasMedia
      */
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->width(160)
+        $this->addMediaConversion('preview')
+            ->width(300)
             ->sharpen(10)
-            ->nonQueued()
-            ->performOnCollections('images', 'products');
+            ->performOnCollections('products')
+            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->nonQueued();
+
     }
 
     /**
@@ -188,6 +193,20 @@ class Product extends Model implements Buyable, HasMedia
         return $this->belongsTo(Status::class);
     }
 
+    public function syncRelated($related)
+    {
+        $this->related()->detach();
+        $related = collect($related);
+        $related->map(function ($item) {
+            $result = $this->where('sku', $item['sku'])
+                ->whereHas('brand', function ($query) use ($item) {
+                    return $query->where('name', $item['brand']);
+                })
+                ->first();
+            $this->related()->attach($result->id);
+        });
+    }
+
     /**
      * Crawling search engine scope
      *
@@ -226,25 +245,25 @@ class Product extends Model implements Buyable, HasMedia
     public function scopeApplicationSearch($query, $year = null, $make = null, $model = null, $engine = null, $category = null, $subcategory = null)
     {
         return $query->when(!is_null($year), function ($query) use ($year) {
-            return $query->whereHas('catalogs', function ($query) use ($year) {
+            return $query->whereHas('vehicles', function ($query) use ($year) {
                 return $query->whereHas('year', function ($query) use ($year) {
                     return $query->where('year', $year);
                 });
             });
         })->when(!is_null($make), function ($query) use ($make) {
-            return $query->whereHas('catalogs', function ($query) use ($make) {
+            return $query->whereHas('vehicles', function ($query) use ($make) {
                 return $query->whereHas('make', function ($query) use ($make) {
                     return $query->where('name', $make);
                 });
             });
         })->when(!is_null($model), function ($query) use ($model) {
-            return $query->whereHas('catalogs', function ($query) use ($model) {
+            return $query->whereHas('vehicles', function ($query) use ($model) {
                 return $query->whereHas('model', function ($query) use ($model) {
                     return $query->where('name', $model);
                 });
             });
         })->when(!is_null($engine), function ($query) use ($engine) {
-            return $query->whereHas('catalogs', function ($query) use ($engine) {
+            return $query->whereHas('vehicles', function ($query) use ($engine) {
                 return $query->whereHas('engine', function ($query) use ($engine) {
                     return $query->where('name', $engine);
                 });
@@ -281,27 +300,4 @@ class Product extends Model implements Buyable, HasMedia
 
         $media->delete();
     }
-
-    /**
-     * Undocumented function
-     *
-     * @return void
-     */
-    public function catalogs()
-    {
-        return $this->hasMany(Catalog::class);
-    }
-
-    // public function getThumbAttribute()
-    // {
-    //     return $this->getFirstMediaUrl('products', 'thumb');
-    // }
-
-    // public function getMediaAttribute()
-    // {
-    //     foreach ($this->media() as $media) {
-    //         return $media->getMediaUrl();
-    //     }
-    // }
-
 }

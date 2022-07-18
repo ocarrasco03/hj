@@ -181,9 +181,7 @@
                                         Impuestos
                                     </th>
                                     <th class="w-px">Total</th>
-                                    <th class="w-px hidden md:table-cell">
-                                        Acciones
-                                    </th>
+                                    <th class="w-px hidden md:table-cell"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -207,15 +205,39 @@
                                         >
                                     </td>
                                     <td class="hidden md:table-cell">
-                                        {{ $formatPrice(103.25) }}
+                                        {{ $formatPrice(order.discount) }}
                                     </td>
                                     <td class="hidden md:table-cell">
-                                        {{ $formatPrice(103.25) }}
+                                        {{ $formatPrice(order.tax) }}
                                     </td>
                                     <td>
-                                        {{ $formatPrice(10254) }}
+                                        {{ $formatPrice(order.total) }}
                                     </td>
-                                    <td class="hidden md:table-cell"></td>
+                                    <td class="hidden md:table-cell">
+                                        <Dropdown>
+                                            <template #trigger>
+                                                <span
+                                                    class="btn btn-icon rounded-full text-secondary-500 hover:text-secondary-500 hover:bg-gray-100 la la-ellipsis-v"
+                                                ></span>
+                                            </template>
+                                            <template #content>
+                                                <div class="divide-y">
+                                                    <DropdownLink class="hover:text-secondary-500">
+                                                        {{ $t('Show') }}
+                                                    </DropdownLink>
+                                                    <DropdownLink :href="route('cart.checkout', {order: order.id})" class="hover:text-secondary-500" v-if="order.status.prefix === 'PAYMENT_ERROR' || order.status.prefix === 'AWAITING_CHEQUE_PAYMENT'">
+                                                        {{ $t('Pay') }}
+                                                    </DropdownLink>
+                                                    <DropdownLink class="hover:text-secondary-500" v-if="order.status.prefix === 'PAYMENT_ACCEPTED' || order.status.prefix === 'PREPARATION_IN_PROGRESS' || order.status.prefix === 'SHIPPED' || order.status.prefix === 'DELIVERED'">
+                                                        {{ $t('Refound') }}
+                                                    </DropdownLink>
+                                                    <DropdownLink class="hover:text-secondary-500 capitalize" :href="route('checkout.cancel', {order: order.id})" v-if="order.status.prefix === 'PAYMENT_ERROR' || order.status.prefix === 'AWAITING_CHEQUE_PAYMENT'">
+                                                        {{ $t('cancel') }}
+                                                    </DropdownLink>
+                                                </div>
+                                            </template>
+                                        </Dropdown>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -232,6 +254,8 @@ import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import ValidationErrors from "@/Components/ValidationErrors";
 import ApplicationLogo from "@/Components/ApplicationLogo";
 import ProfileMenu from "@/Pages/Profile/ProfileMenu";
+import Dropdown from "@/Components/Dropdown";
+import DropdownLink from "@/Components/DropdownLink";
 
 const props = defineProps({
     orders: Object,

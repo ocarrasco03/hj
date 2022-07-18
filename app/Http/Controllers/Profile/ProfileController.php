@@ -16,7 +16,7 @@ class ProfileController extends Controller
     {
         return Inertia::render('Profile/Profile', [
             'user' => new UserResource(auth()->user()),
-            'orders' => new OrderCollection($orders->where('user_id', auth()->user()->id)->take(5)->get())
+            'orders' => new OrderCollection($orders->where('user_id', auth()->user()->id)->orderByDesc('created_at')->take(5)->get())
         ]);
     }
 

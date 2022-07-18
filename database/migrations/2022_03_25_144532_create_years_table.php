@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('years', function (Blueprint $table) {
             $table->id();
-            $table->year('year')->unique();
+            $table->year('year')->unique()->index();
             $table->timestamps();
             $table->softDeletes();
 
