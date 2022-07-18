@@ -6,7 +6,7 @@ deployment:
 
     # Production Mode
     - export DEPLOYPATH=/home/hjautopa/public_html/laravel
-    - /bin/cp -r * $DEPLOYPATH #copy all from root
-    - /bin/cp ./public/js/*.js $DEPLOYPATH/public/js
-    - /bin/cp ./public/css/*.css $DEPLOYPATH/public/css
-    - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public/storage
+    # - /bin/cp -r * $DEPLOYPATH #copy all from root
+    # - /bin/cp ./public/js/*.js $DEPLOYPATH/public/js
+    # - /bin/cp ./public/css/*.css $DEPLOYPATH/public/css
+    # - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public/storage
