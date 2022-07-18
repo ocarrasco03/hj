@@ -3,6 +3,7 @@
 namespace App\Models\Sales;
 
 use App\Models\Catalogs\Product;
+use App\Models\Configs\Address;
 use App\Models\Configs\Status;
 use App\Models\User;
 use App\Traits\Uuids;
@@ -22,7 +23,7 @@ class Order extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id', 'status_id', 'subtotal', 'discount', 'tax', 'total',
+        'user_id', 'status_id', 'address_id', 'subtotal', 'discount', 'tax', 'total', 'payment_provider', 'transaction_id', 'shipping'
     ];
 
     /**
@@ -79,6 +80,16 @@ class Order extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    /**
+     * Get the address of the current order to be shipped
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 
     /**

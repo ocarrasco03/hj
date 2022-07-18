@@ -1,7 +1,9 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
-import Pagination from "@/Components/Cms/Pagination.vue";
+import Pagination from "@/Components/Cms/Pagination";
+import Dropdown from "@/Components/Dropdown";
+import DropdownLink from "@/Components/DropdownLink";
 import Swal from "sweetalert2";
 import axios from "axios";
 import nprogress from "nprogress";
@@ -12,7 +14,7 @@ const props = defineProps({
 
 const selectedRows = ref([]);
 
-const confirmDelete = (event) => {
+const confirmDelete = (id, index) => {
     Swal.fire({
         title: "&iquest;Estás seguro de querer eliminar la orden?",
         icon: "warning",
@@ -26,15 +28,15 @@ const confirmDelete = (event) => {
             nprogress.start();
             axios
                 .delete(
-                    route("admin.settings.advanced.users.delete", {
-                        user: event.target.dataset.id,
+                    route("admin.catalogs.products.delete", {
+                        product: id,
                     })
                 )
                 .then((res) => {
                     if (res.data.success) {
-                        props.users.data[
-                            event.target.dataset.index
-                        ].deleted_at = new Date(Date.now()).toISOString();
+                        props.products.data[index].deleted_at = new Date(
+                            Date.now()
+                        ).toISOString();
                         Swal.fire("Eliminado!", res.data.message, "success");
                     } else {
                         Swal.fire({
@@ -134,19 +136,21 @@ export default {
                     class="btn btn-admin uppercase ml-2"
                     >Agregar</Link
                 >
-                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                <button
+                    class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large"
+                >
                     <span class="las la-cloud-upload-alt"></span>
                 </button>
-                <button class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large">
+                <button
+                    class="btn btn-outlined btn-admin ml-2 btn-icon btn-icon-large"
+                >
                     <span class="las la-cloud-download-alt"></span>
                 </button>
             </div>
         </div>
     </section>
 
-    <div
-        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
-    >
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <div class="card w-full py-4">
             <table
                 class="table table-auto table-admin w-full table-hoverable border-collapse"
@@ -272,56 +276,73 @@ export default {
                             {{ formatedDate(product.created_at) }}
                         </td>
                         <td class="items-center text-center">
-                            <Link
-                                :href="
-                                    route('admin.catalogs.products.show', {
-                                        product: product.id,
-                                    })
-                                "
-                                v-if="!product.deleted_at"
-                                class="btn btn-outlined btn-admin btn-icon"
-                                as="button"
-                                method="get"
-                                :disabled="!$can('pedidos.update')"
-                            >
-                                <span class="la la-eye"></span>
-                            </Link>
-                            <button
-                                v-if="!product.deleted_at"
-                                class="btn btn-outlined btn-danger ml-2 btn-icon rounded-full"
-                                @click="confirmDelete"
-                                :disabled="!$can('pedidos.delete')"
-                            >
-                                <span
-                                    class="la la-trash-alt"
-                                    :data-id="product.id"
-                                    :data-index="index"
-                                ></span>
-                            </button>
-                            <Link
-                                v-if="product.deleted_at"
-                                :href="
-                                    route(
-                                        'admin.settings.advanced.users.restore',
-                                        { product: product.id }
-                                    )
-                                "
-                                class="btn btn-outlined btn-admin ml-2 btn-icon rounded-full"
-                                preserve-scroll
-                                method="put"
-                                as="button"
-                            >
-                                <span class="la la-redo-alt"></span>
-                            </Link>
+                            <Dropdown>
+                                <template #trigger>
+                                    <span
+                                        class="btn btn-icon rounded-full text-secondary-500 hover:text-secondary-500 hover:bg-gray-100 la la-ellipsis-v"
+                                    ></span>
+                                </template>
+                                <template #content>
+                                    <div class="divide-y">
+                                        <DropdownLink
+                                            :href="
+                                                route(
+                                                    'admin.catalogs.products.show',
+                                                    {
+                                                        product: product.id,
+                                                    }
+                                                )
+                                            "
+                                            v-if="!product.deleted_at"
+                                            class="hover:text-admin-500"
+                                            :disabled="!$can('pedidos.update')"
+                                        >
+                                            <span
+                                                class="la la-eye leading-none mr-2"
+                                            ></span
+                                            >{{ $t("Show") }}
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-if="!product.deleted_at"
+                                            class="hover:text-danger-500"
+                                            @click.prevent="
+                                                confirmDelete(product.id, index)
+                                            "
+                                            :disabled="!$can('pedidos.delete')"
+                                        >
+                                            <span
+                                                class="la la-trash-alt leading-none mr-2"
+                                            ></span>
+                                            {{ $t("Delete") }}
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-if="product.deleted_at"
+                                            :href="
+                                                route(
+                                                    'admin.catalogs.products.restore',
+                                                    { product: product.id }
+                                                )
+                                            "
+                                            class="hover:text-admin-500"
+                                            preserve-scroll
+                                            method="put"
+                                            as="button"
+                                        >
+                                            <span
+                                                class="la la-redo-alt leading-none mr-2"
+                                            ></span
+                                            >{{ $t("Restore") }}
+                                        </DropdownLink>
+                                    </div>
+                                </template>
+                            </Dropdown>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div
-        class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4"
-    >
+    <div class="w-full pb-5 lg:flex px-0 space-y-4 lg:space-y-0 lg:space-x-4">
         <Pagination
             :links="products.links"
             :total="products.total"

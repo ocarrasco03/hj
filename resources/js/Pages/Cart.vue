@@ -1,12 +1,12 @@
 <script setup>
-import {ref} from 'vue';
-import { Head, Link } from "@inertiajs/inertia-vue3";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
-import PrimaryButton from "@/Components/Button.vue";
-import Input from "@/Components/Input.vue";
+import { ref } from "vue";
+import { Head, Link, useForm } from "@inertiajs/inertia-vue3";
+import SecondaryButton from "@/Components/SecondaryButton";
+import PrimaryButton from "@/Components/Button";
+import Input from "@/Components/Input";
 import axios from "axios";
 import nprogress from "nprogress";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import ApplicationLogo from "@/Components/ApplicationLogo";
 
 const props = defineProps({
     cart: Object,
@@ -24,7 +24,7 @@ const details = ref({
     discount: props.discount,
     total: props.total,
     count: props.count,
-})
+});
 
 const add = (item) => {
     nprogress.start();
@@ -75,6 +75,23 @@ const reduce = (item, index) => {
             nprogress.done();
         });
 };
+
+const form = useForm({
+    discount_code: "",
+});
+
+const applyDiscount = () => {
+    form.put(route("cart.discount"), {
+        onSuccess: (res) => {
+            details.value.cart = res.props.cart;
+            details.value.subtotal = res.props.subtotal;
+            details.value.discount = res.props.discount;
+            details.value.tax = res.props.tax;
+            details.value.total = res.props.total;
+        },
+        onFinish: () => form.reset(),
+    });
+};
 </script>
 
 <template>
@@ -118,7 +135,7 @@ const reduce = (item, index) => {
                                     > -->
                                 </td>
                                 <td class="px-2 border-x border-gray-500">
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex items-center space-x-2 flex-col md:flex-row">
                                         <img
                                             v-if="item.options.image"
                                             :src="item.options.image"
@@ -138,9 +155,7 @@ const reduce = (item, index) => {
                                 </td>
                                 <td class="px-4">
                                     Precio:
-                                    <h4 class="font-bold">
-                                        ${{ item.total }}
-                                    </h4>
+                                    <h4 class="font-bold">${{ item.total }}</h4>
                                 </td>
                             </tr>
                         </tbody>
@@ -150,17 +165,18 @@ const reduce = (item, index) => {
                         class="border-b border-l border-gray-500 flex-auto shrink-0 divide-y max-w-sm w-full"
                     >
                         <div class="p-2">
-                            <span
-                                >Hay {{ count }} articulos en el
-                                carrito</span
-                            >
+                            <span>Hay {{ count }} articulos en el carrito</span>
                             <div class="flex justify-between">
                                 <h5>Subtotal:</h5>
-                                <span>{{ $formatPrice(details.subtotal) }}</span>
+                                <span>{{
+                                    $formatPrice(details.subtotal)
+                                }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <h5>Descuento:</h5>
-                                <span>{{ $formatPrice(details.discount) }}</span>
+                                <h5>{{ $t('Shipping') }}:</h5>
+                                <span>{{
+                                    $formatPrice(details.discount)
+                                }}</span>
                             </div>
                         </div>
                         <div class="p-2">
@@ -175,35 +191,20 @@ const reduce = (item, index) => {
                         </div>
                     </div>
                 </div>
-                <div
-                    class="p-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0"
-                >
-                    <div
-                        class="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0 flex-1"
-                    >
-                        <Link
-                            :href="route('home')"
-                            class="px-4 py-2 bg-secondary-800 border border-transparent text-center font-semibold text-sm text-white capitalize tracking-widest hover:bg-secondary-700 hover:text-yellow-700 active:bg-secondary-900 focus:outline-none focus:border-secondary-900 focus:shadow-outline-secondary transition ease-in-out duration-150 justify-center"
-                        >
-                            Seguir Comprando
-                        </Link>
-                        <form
-                            @submit.prevent=""
-                            class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0 flex-1"
-                        >
-                            <Input
-                                name="discount-code"
-                                id="discount-code"
-                                placeholder="183ERKJSSDS"
-                                class="px-4 py-1 text-center flex-auto"
-                            />
-                            <PrimaryButton
-                                class="capitalize font-normal flex-auto bg-gray-700"
-                                >Aplicar Cupon</PrimaryButton
-                            >
-                        </form>
+                <div class="p-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0 md:pr-0">
+                    <div class="flex flex-1 flex-shrink-0">
                     </div>
-                    <Link :href="route('cart.shipping')" class="flex flex-1 md:max-w-sm justify-center items-center px-4 py-2 border-yellow-500 bg-yellow-500 border border-transparent font-semibold text-sm text-black uppercase tracking-widest hover:bg-secondary-700 hover:text-yellow-700 active:bg-secondary-900 focus:outline-none focus:border-secondary-900 focus:shadow-outline-secondary transition ease-in-out duration-150">Pagar</Link>
+                    <Link
+                        :href="route('home')"
+                        class="px-4 py-2 bg-secondary-800 border border-transparent text-center font-semibold text-sm text-white capitalize tracking-widest hover:bg-secondary-700 hover:text-yellow-700 active:bg-secondary-900 focus:outline-none focus:border-secondary-900 focus:shadow-outline-secondary transition ease-in-out duration-150 justify-center"
+                    >
+                        Seguir Comprando
+                    </Link>
+                    <Link
+                        :href="route('cart.shipping')"
+                        class="flex flex-1 md:max-w-xs justify-center items-center px-4 py-2 border-yellow-500 bg-yellow-500 border border-transparent font-semibold text-sm text-black uppercase tracking-widest hover:bg-secondary-700 hover:text-yellow-700 active:bg-secondary-900 focus:outline-none focus:border-secondary-900 focus:shadow-outline-secondary transition ease-in-out duration-150"
+                        >Pagar</Link
+                    >
                 </div>
                 <div class="flex items-center justify-center">
                     <Link

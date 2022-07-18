@@ -2089,3 +2089,12 @@ select {
 iframe:focus-visible {
     outline: none;
 }
+
+.simple-typeahead-button {
+    &>.simple-typeahead-input {
+        @apply border-none;
+        &:focus {
+            @apply ring-0 ring-transparent;
+        }
+    }
+}

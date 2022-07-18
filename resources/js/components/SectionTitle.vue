@@ -13,7 +13,7 @@ const classesText = computed(() =>
 
 <template>
     <div :class="classes">
-        <div :class="classesText" class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 font-bold">
+        <div :class="classesText" class="container mx-auto py-4 px-4 sm:px-6 lg:px-8 font-bold">
             <slot></slot>
         </div>
     </div>

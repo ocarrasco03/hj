@@ -2,42 +2,60 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Excel;
+use App\Http\Resources\Cms\Exports\Catalogs\ProductCollection;
+use App\Models\Catalogs\Product;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithProperties;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ProductExport implements FromCollection, WithProperties
+class ProductExport implements FromCollection, ShouldAutoSize, WithStyles, WithHeadings, WithColumnFormatting
 {
     use Exportable;
-    /**
-    * It's required to define the fileName within
-    * the export class when making use of Responsable.
-    */
-    private $fileName = 'products.xlsx';
 
     /**
-    * Optional Writer Type
-    */
-    private $writerType = Excel::XLSX;
-
-    /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
-        //
+        return new ProductCollection(Product::whereHas('brand', function ($query) {
+            return $query->where('name', 'SYD');
+        })->get());
     }
 
-    public function properties(): array
+    public function styles(Worksheet $sheet)
     {
         return [
-            'creator' => 'HJ Acco Autopartes S.A. de C.V.',
-            'lastModifiedBy' => 'HJ Acco Autopartes S.A. de C.V.',
-            'title' => 'Exportación de Productos',
-            'description' => 'Exportación de todos los productos',
-            'category' => 'Productos',
-            'company' => 'HJ Autopartes',
+            1 => [
+                'font' => [
+                    'bold' => true,
+                    'size' => 14,
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                ],
+            ],
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'D' => NumberFormat::FORMAT_NUMBER_00,
+            'E' => NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+            'F' => NumberFormat::FORMAT_CURRENCY_USD_SIMPLE,
+        ];
+    }
+
+    public function headings(): array
+    {
+        return [
+            'SKU', 'NOMBRE', 'DESCRIPCION', 'STOCK', 'COSTO', 'PRECIO', 'MARCA', 'CATEGORIA', 'SUBCATEGORIA',
         ];
     }
 }

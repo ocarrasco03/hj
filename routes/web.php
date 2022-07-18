@@ -6,11 +6,13 @@ use App\Models\Sales\Order;
 use App\Mail\Cart\OrderCreated;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Profile\AddressesController;
 use App\Http\Controllers\Profile\ChangePasswordController;
+use App\Http\Controllers\Profile\OrdersController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Jobs\Orders\NotifyUserOrderPlaced;
 
@@ -81,7 +83,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
                 });
             });
 
-            Route::get('mis-pedidos')->name('orders');
+            Route::get('mis-pedidos', [OrdersController::class, 'index'])->name('orders');
             Route::get('mis-pedidos/{id}')->name('order.show');
             Route::delete('mis-pedidos/{id}')->name('order.cancel');
         });
@@ -92,10 +94,19 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::name('cart.')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::put('/', 'update')->name('update');
+            Route::put('/discount', 'applyDiscount')->name('discount');
             Route::delete('/{id}', 'destroy')->name('destroy');
             Route::get('/envio','shipping')->name('shipping');
             Route::post('/pedido','processOrder')->name('process.order');
             Route::get('/pedido/{order}/pagar','checkout')->name('checkout');
+        });
+        Route::name('checkout.')->prefix('checkout')->controller(CheckoutController::class)->group(function () {
+            Route::get('/pedido/{order}/pagar/bbva', 'executeBbvaPayment')->name('pay.bbva');
+            Route::get('/pedido/{order}/charge', 'charge')->name('charge');
+            Route::post('/pedido/{order}/charge', 'charge')->name('charge');
+            Route::get('/pedido/{order}/cancelar', 'cancel')->name('cancel');
+            Route::get('/pedido/{order}/devolución', 'refound')->name('refound');
+            Route::get('/pedido/{order}/aceptado', 'paid')->name('paid');
         });
     });
 });

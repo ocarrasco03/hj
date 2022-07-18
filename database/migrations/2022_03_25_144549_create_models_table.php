@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('models', function (Blueprint $table) {
             $table->id();
             $table->foreignId('make_id');
-            $table->string('name');
+            $table->string('name')->index();
             $table->timestamps();
             $table->softDeletes();
 

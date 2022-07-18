@@ -1,23 +1,26 @@
 <?php
 
-use App\Http\Controllers\Cms\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Cms\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Cms\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
-use App\Http\Controllers\Cms\Auth\NewPasswordController;
-use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Cms\Auth\VerifyEmailController;
-use App\Http\Controllers\Cms\Catalogs\ProductController;
-use App\Http\Controllers\Cms\Customers\CustomersController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\Sales\OrdersController;
-use App\Http\Controllers\Cms\Settings\General\SliderController;
-use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
-use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Settings\UsersController;
 use App\Http\Controllers\Cms\Support\PromptController;
 use App\Http\Controllers\Cms\Support\TicketsController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Cms\Auth\NewPasswordController;
+use App\Http\Controllers\Cms\Auth\VerifyEmailController;
+use App\Http\Controllers\Cms\Catalogs\ProductController;
+use App\Http\Controllers\Cms\Customers\CustomersController;
+use App\Http\Controllers\Cms\Auth\PasswordResetLinkController;
+use App\Http\Resources\Cms\Exports\Catalogs\ProductCollection;
+use App\Http\Controllers\Cms\Settings\General\SliderController;
+use App\Http\Controllers\Cms\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Cms\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
+use App\Http\Controllers\Cms\Settings\SystemInformationController;
+use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Cms\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Cms\Settings\Advanced\ImportController;
+use App\Http\Controllers\Cms\Support\LogViewerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,17 +98,19 @@ Route::middleware('auth:admin')->group(function () {
     });
 
     Route::prefix('catalogos')->name('catalogs.')->group(function () {
-        Route::controller(ProductController::class)->prefix('productos')->name('products.')->group(function () {
+        Route::controller(ProductController::class)
+            ->prefix('productos')->name('products.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/nuevo-producto', 'create')->name('create');
             Route::post('/nuevo-producto', 'store')->name('store');
             Route::get('/{product}', 'show')->name('show');
             Route::put('/{product}', 'update')->name('update');
             Route::delete('/{product}', 'destroy')->name('delete');
+            Route::put('/restore/{product}', 'restore')->name('restore');
             Route::post('/upload/{product}', 'upload')->name('upload.file');
             Route::delete('/remove/{product}/{id}', 'remove')->name('remove.file');
-            Route::get('/exportar');
         });
+        // Route::get('/export', [ProductController::class,'export'])->name('products.export');
         Route::prefix('paquetes')->name('bundles.')->group(function () {
             //
         });
@@ -148,6 +153,8 @@ Route::middleware('auth:admin')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/{ticket}', 'show')->name('show');
         });
+        Route::get('logs', [LogViewerController::class, 'index'])->name('logs');
+        Route::get('logs/crypt', [LogViewerController::class, 'crypt'])->name('logs.crypt');
     });
 
     /*
@@ -216,8 +223,8 @@ Route::middleware('auth:admin')->group(function () {
                     ->middleware(['permission:permission.update'])
                     ->name('update.permissions');
             });
-            Route::prefix('importar')->name('import.')->group(function () {
-                //
+            Route::prefix('importar')->controller(ImportController::class)->name('import.')->group(function () {
+                Route::get('/', 'index')->name('index');
             });
             Route::prefix('exportar')->name('export.')->group(function () {
                 //

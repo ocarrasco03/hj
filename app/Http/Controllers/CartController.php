@@ -2,35 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Cart\ShippingRequest;
-use App\Http\Resources\Cms\Sales\OrderResource;
-use App\Jobs\Orders\NotifyUserOrderPlaced;
-use App\Jobs\Orders\NotifyUserPaymentAccepted;
-use App\Jobs\Orders\NotifyUserPaymentFailed;
-use App\Models\Catalogs\Product;
-use App\Models\Configs\Country;
-use App\Models\Configs\Status;
-use App\Models\Sales\Order;
-use App\Models\User;
-use App\Notifications\Orders\OrderCreated;
-use App\Packages\BBVA\BBVA;
-use App\Packages\Shoppingcart\Cart;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Validator;
-use Inertia\Inertia;
 use Notification;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Sales\Order;
+use App\Packages\BBVA\BBVA;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\Configs\Status;
+use App\Models\Configs\Country;
+use App\Models\Catalogs\Product;
+use Illuminate\Support\Facades\DB;
+use App\Packages\Shoppingcart\Cart;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use App\Jobs\Orders\NotifyUserOrderPlaced;
+use App\Notifications\Orders\OrderCreated;
+use App\Http\Requests\Cart\ShippingRequest;
+use App\Jobs\Orders\NotifyUserPaymentFailed;
+use App\Jobs\Orders\NotifyUserPaymentAccepted;
+use App\Http\Resources\Cms\Sales\OrderResource;
+use App\Http\Resources\Main\Profile\UserResource;
+use App\Http\Resources\Main\Profile\AddressCollection;
+use App\Models\Sales\Discount;
 
 class CartController extends Controller
 {
     protected static $affiliate;
 
-    public function __construct()
+    /**
+     * @var App\Packages\Shoppingcart\Cart
+     */
+    private $cart;
+
+    public function __construct(Cart $cart)
     {
         self::$affiliate = config('bbva.affiliate');
+        $this->cart = $cart;
     }
 
     /**
@@ -38,15 +49,15 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Cart $cart)
+    public function index()
     {
         return Inertia::render('Cart', [
-            'cart' => $cart->content(),
-            'subtotal' => $cart->subtotalFloat(),
-            'tax' => $cart->taxFloat(),
-            'discount' => $cart->discountFloat(),
-            'total' => $cart->totalFloat(),
-            'count' => $cart->countItems(),
+            'cart' => $this->cart->content(),
+            'subtotal' => $this->cart->subtotalFloat(),
+            'tax' => $this->cart->taxFloat(),
+            'discount' => $this->cart->discountFloat(),
+            'total' => $this->cart->totalFloat(),
+            'count' => $this->cart->countItems(),
         ]);
     }
 
@@ -66,7 +77,7 @@ class CartController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Redirect::route('home')->with(['toast' => ['type' => 'success', 'message' => 'Los parametros son incorrectos']]);
+            return Redirect::route('home')->with(['toast' => ['type' => 'error', 'message' => 'Los parametros son incorrectos']]);
         }
 
         $cart->add(
@@ -110,6 +121,33 @@ class CartController extends Controller
                 'count' => $cart->countItems(),
             ],
         ]], 200);
+    }
+
+    public function applyDiscount(Request $request, Discount $discount, Cart $cart)
+    {
+        $discount = $discount->where('code', $request->input('discount_code'))->where('user_id', auth()->user()->id)->first();
+
+        if (is_null($discount)) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'El código de descuento solicitado no existe!']]);
+        }
+
+        if ($discount->used) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'Tu codigo de descuento ya ha sido utilizado!']]);
+        }
+
+        if (now() >= $discount->expire_date) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'Tu codigo de descuento ha expirado!']]);
+        }
+
+        $cart->setGlobalDiscount($discount->discount);
+
+        $discount->used = true;
+
+        if ($discount->isDirty()) {
+            $discount->save();
+        }
+
+        return Redirect::back()->with(['toast' => ['type' => 'success', 'message' => 'Tu descuento se ha aplicado']]);
     }
 
     /**
@@ -172,6 +210,8 @@ class CartController extends Controller
             'subtotal' => $cart->subtotalFloat(),
             'discount' => $cart->discountFloat(),
             'total' => $cart->totalFloat(),
+            'user' => new UserResource(auth()->user()),
+            'addresses' => new AddressCollection(auth()->user()->addresses),
         ]);
     }
 
@@ -192,6 +232,7 @@ class CartController extends Controller
         try {
             $order->user_id = auth()->user()->id;
             $order->status_id = $status->id;
+            $order->address_id = $request->input('address');
             $order->subtotal = $request->input('subtotal');
             $order->discount = $request->input('discount');
             $order->tax = $request->input('tax');
@@ -221,6 +262,12 @@ class CartController extends Controller
         return redirect()->route('cart.checkout', $order->id);
     }
 
+    /**
+     * Payment process view
+     *
+     * @param Order $order
+     * @return \Illuminate\Http\Response
+     */
     public function checkout(Order $order)
     {
         $charge_pending = $this->getOrderStatus('charge_pending');
@@ -231,69 +278,9 @@ class CartController extends Controller
             return redirect()->route('profile.orders');
         }
 
+        Inertia::share('paypal', env('PAYPAL_CLIENT_ID'));
+
         return Inertia::render('Checkout/Payment', ['order' => new OrderResource($order)]);
-    }
-
-    public function pay(Order $order, Request $request)
-    {
-        switch ($request) {
-            case 'bbva':
-                $charge = [
-                    'affiliation_bbva' => self::$affiliate,
-                    'amount' => $order->total,
-                    'description' => '',
-                    'currency' => 'MXN',
-                    'order_id' => $order->id,
-                    'use_3d_secure' => true,
-                    'redirect_url' => '',
-                    'customer' => [
-                        'name' => '',
-                        'last_name' => '',
-                        'email' => '',
-                        'phone_number' => '',
-                    ],
-                ];
-                $bbva = BBVA::charges($charge);
-                return redirect($bbva['payment_method']['url']);
-                break;
-
-            case 'paypal':
-                # code...
-                break;
-
-            default:
-                # code...
-                break;
-        }
-    }
-
-    public function paymentResponse(Request $request, Order $order)
-    {
-        $bbva = BBVA::getCharge($request->id);
-        $status = $this->getOrderStatus($bbva['status']);
-
-        if ($bbva['status'] == 'completed') {
-            $order->update([
-                'status_id' => $status->id,
-            ]);
-
-            if ($status->send_email) {
-                new NotifyUserPaymentAccepted(User::find($order->user_id));
-            }
-        } else {
-            $order->update([
-                'status_id' => $status->id,
-            ]);
-
-            if ($status->send_email) {
-                new NotifyUserPaymentFailed(User::find($order->user_id));
-            }
-
-            return redirect()->route('cart.checkout', $order->id)
-                ->withErrors($bbva['error_message']);
-        }
-
-        return;
     }
 
     /**

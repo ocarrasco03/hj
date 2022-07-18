@@ -23,13 +23,45 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({
+                'gtm.start': new Date().getTime(),
+                event: 'gtm.js'
+            });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src =
+                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-PKMTG4S');
+    </script>
+    <!-- End Google Tag Manager -->
+
     <!-- Scripts -->
     @routes
-    <script defer src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}" data-sdk-integration-source="button-factory"></script>
+    {{-- <script defer src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}&currency=MXN"
+        data-sdk-integration-source="button-factory"></script> --}}
     <script src="{{ mix('js/app.js') }}" defer></script>
+
+    <!-- Meta Tag -->
+    {!! SEOMeta::generate() !!}
+    {!! OpenGraph::generate() !!}
+    {!! Twitter::generate() !!}
+    {!! JsonLd::generate() !!}
 </head>
 
 <body class="font-sans antialiased">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKMTG4S" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     @inertia
 
     @env('local')

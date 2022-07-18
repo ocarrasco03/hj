@@ -24,17 +24,7 @@ class ShippingRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string'],
-            'company' => ['string', 'nullable'],
-            'email' => ['required', 'email'],
-            'phone' => ['required', 'string', 'max:20'],
-            'zip_code' => ['required', 'string'],
-            'neighborhood' => ['required', 'string'],
-            'state' => ['required', 'string'],
-            'country' => ['required', 'string'],
-            'city' => ['required', 'string'],
-            'address' => ['required', 'string', 'max:255'],
-            'notes' => ['string', 'max:255', 'nullable'],
+            'address' => ['required', 'numeric'],
             'shipping' => ['required', 'numeric'],
             'discount' => ['required', 'numeric'],
             'subtotal' => ['required', 'numeric'],

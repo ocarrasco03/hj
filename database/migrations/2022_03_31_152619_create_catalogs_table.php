@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id');
             $table->foreignId('year_id');
             $table->foreignId('make_id');
             $table->foreignId('model_id');
@@ -24,11 +23,18 @@ return new class extends Migration
             $table->jsonb('attributes')->nullable();
             $table->timestamps();
 
-            $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('year_id')->references('id')->on('years');
             $table->foreign('make_id')->references('id')->on('manufacturers');
             $table->foreign('model_id')->references('id')->on('models');
             $table->foreign('engine_id')->references('id')->on('engines');
+        });
+
+        Schema::create('catalog_product', function (Blueprint $table) {
+            $table->foreignId('product_id');
+            $table->foreignId('catalog_id');
+
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('catalog_id')->references('id')->on('catalogs');
         });
     }
 
@@ -39,6 +45,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('catalog_product');
         Schema::dropIfExists('catalogs');
     }
 };
