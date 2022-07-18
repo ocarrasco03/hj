@@ -5,8 +5,9 @@ deployment:
     # - /bin/ln -s /home/hjautopa/repositories/hj/storage/app/public $DEPLOYPATH/storage
 
     # Production Mode
-    - export DEPLOYPATH=/home/hjautopa/public_html/laravel
-    # - /bin/cp -r * $DEPLOYPATH #copy all from root
+    - export DEPLOYPATH=/home/hjautopa
+    - /bin/cp -r * $DEPLOYPATH #copy all from root
+    - /bin/cp -r /public $DEPLOYPATH/public_html
     # - /bin/cp ./public/js/*.js $DEPLOYPATH/public/js
     # - /bin/cp ./public/css/*.css $DEPLOYPATH/public/css
-    # - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public/storage
+    - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public_html/storage
