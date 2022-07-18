@@ -204,6 +204,17 @@ const props = defineProps({
     order: Object,
 });
 
+const form = useForm({
+    id: null,
+    response: null,
+    status: null,
+    provider: "paypal",
+});
+
+const submit = () => {
+    form.post(route("checkout.charge", { order: props.order.data.id }));
+};
+
 onMounted(() => {
     loadScript({
         "client-id": usePage().props.value.paypal,
@@ -233,11 +244,13 @@ onMounted(() => {
                                         breakdown: {
                                             item_total: {
                                                 currency_code: "MXN",
-                                                value: props.order.data.subtotal,
+                                                value: props.order.data
+                                                    .subtotal,
                                             },
                                             shipping: {
                                                 currency_code: "MXN",
-                                                value: props.order.data.shipping,
+                                                value: props.order.data
+                                                    .shipping,
                                             },
                                             tax_total: {
                                                 currency_code: "MXN",
@@ -245,7 +258,8 @@ onMounted(() => {
                                             },
                                             discount: {
                                                 currency_code: "MXN",
-                                                value: props.order.data.discount,
+                                                value: props.order.data
+                                                    .discount,
                                             },
                                         },
                                     },
@@ -277,13 +291,20 @@ onMounted(() => {
                         });
                     },
                     onApprove: (data, actions) => {
+                        console.log(data, actions);
                         return actions.order.capture().then((details) => {
                             console.log(details);
-                            axios;
+                            form.response = details.id;
+                            form.response = details;
+                            form.status = "completed";
+                            submit();
                         });
                     },
-                    onError: (data, actions) => {
-                        console.log(data, actions);
+                    onError: (err) => {
+                        console.log(err.message, err.message.body);
+                        form.response = err.message;
+                        form.status = "failed";
+                        submit();
                     },
                     style: {
                         shape: "rect",

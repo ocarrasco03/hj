@@ -13,7 +13,7 @@ class OrdersController extends Controller
     public function index(Order $orders)
     {
         return Inertia::render('Profile/Orders', [
-            'orders' => new OrderCollection($orders->where('user_id',auth()->user()->id)->paginate(15))
+            'orders' => new OrderCollection($orders->where('user_id',auth()->user()->id)->orderByDesc('created_at')->paginate(15))
         ]);
     }
 }

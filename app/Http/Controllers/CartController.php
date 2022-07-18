@@ -27,6 +27,7 @@ use App\Jobs\Orders\NotifyUserPaymentAccepted;
 use App\Http\Resources\Cms\Sales\OrderResource;
 use App\Http\Resources\Main\Profile\UserResource;
 use App\Http\Resources\Main\Profile\AddressCollection;
+use App\Models\Sales\Discount;
 
 class CartController extends Controller
 {
@@ -76,7 +77,7 @@ class CartController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return Redirect::route('home')->with(['toast' => ['type' => 'success', 'message' => 'Los parametros son incorrectos']]);
+            return Redirect::route('home')->with(['toast' => ['type' => 'error', 'message' => 'Los parametros son incorrectos']]);
         }
 
         $cart->add(
@@ -120,6 +121,33 @@ class CartController extends Controller
                 'count' => $cart->countItems(),
             ],
         ]], 200);
+    }
+
+    public function applyDiscount(Request $request, Discount $discount, Cart $cart)
+    {
+        $discount = $discount->where('code', $request->input('discount_code'))->where('user_id', auth()->user()->id)->first();
+
+        if (is_null($discount)) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'El código de descuento solicitado no existe!']]);
+        }
+
+        if ($discount->used) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'Tu codigo de descuento ya ha sido utilizado!']]);
+        }
+
+        if (now() >= $discount->expire_date) {
+            return redirect()->back()->with(['toast' => ['type' => 'error', 'message' => 'Tu codigo de descuento ha expirado!']]);
+        }
+
+        $cart->setGlobalDiscount($discount->discount);
+
+        $discount->used = true;
+
+        if ($discount->isDirty()) {
+            $discount->save();
+        }
+
+        return Redirect::back()->with(['toast' => ['type' => 'success', 'message' => 'Tu descuento se ha aplicado']]);
     }
 
     /**

@@ -20,9 +20,10 @@ return new class extends Migration
             $table->foreignId('address_id');
             $table->float('subtotal', 10, 2);
             $table->float('discount', 10, 2)->default(0);
+            $table->float('shipping', 10, 2)->default(0);
             $table->float('tax', 10, 2);
             $table->float('total', 10, 2);
-            $table->enum('payment_method', ['bbva', 'paypal'])->nullable();
+            $table->enum('payment_provider', ['bbva', 'paypal'])->nullable();
             $table->string('transaction_id')->nullable();
             $table->timestamps();
             $table->softDeletes();

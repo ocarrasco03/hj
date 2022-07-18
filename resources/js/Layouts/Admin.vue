@@ -876,7 +876,7 @@ onMounted(() => {
                         Roles y Permisos
                     </Link>
                     <Link
-                        :href="route('admin.settings.info')"
+                        :href="route('admin.settings.advanced.import.index')"
                         :class="{
                             active: route().current(
                                 'admin.settings.advanced.import.*'

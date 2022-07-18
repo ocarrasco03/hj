@@ -94,6 +94,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::name('cart.')->group(function () {
             Route::post('/', 'store')->name('store');
             Route::put('/', 'update')->name('update');
+            Route::put('/discount', 'applyDiscount')->name('discount');
             Route::delete('/{id}', 'destroy')->name('destroy');
             Route::get('/envio','shipping')->name('shipping');
             Route::post('/pedido','processOrder')->name('process.order');
@@ -102,8 +103,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         Route::name('checkout.')->prefix('checkout')->controller(CheckoutController::class)->group(function () {
             Route::get('/pedido/{order}/pagar/bbva', 'executeBbvaPayment')->name('pay.bbva');
             Route::get('/pedido/{order}/charge', 'charge')->name('charge');
+            Route::post('/pedido/{order}/charge', 'charge')->name('charge');
             Route::get('/pedido/{order}/cancelar', 'cancel')->name('cancel');
             Route::get('/pedido/{order}/devolución', 'refound')->name('refound');
+            Route::get('/pedido/{order}/aceptado', 'paid')->name('paid');
         });
     });
 });

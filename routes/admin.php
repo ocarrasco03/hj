@@ -19,6 +19,7 @@ use App\Http\Controllers\Cms\Settings\RolesPermissionsController;
 use App\Http\Controllers\Cms\Settings\SystemInformationController;
 use App\Http\Controllers\Cms\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Cms\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Cms\Settings\Advanced\ImportController;
 use App\Http\Controllers\Cms\Support\LogViewerController;
 
 /*
@@ -222,8 +223,8 @@ Route::middleware('auth:admin')->group(function () {
                     ->middleware(['permission:permission.update'])
                     ->name('update.permissions');
             });
-            Route::prefix('importar')->name('import.')->group(function () {
-                //
+            Route::prefix('importar')->controller(ImportController::class)->name('import.')->group(function () {
+                Route::get('/', 'index')->name('index');
             });
             Route::prefix('exportar')->name('export.')->group(function () {
                 //

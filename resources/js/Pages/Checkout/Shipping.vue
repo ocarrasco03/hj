@@ -4,7 +4,9 @@ import { Head, Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import axios from "axios";
 import { trans } from "laravel-vue-i18n";
 import SimpleTypeahead from "vue3-simple-typeahead";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
+import SecondaryButton from "@/Components/SecondaryButton";
+import PrimaryButton from "@/Components/Button";
+import Input from "@/Components/Input";
 
 const props = defineProps({
     countries: Object,
@@ -12,6 +14,10 @@ const props = defineProps({
     tax: Number,
     subtotal: Number,
     discount: {
+        type: Number,
+        default: 0,
+    },
+    shipping: {
         type: Number,
         default: 0,
     },
@@ -27,9 +33,12 @@ const neighborhoods = ref([]);
 const addAddress = ref(false);
 
 const form = useForm({
-    address: props.user.data.addresses.shipping !== null ? props.user.data.addresses.shipping.id : null,
+    address:
+        props.user.data.addresses.shipping !== null
+            ? props.user.data.addresses.shipping.id
+            : null,
     shipping: 0,
-    discount: 0,
+    discount: props.discount,
     subtotal: props.subtotal,
     tax: props.tax,
     total: props.total,
@@ -64,7 +73,24 @@ const saveAddress = () => {
         },
         onError: (err) => console.log(err),
     });
-}
+};
+
+const discountForm = useForm({
+    discount_code: "",
+});
+
+const applyDiscount = () => {
+    discountForm.put(route("cart.discount"), {
+        onSuccess: (res) => {
+            props.items = res.props.cart;
+            form.subtotal = res.props.subtotal;
+            form.discount = res.props.discount;
+            form.tax = res.props.tax;
+            form.total = res.props.total;
+        },
+        onFinish: () => discountForm.reset(),
+    });
+};
 
 const autocomplete = (input, array, model) => {
     let currentFocus;
@@ -261,35 +287,43 @@ const loadStates = () => {
                 <h4>{{ $t("Shipping address") }}</h4>
             </div>
             <div class="pb-10 pt-6 px-10 lg:flex">
-                <div class="lg:w-1/2 lg:pr-4">
-                    <select
-                        name="shipping"
-                        id="shipping"
-                        class="form-control rounded-b-none"
-                        v-model="form.address"
-                    >
-                        <option
-                            :value="address.id"
-                            v-for="(address, key) in addresses.data"
-                            :key="key"
+                <div class="lg:w-1/2 lg:pr-4 divide-y">
+                    <div class="mb-5">
+                        <select
+                            name="shipping"
+                            id="shipping"
+                            class="form-control rounded-b-none"
+                            v-model="form.address"
                         >
-                            {{
-                                `${address.street} ${address.exterior_no} ${address.neighborhood} ${address.city} ${address.state}`
-                            }}
-                        </option>
-                    </select>
-                    <button
-                        @click="addAddress = !addAddress"
-                        class="form-control border-t-0 rounded-t-none hover:bg-secondary-500 hover:text-primary-500"
+                            <option
+                                :value="address.id"
+                                v-for="(address, key) in addresses.data"
+                                :key="key"
+                            >
+                                {{
+                                    `${address.street} ${address.exterior_no} ${address.neighborhood} ${address.city} ${address.state}`
+                                }}
+                            </option>
+                        </select>
+                        <button
+                            @click="addAddress = !addAddress"
+                            class="form-control border-t-0 rounded-t-none hover:bg-secondary-500 hover:text-primary-500"
+                        >
+                            {{ $t("Add new address") }}
+                        </button>
+                    </div>
+                    <!-- <hr class="divide mt-5" /> -->
+                    <form
+                        @submit.prevent="saveAddress"
+                        v-if="addAddress"
+                        class="my-5"
                     >
-                        {{ $t("Add new address") }}
-                    </button>
-                    <hr class="divide mt-5" />
-                    <form @submit.prevent="saveAddress" v-if="addAddress">
                         <div class="mt-5">
                             <label for="address_line_1" class="label"
                                 >{{ $t("Street") }}
-                                <small class="text-sm text-red-500">*</small></label
+                                <small class="text-sm text-red-500"
+                                    >*</small
+                                ></label
                             >
                             <input
                                 type="text"
@@ -474,6 +508,12 @@ const loadStates = () => {
                             </SecondaryButton>
                         </div>
                     </form>
+                    <form @submit.prevent="applyDiscount">
+                        <div class="mt-5 flex flex-col md:flex-row space-y-2 md:space-x-2 md:space-y-0">
+                            <input type="text" class="form-control flex-auto" name="discount_code" id="discount_code" placeholder="183ERKJSSDS" v-model="discountForm.discount_code">
+                            <button type="submit" class="capitalize font-normal flex-1 bg-gray-700 btn btn-secondary">Aplicar Cupon</button>
+                        </div>
+                    </form>
                 </div>
                 <form
                     @submit.prevent="submit"
@@ -527,6 +567,14 @@ const loadStates = () => {
                                     </tr>
                                     <tr>
                                         <td class="uppercase font-bold">
+                                            {{ $t("Discount") }}
+                                        </td>
+                                        <td class="text-red-500 text-right">
+                                            {{ $formatPrice(form.discount) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="uppercase font-bold">
                                             {{ $t("Tax") }}
                                         </td>
                                         <td class="text-red-500 text-right">
@@ -566,7 +614,10 @@ const loadStates = () => {
                             </p>
                         </div>
                         <div class="mt-5 flex">
-                            <SecondaryButton class="flex-1 disabled:opacity-70 disabled:cursor-not-allowed" :disabled="form.address === null">
+                            <SecondaryButton
+                                class="flex-1 disabled:opacity-70 disabled:cursor-not-allowed"
+                                :disabled="form.address === null"
+                            >
                                 {{ $t("Select payment method") }}
                             </SecondaryButton>
                         </div>

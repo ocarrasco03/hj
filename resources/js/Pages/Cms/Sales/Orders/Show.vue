@@ -126,6 +126,8 @@ export default {
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
                         href="#"
                         v-if="
+                            order.data.status.prefix !== 'AWAITING_CHEQUE_PAYMENT' &&
+                            order.data.status.prefix !== 'PAYMENT_ERROR' &&
                             order.data.status.prefix !== 'CANCELED' &&
                             order.data.status.prefix !== 'REFUND'
                         "
@@ -137,10 +139,26 @@ export default {
                     </Link>
                     <Link
                         class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
+                        :href="route('checkout.cancel', {order: order.data.id})"
+                        v-if="
+                            order.data.status.prefix !== 'CANCELED' &&
+                            order.data.status.prefix !== 'PAYMENT_ACCEPTED' &&
+                            order.data.status.prefix !== 'SHIPPED' &&
+                            order.data.status.prefix !== 'REFUND'
+                        "
+                    >
+                        <span
+                            class="hj hj-product-return text-gray-600 text-2xl mr-2"
+                        ></span>
+                        {{ $t("Cancel") }}
+                    </Link>
+                    <Link
+                        class="flex items-center text-gray-700 dark:text-gray-500 hover:text-admin"
                         href="#"
                         v-if="
                             order.data.status.prefix !== 'CANCELED' &&
                             order.data.status.prefix !== 'SHIPPED' &&
+                            order.data.status.prefix !== 'REFUND' &&
                             order.data.status.prefix !== 'DELIVERED'
                         "
                     >
@@ -232,6 +250,15 @@ export default {
                         }"
                         >{{ order.data.status.name }}</span
                     >
+                </div>
+            </div>
+            <hr />
+            <div class="px-10 py-5 flex justify-between">
+                <div>
+                    <strong class="mr-2">{{ $t("Payment Method") }}:</strong>
+                    <span class="uppercase">
+                    {{ order.data.payment_provider }}
+                    </span>
                 </div>
             </div>
             <hr />

@@ -52,6 +52,7 @@ class OrderResource extends JsonResource
             'shipping' => 0,
             'tax' => $this->tax,
             'total' => $this->total,
+            'payment_provider' => $this->payment_provider,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at->diffForHumans(),
         ];

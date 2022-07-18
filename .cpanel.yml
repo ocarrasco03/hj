@@ -1,5 +1,12 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/hjautopa/repositories/hj/public
+    # - export DEPLOYPATH=/home/hjautopa/repositories/hj/public
     # - /bin/ln -s /home/hjautopa/repositories/hj/storage/app/public $DEPLOYPATH/storage
+
+    # Production Mode
+    - export DEPLOYPATH=/home/hjautopa/public_html/laravel
+    - /bin/ln -s /home/hjautopa/storage/app/public $DEPLOYPATH/public/storage
+    - /bin/cp -r * $DEPLOYPATH #copy all from root
+    - /bin/cp ./public/js/*.js $DEPLOYPATH/public_html/js
+    - /bin/cp ./public/css/*.css $DEPLOYPATH/public_html/css
