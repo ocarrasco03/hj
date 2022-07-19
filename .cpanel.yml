@@ -6,8 +6,8 @@ deployment:
 
     # Production Mode
     - export DEPLOYPATH=/home/hjautopa
-    # - /bin/cp -r * $DEPLOYPATH #copy all from root
+    - /bin/cp -r * $DEPLOYPATH #copy all from root
     - /bin/cp -r ./public/* $DEPLOYPATH/public_html
     # - /bin/cp ./public/js/*.js $DEPLOYPATH/public/js
     # - /bin/cp ./public/css/*.css $DEPLOYPATH/public/css
-    # - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public_html/storage
+    - /bin/ln -s $DEPLOYPATH/storage/app/public $DEPLOYPATH/public_html/storage

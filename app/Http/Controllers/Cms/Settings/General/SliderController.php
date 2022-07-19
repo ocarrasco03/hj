@@ -36,11 +36,11 @@ class SliderController extends Controller
         try {
             if (is_array($request->image)) {
                 foreach ($request->file('image') as $image) {
-                    $slider->addMedia($image)->withResponsiveImages()->toMediaCollection('slider');
+                    $slider->addMedia($image)->toMediaCollection('slider');
                 }
             } else {
                 if ($request->has('image')) {
-                    $slider->addMedia($request->file('image'))->withResponsiveImages()->toMediaCollection('slider');
+                    $slider->addMedia($request->file('image'))->toMediaCollection('slider');
                 } else {
                     throw new \Exception('No image loaded');
                 }
