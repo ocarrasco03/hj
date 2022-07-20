@@ -73,10 +73,10 @@ class Admin extends Authenticatable implements HasMedia
 
     function registerMediaConversions(Media $media = null): void
     {
-        $this
-            ->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
-            ->nonQueued();
+        // $this
+        //     ->addMediaConversion('preview')
+        //     ->fit(Manipulations::FIT_CROP, 300, 300)
+        //     ->nonQueued();
     }
 
     function registerMediaCollections(): void
