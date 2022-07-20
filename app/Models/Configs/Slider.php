@@ -28,7 +28,8 @@ class Slider extends Model implements HasMedia
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->width(300)
+            // ->fit(Manipulations::FIT_CROP, 300, 300)
             ->nonQueued();
     }
 

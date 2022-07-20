@@ -121,9 +121,9 @@ class Product extends Model implements Buyable, HasMedia
     {
         $this->addMediaConversion('preview')
             ->width(300)
-            ->sharpen(10)
-            ->performOnCollections('products')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
+        //     ->sharpen(10)
+        //     ->performOnCollections('products')
+        //     ->fit(Manipulations::FIT_CROP, 300, 300)
             ->nonQueued();
 
     }
