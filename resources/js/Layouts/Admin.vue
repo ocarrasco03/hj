@@ -483,7 +483,7 @@ onMounted(() => {
                             active: route().current('admin.sales.orders.*'),
                         }"
                         @click="hideMenuDetail"
-                        v-if="$can('product.read')"
+                        v-if="$can('orders.read')"
                     >
                         <span class="la la-shopping-cart"></span>
                         Pedidos

@@ -24,7 +24,7 @@ class SliderResource extends JsonResource
                 'extension' => $items[$i]['extension'],
                 'size' => $items[$i]->human_readable_size,
                 'original_url' => $items[$i]->getFullUrl(),
-                'preview_url' => $items[$i]->getFullUrl('preview'),
+                'preview_url' => $items[$i]->getFullUrl(),
                 'order' => $items[$i]['order_column'],
             ];
         }
