@@ -63,12 +63,12 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
 
     public function chunkSize(): int
     {
-        return 1;
+        return 100;
     }
 
     public function batchSize(): int
     {
-        return 1;
+        return 100;
     }
 
     /**
