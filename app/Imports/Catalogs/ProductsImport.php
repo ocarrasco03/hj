@@ -43,6 +43,18 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
                 $product->price = $row['price'];
                 $product->stock = $row['stock'];
                 $product->save();
+            } else {
+                $product->brand_id = $brand->id;
+                $product->sku = $row['sku'];
+                $product->name = $row['name'];
+                $product->slug = Str::slug($row['sku'] . ' ' . $row['name'] . ' ' . $row['brand']);
+                $product->cost = $row['cost'];
+                $product->price_wo_tax = $row['price'] / 1.16;
+                $product->price = $row['price'];
+                $product->stock = $row['stock'];
+                if ($product->isDirty()) {
+                    $product->save();
+                }
             }
 
             $product->category([$category->id, $subcategory->id]);
@@ -51,12 +63,12 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 1;
     }
 
     public function batchSize(): int
     {
-        return 1000;
+        return 1;
     }
 
     /**
