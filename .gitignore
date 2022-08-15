@@ -17,3 +17,5 @@ yarn-error.log
 error_log
 /storage/media-library
 /docker
+*.xls
+*.xlsx
