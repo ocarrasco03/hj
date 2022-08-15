@@ -23,7 +23,7 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
      */
     public function collection(Collection $collection)
     {
-        ini_set('memory_limit', '2048M');
+        ini_set('memory_limit', '-1');
 
         foreach ($collection as $row) {
             $brand = $this->getBrand($row['brand']);
