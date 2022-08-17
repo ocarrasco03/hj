@@ -3,7 +3,7 @@
 namespace App\Imports\Catalogs;
 
 use App\Models\Catalogs\Product;
-use App\Models\Vehicles\Catalog;
+use App\Models\Vehicles\Engine;
 use App\Models\Vehicles\Manufacturer;
 use App\Models\Vehicles\Model;
 use App\Models\Vehicles\Vehicle;
@@ -25,13 +25,17 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
     public function collection(Collection $collection)
     {
         ini_set('max_execution_time', 0);
-        ini_set('memory_limit', '2048M');
+        ini_set('memory_limit', '-1');
         foreach ($collection as $row) {
+            $engine = null;
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);
+            if ($row['lts'] !== '-' && $row['cil'] !== '-') {
+                $engine = $this->getEngine($row['lts'], $row['cil'], $row['fuel'], $row['intake'], $row['valves']);
+            }
             $attachments = [];
             foreach ($row as $key => $value) {
-                if ($key !== 'sku' && $key !== 'brand' && $key !== 'model' && $key !== 'make' && $key !== 'notes' && $key !== 'from' && $key !== 'to') {
+                if ($key !== 'sku' && $key !== 'brand' && $key !== 'model' && $key !== 'make' && $key !== 'notes' && $key !== 'from' && $key !== 'to' && $key !== 'lts' && $key !== 'cil') {
                     if ($value !== '-') {
                         $attachments[$key] = $value;
                     }
@@ -47,8 +51,8 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
                     $years[] = $year->id;
                     if ($product) {
                         $notes = ($row['notes'] !== '-' && !empty($row['notes'])) ? $row['notes'] : null;
-                        $this->createVehicle($year->id, $make->id, $model->id, null);
-                        $product->attachVehicle($year, $make, $model, null, $notes, $attachments);
+                        $this->createVehicle($year->id, $make->id, $model->id, $engine ? $engine->id : null);
+                        $product->attachVehicle($year, $make, $model, $engine, $notes, $attachments);
                     }
                 }
                 $model->storeYear($years);
@@ -96,10 +100,26 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
         return $year;
     }
 
+    public function getEngine($liters, $cilinders, $fuel, $intake, $valves)
+    {
+        $engine = Engine::where('liters', $liters)->where('cilinders', $cilinders)->first();
+        if (!$engine) {
+            $engine = new Engine();
+            $engine->display_name = $cilinders . ' ' . number_format($liters, 1);
+            $engine->liters = number_format($liters, 1);
+            $engine->cilinders = $cilinders;
+            $engine->fuel = $fuel == '-' ? null : $fuel;
+            $engine->intake = $intake == '-' ? null : $intake;
+            $engine->valves = $valves == '-' ? null : $valves;
+            $engine->save();
+        }
+        return $engine;
+    }
+
     public function createVehicle($year, $make, $model, $engine = null)
     {
         $vehicle = new Vehicle();
-        if(is_null($vehicle->where('year_id', $year)->where('make_id', $make)->where('model_id', $model)->where('engine_id', $engine)->first())) {
+        if (is_null($vehicle->where('year_id', $year)->where('make_id', $make)->where('model_id', $model)->where('engine_id', $engine)->first())) {
             $vehicle->year_id = $year;
             $vehicle->make_id = $make;
             $vehicle->model_id = $model;
@@ -115,7 +135,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function chunkSize(): int
     {
-        return 500;
+        return 1;
     }
 
     /**
@@ -123,6 +143,6 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function batchSize(): int
     {
-        return 500;
+        return 1;
     }
 }

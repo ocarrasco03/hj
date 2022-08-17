@@ -26,9 +26,16 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
         ini_set('memory_limit', '-1');
 
         foreach ($collection as $row) {
+            $categoryAttach = [];
             $brand = $this->getBrand($row['brand']);
             $category = $this->getCategory($row['category']);
-            $subcategory = $this->getCategory($row['subcategory'], $category->id);
+            array_push($categoryAttach, $category->id);
+
+            if (!is_null($row['subcategory'])) {
+                $subcategory = $this->getCategory($row['subcategory'], $category->id);
+                array_push($categoryAttach, $subcategory->id);
+            }
+
 
             $product = Product::where('brand_id', $brand->id)->where('sku', $row['sku'])->first();
 
@@ -57,7 +64,7 @@ class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading,
                 }
             }
 
-            $product->category([$category->id, $subcategory->id]);
+            $product->category($categoryAttach);
         }
     }
 
