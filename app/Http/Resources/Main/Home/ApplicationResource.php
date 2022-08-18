@@ -18,7 +18,7 @@ class ApplicationResource extends JsonResource
             'year' => $this->year->year,
             'make' => $this->make->name,
             'model' => $this->model->name,
-            'engine' => null,
+            'engine' => $this->engine->display_name,
             'notes' => $this->notes,
             'attributes' => $this->attributes,
         ];
