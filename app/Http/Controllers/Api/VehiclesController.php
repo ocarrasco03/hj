@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\Configs\CategoryCollection;
+use App\Http\Resources\Api\Vehicles\EngineCollection;
 use App\Http\Resources\Api\Vehicles\MakeCollection;
 use App\Http\Resources\Api\Vehicles\ModelCollection;
 use App\Http\Resources\Api\Vehicles\YearCollection;
 use App\Models\Configs\Category;
+use App\Models\Vehicles\Engine;
 use App\Models\Vehicles\Manufacturer;
 use App\Models\Vehicles\Model;
+use App\Models\Vehicles\Vehicle;
 use App\Models\Vehicles\Year;
+use Illuminate\Support\Facades\DB;
 
 class VehiclesController extends Controller
 {
@@ -47,6 +51,29 @@ class VehiclesController extends Controller
             ->when(!is_null($make), function ($query) use ($make) {
                 return $query->whereHas('make', function ($query) use ($make) {
                     return $query->where('name', $make);
+                });
+            })
+            ->when(!is_null($year), function ($query) use ($year) {
+                return $query->whereHas('year', function ($query) use ($year) {
+                    return $query->where('year', $year);
+                });
+            })
+            ->get());
+    }
+
+    public function engines($model = null, $year = null)
+    {
+        // foreach (Vehicle::all() as $row) {
+        //     DB::table('models_engines')->insert([
+        //         'model_id' => $row->model_id,
+        //         'year_id' => $row->year_id,
+        //         'engine_id' => $row->engine_id,
+        //     ]);
+        // }
+        return new EngineCollection(Engine::orderBy('display_name')
+            ->when(!is_null($model), function ($query) use ($model) {
+                return $query->whereHas('model', function ($query) use ($model) {
+                    return $query->where('name', $model);
                 });
             })
             ->when(!is_null($year), function ($query) use ($year) {

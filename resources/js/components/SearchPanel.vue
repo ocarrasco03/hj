@@ -57,6 +57,7 @@
                     name="model"
                     :disabled="models.length === 0"
                     v-model="form.model"
+                    @change="getEngines"
                 >
                     <option :value="null" disabled selected>{{ $t('Select a Model') }}</option>
                     <template v-for="(model, key) in models" :key="key">
@@ -240,14 +241,19 @@ const getModels = () => {
 };
 
 const getEngines = () => {
-    axios
-        .get(route("api.engines"))
-        .then((res) => {
-            engines.value = res.data;
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+    if (form.model) {
+        if (form.model !== lastSearch.value.model) {
+            form.engine = null;
+        }
+        axios
+            .get(route("api.engines"))
+            .then((res) => {
+                engines.value = res.data;
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 };
 
 const getCategories = () => {

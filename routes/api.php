@@ -27,8 +27,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::name('api.')->group(function () {
-    Route::get('engines', [SearchController::class, 'getEngines'])->name('engines');
-
     Route::prefix('v2')->name('v2.')->group(function () {
         Route::get('countries', [CountriesController::class, '__invoke'])->name('countries');
         Route::get('states/{country?}', [StatesController::class, '__invoke'])->name('states');
@@ -40,6 +38,7 @@ Route::name('api.')->group(function () {
             Route::get('years', 'years')->name('years');
             Route::get('makes', 'makes')->name('makes');
             Route::get('models/{make?}/{year?}', 'models')->name('models');
+            Route::get('engines/{model?}/{year?}', 'engines')->name('engines');
             Route::get('categories/{category?}', 'categories')->name('categories');
         });
 
@@ -48,6 +47,14 @@ Route::name('api.')->group(function () {
             Route::get('zip-codes/{country}/{state}/{city?}', 'zipCodes')->name('zip.code');
             Route::get('neighborhood/{zip_code?}', 'neighborhood')->name('neighborhood');
             Route::get('products/sku', 'products')->name('products');
+        });
+
+        Route::get('fix/products', function () {
+            $products = App\Models\Catalogs\Product::where('name', 'like', 'BANDA MICRO-V')
+                ->whereHas('brand', function ($query) {
+                    return $query->where('name', 'SHARK WP');
+                })->get();
+            return response()->json(['success'=>true, 'data' => $products]);
         });
     });
 

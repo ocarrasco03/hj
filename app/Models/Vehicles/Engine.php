@@ -2,6 +2,7 @@
 
 namespace App\Models\Vehicles;
 
+use App\Models\Vehicles\Model as VehiclesModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,4 +25,14 @@ class Engine extends Model
         'fuel',
         'valves',
     ];
+
+    public function model()
+    {
+        return $this->belongsToMany(VehiclesModel::class, 'models_engines');
+    }
+
+    public function year()
+    {
+        return $this->belongsToMany(Year::class, 'models_engines');
+    }
 }
