@@ -7,7 +7,6 @@ use App\Http\Controllers\Api\NeighborhoodsController;
 use App\Http\Controllers\Api\StatesController;
 use App\Http\Controllers\Api\VehiclesController;
 use App\Http\Controllers\Api\ZipCodesController;
-use App\Http\Controllers\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,14 +46,6 @@ Route::name('api.')->group(function () {
             Route::get('zip-codes/{country}/{state}/{city?}', 'zipCodes')->name('zip.code');
             Route::get('neighborhood/{zip_code?}', 'neighborhood')->name('neighborhood');
             Route::get('products/sku', 'products')->name('products');
-        });
-
-        Route::get('fix/products', function () {
-            $products = App\Models\Catalogs\Product::where('name', 'like', 'BANDA MICRO-V')
-                ->whereHas('brand', function ($query) {
-                    return $query->where('name', 'SHARK WP');
-                })->get();
-            return response()->json(['success'=>true, 'data' => $products]);
         });
     });
 
