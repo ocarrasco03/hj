@@ -9,6 +9,8 @@ import ValidationErrors from "@/Components/ValidationErrors";
 
 const form = useForm({
     files: null,
+    type: '',
+    target: '',
 });
 
 const submit = () => {
@@ -16,6 +18,9 @@ const submit = () => {
     //     preserveScroll: true,
     //     preserveState: false,
     // });
+};
+const upload = () => {
+    document.getElementById("uploadFile").click();
 };
 
 const drop = event => {
@@ -62,15 +67,18 @@ export default {
         <div class="card w-full p-3 md:flex">
             <div class="flex-1">
                 <label for="type">Tipo</label>
-                <select name="type" id="type">
+                <select name="type" id="type" v-model="form.type">
                     <option value="image">Imagenes</option>
                     <option value="file">Archivo</option>
                 </select>
             </div>
             <div class="md:ml-2">
-                <label for="type">Tipo de Carga</label>
-                <select name="type" id="type">
-                    <option value="image">Productos</option>
+                <label for="target">Tipo de Carga</label>
+                <select name="target" id="target" v-model="form.target">
+                    <option value="product">Productos</option>
+                    <option value="app-catalog">Catalogo de Aplicacion</option>
+                    <option value="prices">Precios</option>
+                    <option value="stocks">Inventarios</option>
                 </select>
             </div>
         </div>

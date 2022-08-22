@@ -18,10 +18,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('backup:clean')->daily()->at('09:00');
-        $schedule->command('backup:run')->daily()->at('09:30');
+        $schedule->command('backup:clean')->monthly()->at('09:00');
+        $schedule->command('backup:run')->monthly()->at('09:30');
         $schedule->command('telescope:prune')->daily();
-        $schedule->command('queue:work')->hourly();
+        $schedule->command('queue:work')->everyMinute();
     }
 
     /**
