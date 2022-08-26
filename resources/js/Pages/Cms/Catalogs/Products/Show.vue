@@ -766,7 +766,7 @@ export default {
                             class="wrapper-img"
                         >
                             <img
-                                :src="image.preview_url"
+                                :src="image.original_url"
                                 :alt="image.file_name"
                                 srcset=""
                                 class="h-8 carousel-item"
