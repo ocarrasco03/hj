@@ -50,7 +50,7 @@ defineProps({
                         <h4>{{ item.sku }} | {{ item.name }}</h4>
                         <div class="flex items-center divide-x space-x-2">
                             <RateStars :rate="parseFloat(item.rate)" />
-                            <span class="text-xs pl-1">Marca: {{ item.brand.name }}</span>
+                            <span class="text-xs pl-1">Marca: {{ item.brand }}</span>
                             <span class="text-xs pl-1">Categorias:
                                 <template v-for="(category, index) in item.categories" :key="index">
                                     {{ category.name }}{{ index < (item.categories.length - 1) ? ' | ' : '' }}
