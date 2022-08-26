@@ -45,71 +45,33 @@ class ImportImages extends Command
             $bar = $this->output->createProgressBar(count($products));
             $bar->start();
             foreach ($products as $product) {
+                // EAGLE
                 if (is_dir(public_path('/images/CONSECS/eagle'))) {
-                    if (file_exists(public_path('/images/CONSECS/eagle/') . $product->sku . '.jpg')) {
-                        $product->addMedia(public_path('/images/CONSECS/eagle/') . $product->sku . '.jpg')
+                    if (file_exists(public_path('/images/CONSECS/eagle/CUBREPOLVOS/MA/') . $product->sku . '.jpg')) {
+                        $product->addMedia(public_path('/images/CONSECS/eagle/CUBREPOLVOS/MA/') . $product->sku . '.jpg')
                             ->withResponsiveImages()
                             ->toMediaCollection('products');
                     }
-                    if (file_exists(public_path('/images/CONSECS/eagle/') . strtoupper($product->sku) . '.JPG')) {
-                        $product->addMedia(public_path('/images/CONSECS/eagle/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
-                }
 
-                if (is_dir(public_path('/images/CONSECS/partech'))) {
-                    if (file_exists(public_path('/images/CONSECS/partech/') . $product->sku . '.jpg')) {
-                        $product->addMedia(public_path('/images/CONSECS/partech/') . $product->sku . '.jpg')
+                    if (file_exists(public_path('/images/CONSECS/eagle/DIRECCIONYSUSPENSION/MA/') . $product->sku . '.jpg')) {
+                        $product->addMedia(public_path('/images/CONSECS/eagle/DIRECCIONYSUSPENSION/MA/') . $product->sku . '.jpg')
                             ->withResponsiveImages()
                             ->toMediaCollection('products');
                     }
-                    if (file_exists(public_path('/images/CONSECS/partech/') . strtoupper($product->sku) . '.JPG')) {
-                        $product->addMedia(public_path('/images/CONSECS/partech/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
-                }
 
-                if (is_dir(public_path('/images/CONSECS/rodatech'))) {
-                    if (file_exists(public_path('/images/CONSECS/rodatech/') . $product->sku . '.jpg')) {
-                        $product->addMedia(public_path('/images/CONSECS/rodatech/') . $product->sku . '.jpg')
+                    if (file_exists(public_path('/images/CONSECS/eagle/JUNTASHOMOCINETICAS/MA_medidas/') . $product->sku . '.jpg')) {
+                        $product->addMedia(public_path('/images/CONSECS/eagle/JUNTASHOMOCINETICAS/MA_medidas/') . $product->sku . '.jpg')
                             ->withResponsiveImages()
                             ->toMediaCollection('products');
                     }
-                    if (file_exists(public_path('/images/CONSECS/rodatech/') . strtoupper($product->sku) . '.JPG')) {
-                        $product->addMedia(public_path('/images/CONSECS/rodatech/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
-                }
 
-                if (is_dir(public_path('/images/CONSECS/tg'))) {
-                    if (file_exists(public_path('/images/CONSECS/tg/') . $product->sku . '.jpg')) {
-                        $product->addMedia(public_path('/images/CONSECS/tg/') . $product->sku . '.jpg')
+                    if (file_exists(public_path('/images/CONSECS/eagle/SOPORTES/MA/') . $product->sku . '.jpg')) {
+                        $product->addMedia(public_path('/images/CONSECS/eagle/SOPORTES/MA/') . $product->sku . '.jpg')
                             ->withResponsiveImages()
                             ->toMediaCollection('products');
                     }
-                    if (file_exists(public_path('/images/CONSECS/tg/') . strtoupper($product->sku) . '.JPG')) {
-                        $product->addMedia(public_path('/images/CONSECS/tg/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
-                }
 
-                if (is_dir(public_path('/images/CONSECS/trackone'))) {
-                    if (file_exists(public_path('/images/CONSECS/trackone/') . $product->sku . '.jpg')) {
-                        $product->addMedia(public_path('/images/CONSECS/trackone/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
-                    if (file_exists(public_path('/images/CONSECS/trackone/') . strtoupper($product->sku) . '.JPG')) {
-                        $product->addMedia(public_path('/images/CONSECS/trackone/') . $product->sku . '.jpg')
-                            ->withResponsiveImages()
-                            ->toMediaCollection('products');
-                    }
                 }
-
                 $bar->advance();
             }
             $bar->finish();
