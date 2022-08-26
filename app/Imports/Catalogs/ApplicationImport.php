@@ -8,6 +8,8 @@ use App\Models\Vehicles\Manufacturer;
 use App\Models\Vehicles\Model;
 use App\Models\Vehicles\Vehicle;
 use App\Models\Vehicles\Year;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -16,9 +18,11 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
 
-class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar, WithChunkReading, WithBatchInserts
+class ApplicationImport implements ToCollection, WithHeadingRow, WithChunkReading, WithBatchInserts, ShouldQueue
 {
     use Importable;
+    use Queueable;
+
     /**
      * @param Collection $collection
      */
@@ -135,7 +139,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function chunkSize(): int
     {
-        return 1;
+        return 100;
     }
 
     /**
@@ -143,6 +147,6 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithProgressBar
      */
     public function batchSize(): int
     {
-        return 1;
+        return 100;
     }
 }
