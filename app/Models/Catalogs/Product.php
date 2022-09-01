@@ -265,7 +265,7 @@ class Product extends Model implements Buyable, HasMedia
         })->when(!is_null($engine), function ($query) use ($engine) {
             return $query->whereHas('vehicles', function ($query) use ($engine) {
                 return $query->whereHas('engine', function ($query) use ($engine) {
-                    return $query->where('name', $engine);
+                    return $query->where('display_name', $engine);
                 });
             });
         })->when(!is_null($category), function ($query) use ($category) {

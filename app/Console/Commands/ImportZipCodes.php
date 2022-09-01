@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Imports\ZipCodesImport;
 use Illuminate\Console\Command;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportZipCodes extends Command
 {
@@ -40,7 +42,8 @@ class ImportZipCodes extends Command
         ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            (new \App\Imports\ZipCodesImport)->withOutput($this->output)->import(public_path('/excel/ZipCodeLayout.xlsx'));
+            // (new \App\Imports\ZipCodesImport)->withOutput($this->output)->import(public_path('/excel/ZipCodeLayout.xlsx'));
+            Excel::queueImport(new ZipCodesImport, public_path('/excel/ZipCodeLayout.xlsx'));
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

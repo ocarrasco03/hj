@@ -3,21 +3,24 @@
 namespace App\Imports;
 
 use App\Models\Configs\City;
-use App\Models\Configs\Country;
-use App\Models\Configs\Neighborhood;
 use App\Models\Configs\State;
+use Illuminate\Bus\Queueable;
+use App\Models\Configs\Country;
 use App\Models\Configs\ZipCode;
 use Illuminate\Support\Collection;
+use App\Models\Configs\Neighborhood;
 use Maatwebsite\Excel\Concerns\Importable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class ZipCodesImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow
+class ZipCodesImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow, ShouldQueue
 {
     use Importable;
+    use Queueable;
 
     /**
     * @param Collection $collection

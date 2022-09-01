@@ -1,21 +1,10 @@
 <template>
     <div
-        class="bg-gray-100 px-4 pb-4 rounded-b sm:max-w-xs w-full z-10 shadow-lg divide-y divide-secondary-500 absolute space-y-6"
-    >
+        class="bg-gray-100 px-4 pb-4 rounded-b sm:max-w-xs w-full z-10 shadow-lg divide-y divide-secondary-500 absolute space-y-6">
         <div id="applicationLookup">
             <div>
-                <Label
-                    for="year"
-                    value="A&ntilde;o"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="year"
-                    name="year"
-                    v-model="form.year"
-                    @change="getModels"
-                >
+                <Label for="year" value="A&ntilde;o" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="year" name="year" v-model="form.year" @change="getModels">
                     <option :value="null" disabled>
                         {{ $t('Select a Year') }}
                     </option>
@@ -25,18 +14,8 @@
                 </select>
             </div>
             <div>
-                <Label
-                    for="make"
-                    value="Armadora"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="make"
-                    name="make"
-                    v-model="form.make"
-                    @change="getModels"
-                >
+                <Label for="make" value="Armadora" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="make" name="make" v-model="form.make" @change="getModels">
                     <option :value="null" disabled>
                         {{ $t('Select a Make') }}
                     </option>
@@ -46,19 +25,9 @@
                 </select>
             </div>
             <div>
-                <Label
-                    for="model"
-                    value="Model"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="model"
-                    name="model"
-                    :disabled="models.length === 0"
-                    v-model="form.model"
-                    @change="getEngines"
-                >
+                <Label for="model" value="Model" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="model" name="model" :disabled="models.length === 0"
+                    v-model="form.model" @change="getEngines">
                     <option :value="null" disabled selected>{{ $t('Select a Model') }}</option>
                     <template v-for="(model, key) in models" :key="key">
                         <option :value="model.model">{{ model.model }}</option>
@@ -66,38 +35,19 @@
                 </select>
             </div>
             <div>
-                <Label
-                    for="engine"
-                    value="Motor"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="engine"
-                    name="engine"
-                    :disabled="engines.length === 0"
-                    v-model="form.engine"
-                >
+                <Label for="engine" value="Motor" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="engine" name="engine" :disabled="engines.length === 0"
+                    v-model="form.engine">
                     <option :value="null" disabled>{{ $t('Select an Engine') }}</option>
                     <template v-for="(engine, key) in engines" :key="key">
-                        <option :value="engine">{{ engine }}</option>
+                        <option :value="engine.engine">{{ engine.engine }}</option>
                     </template>
                 </select>
             </div>
             <div>
-                <Label
-                    for="category"
-                    value="Categoria"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="category"
-                    name="category"
-                    v-model="form.category"
-                    @change="getSubcategories"
-                    :disabled="categories.length === 0"
-                >
+                <Label for="category" value="Categoria" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="category" name="category" v-model="form.category"
+                    @change="getSubcategories" :disabled="categories.length === 0">
                     <option :value="null">Todas las lineas</option>
                     <template v-for="(category, key) in categories" :key="key">
                         <option :value="category.category">
@@ -107,62 +57,30 @@
                 </select>
             </div>
             <div>
-                <Label
-                    for="subcategory"
-                    value="Subcategoria"
-                    class="font-bold text-black mt-1"
-                />
-                <select
-                    class="mt-1 block w-full text-sm"
-                    id="subcategory"
-                    name="subcategory"
-                    v-model="form.subcategory"
-                    :disabled="subcategories.length === 0"
-                >
+                <Label for="subcategory" value="Subcategoria" class="font-bold text-black mt-1" />
+                <select class="mt-1 block w-full text-sm" id="subcategory" name="subcategory" v-model="form.subcategory"
+                    :disabled="subcategories.length === 0">
                     <option :value="null">Todas las sublineas</option>
-                    <template
-                        v-for="(subcategory, key) in subcategories.subcategory"
-                        :key="key"
-                    >
+                    <template v-for="(subcategory, key) in subcategories.subcategory" :key="key">
                         <option :value="subcategory.category">
                             {{ subcategory.category }}
                         </option>
                     </template>
                 </select>
             </div>
-            <SecondaryButton
-                class="flex space-x-1 mt-2 w-full rounded"
-                :disabled="form.processing"
-                @click="search"
-                @keypress.enter="search"
-            >
-                <i
-                    class="fas fa-spinner-third fa-spin mr-2"
-                    v-if="form.processing"
-                ></i>
+            <SecondaryButton class="flex space-x-1 mt-2 w-full rounded" :disabled="form.processing" @click="search"
+                @keypress.enter="search">
+                <i class="fas fa-spinner-third fa-spin mr-2" v-if="form.processing"></i>
                 <span>Buscar</span>
             </SecondaryButton>
         </div>
         <div id="textLookup">
             <div>
-                <Input
-                    id="query"
-                    type="text"
-                    class="mt-6 block w-full"
-                    v-model="formSearch.query"
-                    placeholder="Marca, Modelo, Año, Motor, No. Parte"
-                    @keypress.enter="searchQuery"
-                    required
-                />
-                <SecondaryButton
-                    class="flex space-x-1 mt-2 w-full rounded"
-                    :disabled="formSearch.processing"
-                    @click="searchQuery"
-                >
-                    <i
-                        class="fas fa-spinner-third fa-spin mr-2"
-                        v-if="formSearch.processing"
-                    ></i>
+                <Input id="query" type="text" class="mt-6 block w-full" v-model="formSearch.query"
+                    placeholder="Marca, Modelo, Año, Motor, No. Parte" @keypress.enter="searchQuery" required />
+                <SecondaryButton class="flex space-x-1 mt-2 w-full rounded" :disabled="formSearch.processing"
+                    @click="searchQuery">
+                    <i class="fas fa-spinner-third fa-spin mr-2" v-if="formSearch.processing"></i>
                     <span>Buscar</span>
                 </SecondaryButton>
             </div>
@@ -246,9 +164,9 @@ const getEngines = () => {
             form.engine = null;
         }
         axios
-            .get(route("api.engines"))
+            .get(route("api.v2.vehicles.engines", { model: form.model, year: form.year }))
             .then((res) => {
-                engines.value = res.data;
+                engines.value = res.data.data;
             })
             .catch((err) => {
                 console.log(err);
@@ -293,6 +211,10 @@ onMounted(() => {
 
     if (lastSearch.value.year && lastSearch.value.make) {
         getModels();
+    }
+
+    if (lastSearch.value.model) {
+        getEngines();
     }
 
     if (lastSearch.value.category) {

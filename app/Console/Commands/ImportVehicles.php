@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Catalogs\VehiclesImport;
 use App\Jobs\NotifyUserOfCompletedImport;
 
@@ -45,7 +46,8 @@ class ImportVehicles extends Command
             // (new \App\Imports\Catalogs\VehiclesImport)->queue(public_path('/excel/VehiclesLayout.xlsx'))->chain([
             //     new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'vehiculos'),
             // ]);
-            (new \App\Imports\Catalogs\VehiclesImport)->withOutput($this->output)->import(public_path('/excel/VehiclesLayout.xlsx'));
+            Excel::queueImport(new VehiclesImport, public_path('/excel/VehiclesLayout.xlsx'));
+            // (new \App\Imports\Catalogs\VehiclesImport)->withOutput($this->output)->import(public_path('/excel/VehiclesLayout.xlsx'));
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

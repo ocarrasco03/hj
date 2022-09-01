@@ -46,9 +46,9 @@ class ImportApplicationCatalog extends Command
             // (new \App\Imports\Catalogs\ApplicationImport)->queue(public_path('/excel/ApplicationLayout.xlsx'))->chain([
             //     new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'aplicacion'),
             // ]);
-            $this->output->progressStart(50);
-            for ($i = 1; $i < 51; $i++) {
-                // Excel::queueImport(new ApplicationImport, public_path('/excel/pendientes/'.$i.'.xlsx'));
+            $this->output->progressStart(24);
+            for ($i = 1; $i < 24; $i++) {
+                Excel::queueImport(new ApplicationImport, public_path('/excel/pendientes/'.$i.'.xlsx'));
                 $this->output->progressAdvance();
             }
             $this->output->progressFinish();

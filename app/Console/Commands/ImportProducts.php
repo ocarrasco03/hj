@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Catalogs\ProductsImport;
 use App\Jobs\NotifyUserOfCompletedImport;
 
@@ -42,10 +43,8 @@ class ImportProducts extends Command
         ini_set('max_execution_time',0);
         $this->output->title('Starting Import');
         try {
-            // (new \App\Imports\Catalogs\ProductsImport)->queue(public_path('/excel/ProductsLayout.xlsx'))->chain([
-            //     new NotifyUserOfCompletedImport(\App\Models\User::find(1), 'productos'),
-            // ]);
-            (new \App\Imports\Catalogs\ProductsImport)->withOutput($this->output)->import(public_path('/excel/ProductsLayout.xlsx'));
+            Excel::queueImport(new ProductsImport, public_path('/excel/ProductsLayout.xlsx'));
+            // (new \App\Imports\Catalogs\ProductsImport)->withOutput($this->output)->import(public_path('/excel/ProductsLayout.xlsx'));
             $this->output->success('Import successful');
         } catch (\Throwable$th) {
             $this->output->error($th->getMessage());

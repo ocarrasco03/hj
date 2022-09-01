@@ -34,8 +34,12 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithChunkReadin
             $engine = null;
             $make = $this->getMake($row['make']);
             $model = $this->getModel($make->id, $row['model']);
-            if ($row['lts'] !== '-' && $row['cil'] !== '-') {
-                $engine = $this->getEngine($row['lts'], $row['cil'], $row['fuel'], $row['intake'], $row['valves']);
+            if ($row['lts'] !== '-' && $row['cil'] !== '-' && !is_null($row['lts']) && !is_null($row['cil'])) {
+                if ($row['lts'] === 'ELÉCTRICO') {
+                    $engine = $this->getEngine($row['lts'], 0.0, $row['fuel'], $row['intake'], $row['valves']);
+                } else {
+                    $engine = $this->getEngine($row['lts'], $row['cil'], $row['fuel'], $row['intake'], $row['valves']);
+                }
             }
             $attachments = [];
             foreach ($row as $key => $value) {
@@ -106,7 +110,7 @@ class ApplicationImport implements ToCollection, WithHeadingRow, WithChunkReadin
 
     public function getEngine($liters, $cilinders, $fuel, $intake, $valves)
     {
-        $engine = Engine::where('liters', $liters)->where('cilinders', $cilinders)->first();
+        $engine = Engine::where('liters', number_format($liters, 1))->where('cilinders', $cilinders)->first();
         if (!$engine) {
             $engine = new Engine();
             $engine->display_name = $cilinders . ' ' . number_format($liters, 1);

@@ -2,21 +2,24 @@
 
 namespace App\Imports\Catalogs;
 
+use Illuminate\Support\Str;
+use Illuminate\Bus\Queueable;
 use App\Models\Catalogs\Brand;
 use App\Models\Catalogs\Product;
 use App\Models\Configs\Category;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow
+class ProductsImport implements ToCollection, WithProgressBar, WithChunkReading, WithBatchInserts, WithHeadingRow, ShouldQueue
 {
     use Importable;
+    use Queueable;
 
     /**
      * @param Collection $collection

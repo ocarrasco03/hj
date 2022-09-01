@@ -2,20 +2,23 @@
 
 namespace App\Imports\Catalogs;
 
-use App\Models\Vehicles\Manufacturer;
-use App\Models\Vehicles\Model;
 use App\Models\Vehicles\Year;
+use Illuminate\Bus\Queueable;
+use App\Models\Vehicles\Model;
 use Illuminate\Support\Collection;
+use App\Models\Vehicles\Manufacturer;
 use Maatwebsite\Excel\Concerns\Importable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithProgressBar;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, WithProgressBar, WithBatchInserts
+class VehiclesImport implements ToCollection, WithHeadingRow, WithChunkReading, WithProgressBar, WithBatchInserts, ShouldQueue
 {
     use Importable;
+    use Queueable;
 
     /**
      * @param Collection $collection
