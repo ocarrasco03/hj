@@ -63,17 +63,6 @@ class VehiclesController extends Controller
 
     public function engines($model = null, $year = null)
     {
-        foreach (Vehicle::all() as $row) {
-            if (!is_null($row->engine_id)) {
-                if (DB::table('models_engines')->where('model_id', $row->model_id)->where('year_id', $row->year_id)->where('engine_id', $row->engine_id)->count() === 0) {
-                    DB::table('models_engines')->insert([
-                        'model_id' => $row->model_id,
-                        'year_id' => $row->year_id,
-                        'engine_id' => $row->engine_id,
-                    ]);
-                }
-            }
-        }
         return new EngineCollection(Engine::orderBy('display_name')
             ->when(!is_null($model), function ($query) use ($model) {
                 return $query->whereHas('model', function ($query) use ($model) {
